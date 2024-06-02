@@ -1,5 +1,7 @@
 extends Node2D
 
+var currentMonster:int=1
+var currentProtected:int=1
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -12,6 +14,12 @@ func _process(delta):
 
 func ListenDoorEvent(param: BaseParam.DoorEventParam):
 	if(param.isProtected):
-		$DoorSprite.texture = get_meta("prot1")
+		currentProtected-=1
+		if (currentProtected == 0):
+			currentProtected=get_meta("maxprot")
+		$DoorSprite.texture = get_meta("prot%d" % currentProtected)
 	else:
-		$DoorSprite.texture = get_meta("mon1")
+		currentMonster-=1
+		if (currentMonster == 0):
+			currentMonster=get_meta("maxmon")
+		$DoorSprite.texture = get_meta("mon%d" % currentMonster)
