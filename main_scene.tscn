@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cdq5oomu02ch8"]
+
+[ext_resource type="Script" path="res://model/pipe_overloard.gd" id="1_1crkf"]
+
+[node name="MainScene" type="Node2D"]
+script = ExtResource("1_1crkf")
