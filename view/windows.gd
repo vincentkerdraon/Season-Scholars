@@ -3,6 +3,10 @@ extends Node2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	#ListenWindowHarvestChanged(BaseParam.WindowHarvestChangedParam.new(1, BaseParam.SEASON.ASPARAGUS, BaseParam.SEASON.ASPARAGUS, BaseParam.SEASON.ASPARAGUS))
+	#ListenWindowHarvestChanged(BaseParam.WindowHarvestChangedParam.new(2, BaseParam.SEASON.CHERRY, BaseParam.SEASON.CHERRY,-1))
+	#ListenWindowHarvestChanged(BaseParam.WindowHarvestChangedParam.new(3, BaseParam.SEASON.MUSHROOM,-1, BaseParam.SEASON.MUSHROOM))
+	#ListenWindowHarvestChanged(BaseParam.WindowHarvestChangedParam.new(4, BaseParam.SEASON.LEMON, BaseParam.SEASON.LEMON, BaseParam.SEASON.LEMON))
 	pass # Replace with function body.
 
 
@@ -48,7 +52,10 @@ func DisplayWindowSprite(id:int, meta: CompressedTexture2D):
 	window.find_child("WindowHarvest3").visible=false
 
 func DisplayWindowHarvestSprite(id:int, s1: CompressedTexture2D, s2: CompressedTexture2D, s3: CompressedTexture2D):
+
 	var window = GetWindows(id)
+	if(window == null):
+		return
 	window.find_child("WindowSprite").visible=false
 	window.find_child("WindowHarvest1").visible=true
 	window.find_child("WindowHarvest1").texture=s1

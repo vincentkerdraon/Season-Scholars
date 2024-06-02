@@ -53,7 +53,6 @@ script = ExtResource("7_ul07v")
 metadata/prot1 = ExtResource("8_pi56l")
 metadata/prot2 = ExtResource("9_vmci1")
 metadata/mon1 = ExtResource("10_gh3mb")
-metadata/Mon2 = ExtResource("11_gi6vq")
 metadata/maxmon = 5
 metadata/maxprot = 5
 metadata/mon3 = ExtResource("12_cecip")
@@ -62,6 +61,7 @@ metadata/mon5 = ExtResource("14_d2v11")
 metadata/prot3 = ExtResource("15_gxlrl")
 metadata/prot4 = ExtResource("16_6i5jl")
 metadata/prot5 = ExtResource("17_h24yo")
+metadata/mon2 = ExtResource("11_gi6vq")
 
 [node name="DoorSprite" type="Sprite2D" parent="Door"]
 position = Vector2(684.09, 2.27273)

@@ -23,3 +23,4 @@ func ListenDoorEvent(param: BaseParam.DoorEventParam):
 		if (currentMonster == 0):
 			currentMonster=get_meta("maxmon")
 		$DoorSprite.texture = get_meta("mon%d" % currentMonster)
+	return

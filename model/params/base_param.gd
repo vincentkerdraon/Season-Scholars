@@ -86,7 +86,7 @@ class WindowHarvestChangedParam extends BaseParam:
 	var sea2: SEASON
 	var sea3: SEASON
 	var windowId: int
-	func _init(s1:SEASON, s2:SEASON, s3:SEASON, i:int):
+	func _init(i:int, s1:SEASON, s2:SEASON, s3:SEASON):
 		windowId=i
 		sea1=s1
 		sea2=s2

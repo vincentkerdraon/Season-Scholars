@@ -11,7 +11,7 @@ class_name DoorModel extends BaseModel
 var monsters: Array[MonsterModel] = []
 var difficulty:int
 
-const MAX_NUMBER_NEED_PER_MONSTER = 4
+const MAX_NUMBER_NEED_PER_MONSTER = 3
 const NB_MONSTER_CREATED_BEFURE_UPPING_DIFF = 10
 
 var seasonBeforeAttack :int # Number of season before the current monster will begin to crush the door
@@ -36,7 +36,7 @@ func Reset():
 	seasonCalmAdded = DECOUNT
 	seasonMonsterAdded = MONSTER_ADD
 	difficulty=1
-	CreateMonster()
+	#CreateMonster()
 	
 func CreateMonster():
 	print_debug("New Monster Creation")
@@ -53,26 +53,27 @@ func CreateMonster():
 		seasonCalmAdded=min (1, seasonCalmAdded-1)
 		seasonMonsterAdded=min (1, seasonMonsterAdded-1)
 	difficulty+=1
-	var windowEvent = BaseParam.WindowHarvestChangedParam.new(monsters.size(), newMonster.needs[0].season, -1, -1)
-	if(newMonster.needs.size()>=1):
-		windowEvent.sea2 = newMonster.needs[1].season
-	if(newMonster.needs.size()>=2):
-		windowEvent.sea3 = newMonster.needs[2].season
-	emitCallback.call(PipeOverlord.EventName.WINDOW_HARVEST_CHANGED, windowEvent)
+	EmitHarvestChange(monsters.size(), newMonster)
 	
 
 func ListenSeasonChanged(_season :BaseParam.SeasonParam):
 	seasonBeforeAttack -=1
 	currentSeasonForMonsterAdded -=1
-	if seasonBeforeAttack == 0:
+	if seasonBeforeAttack <= 0:
 		emitCallback.call(PipeOverlord.EventName.DOOR_CHANGED, BaseParam.DoorEventParam.new(false))
 		#print_debug("Game Over - Door Destroyed by HUUUUNNGRY MONSTERS")
 		#emitCallback.call(PipeOverlord.EventName.DOOR_DESTROYED, BaseParam.new())
-	if currentSeasonForMonsterAdded == 0:
+		monsters.pop_front()
+		var id=0
+		for mon in monsters:
+			id+=1
+			EmitHarvestChange(id,mon)
+		id+=1
+		emitCallback.call(PipeOverlord.EventName.WINDOW_CHANGED, BaseParam.WindowChangedParam.new(false, id))
+	if currentSeasonForMonsterAdded <= 0:
 		CreateMonster()
 	
 func ListenStudentGraduated(knowledge: BaseParam.KnowledgesParam):
-	
 	emitCallback.call(PipeOverlord.EventName.WELCOME_AVAILABLE, BaseParam.WelcomeAvailableParam.new(true))
 	if monsters.size()>0 :
 		var defeat = true;
@@ -87,6 +88,23 @@ func ListenStudentGraduated(knowledge: BaseParam.KnowledgesParam):
 			emitCallback.call(PipeOverlord.EventName.OGRE_FED, BaseParam.ScoreParam.new(monster.score))
 			monster.queue_free()
 			seasonBeforeAttack += seasonCalmAdded
+			var id=0
+			for mon in monsters:
+				id+=1
+				EmitHarvestChange(id,mon)
+			id+=1
+			emitCallback.call(PipeOverlord.EventName.WINDOW_CHANGED, BaseParam.WindowChangedParam.new(false, id))
+		else:
+			EmitHarvestChange(1,monsters[0])
+
+func EmitHarvestChange(pos:int, monster:MonsterModel):
+	var need = [-1, -1,-1]
+	var id = 0
+	for n in monster.needs:
+		for v in n.value:
+			need[id]=n.season
+			id+=1
+	emitCallback.call(PipeOverlord.EventName.WINDOW_HARVEST_CHANGED, BaseParam.WindowHarvestChangedParam.new(pos, need[0], need[1], need[2]))
 
 class MonsterModel extends Object:
 	var needs:Array[BaseParam.KnowledgeParam] 

@@ -30,7 +30,7 @@ func AddListener(event: EventName, callback: Callable):
 	return
 
 func Emit(event: EventName, param: BaseParam):
-	print_debug("New Event emitted: {event}, with params {param}".format({"event":EventName.find_key(event), "param":param.to_string()}))
+	print_debug("New Event emitted: {event}, with params {param}".format({"event":EventName.find_key(event), "param":BaseModel.object_to_json(param)}))
 	for callback in listenerDict[event]:
 		callback.call(param)
 	return
@@ -84,14 +84,14 @@ func BeginGame():
 	for model in allModels:
 		model.Reset()
 	currentSeason = BaseParam.SEASON.ASPARAGUS
-	seasonTimer.start(5)
-	Emit(EventName.SEASON_CHANGED, BaseParam.SeasonParam.new(currentSeason))
-	Emit(EventName.DOOR_CHANGED, BaseParam.DoorEventParam.new(true))
-	Emit(EventName.WELCOME_AVAILABLE, BaseParam.WelcomeAvailableParam.new(false))
+	seasonTimer.start(1)
 	Emit(EventName.WINDOW_CHANGED, BaseParam.WindowChangedParam.new(false,1))
 	Emit(EventName.WINDOW_CHANGED, BaseParam.WindowChangedParam.new(false,2))
 	Emit(EventName.WINDOW_CHANGED, BaseParam.WindowChangedParam.new(false,3))
 	Emit(EventName.WINDOW_CHANGED, BaseParam.WindowChangedParam.new(false,4))
+	Emit(EventName.DOOR_CHANGED, BaseParam.DoorEventParam.new(true))
+	Emit(EventName.WELCOME_AVAILABLE, BaseParam.WelcomeAvailableParam.new(true))
+	Emit(EventName.SEASON_CHANGED, BaseParam.SeasonParam.new(currentSeason))
 
 func _on_seasonTimer_timeout():
 	currentSeason = (currentSeason + 1) % BaseParam.SEASON.size() 
@@ -104,6 +104,7 @@ func _ready():
 	AddListener(EventName.DOOR_CHANGED, $Door.ListenDoorEvent)
 	AddListener(EventName.WELCOME_AVAILABLE, $Welcome.ListenWelcomeAvailable)
 	AddListener(EventName.WINDOW_CHANGED, $Windows.ListenWindowChanged)
+	AddListener(EventName.WINDOW_HARVEST_CHANGED, $Windows.ListenWindowHarvestChanged)
 	InitGame()
 
 
