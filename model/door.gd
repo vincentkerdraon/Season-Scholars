@@ -53,6 +53,12 @@ func CreateMonster():
 		seasonCalmAdded=min (1, seasonCalmAdded-1)
 		seasonMonsterAdded=min (1, seasonMonsterAdded-1)
 	difficulty+=1
+	var windowEvent = BaseParam.WindowHarvestChangedParam.new(monsters.size(), newMonster.needs[0].season, -1, -1)
+	if(newMonster.needs.size()>=1):
+		windowEvent.sea2 = newMonster.needs[1].season
+	if(newMonster.needs.size()>=2):
+		windowEvent.sea3 = newMonster.needs[2].season
+	emitCallback.call(PipeOverlord.EventName.WINDOW_HARVEST_CHANGED, windowEvent)
 	
 
 func ListenSeasonChanged(_season :BaseParam.SeasonParam):
@@ -66,6 +72,8 @@ func ListenSeasonChanged(_season :BaseParam.SeasonParam):
 		CreateMonster()
 	
 func ListenStudentGraduated(knowledge: BaseParam.KnowledgesParam):
+	
+	emitCallback.call(PipeOverlord.EventName.WELCOME_AVAILABLE, BaseParam.WelcomeAvailableParam.new(true))
 	if monsters.size()>0 :
 		var defeat = true;
 		for need in monsters[0].needs:

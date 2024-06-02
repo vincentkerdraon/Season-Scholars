@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://cdq5oomu02ch8"]
+[gd_scene load_steps=31 format=3 uid="uid://cdq5oomu02ch8"]
 
 [ext_resource type="Script" path="res://model/pipe_overloard.gd" id="1_1crkf"]
 [ext_resource type="Texture2D" uid="uid://2s4kusnynw47" path="res://images/ready/Classroom/ClassroomAutumn.jpg" id="2_5u3vu"]
@@ -18,6 +18,18 @@
 [ext_resource type="Texture2D" uid="uid://be6ux2vnx3cgc" path="res://images/ready/Door/DoorProtected3.png" id="15_gxlrl"]
 [ext_resource type="Texture2D" uid="uid://6guw8ewqlkrn" path="res://images/ready/Door/DoorProtected4.png" id="16_6i5jl"]
 [ext_resource type="Texture2D" uid="uid://sxwtu1w1xibe" path="res://images/ready/Door/DoorProtected5.png" id="17_h24yo"]
+[ext_resource type="Texture2D" uid="uid://bi6bt2mlast8p" path="res://images/ready/Welcome/DoorClosed.png" id="19_m2stx"]
+[ext_resource type="Script" path="res://view/welcome.gd" id="19_s7wjd"]
+[ext_resource type="Texture2D" uid="uid://c4gleb4trd7fh" path="res://images/ready/Welcome/Traveller1.png" id="21_y7kcy"]
+[ext_resource type="Texture2D" uid="uid://uivvwa02k1ni" path="res://images/ready/Welcome/Traveller2.png" id="22_tvf54"]
+[ext_resource type="Texture2D" uid="uid://dvh5lbxkj7fo0" path="res://images/ready/Welcome/Traveller3.png" id="23_bcbhx"]
+[ext_resource type="Script" path="res://view/windows.gd" id="24_bbqo7"]
+[ext_resource type="Texture2D" uid="uid://cf5qmja6tbtja" path="res://images/ready/Windows/Window1Closed.png" id="24_lf1t4"]
+[ext_resource type="Texture2D" uid="uid://v2wh6k3l8t4b" path="res://images/ready/Windows/Window1Opened.png" id="25_sg54n"]
+[ext_resource type="Texture2D" uid="uid://blmyr2q1votls" path="res://images/ready/Windows/Window1HarvestL.png" id="26_acpi7"]
+[ext_resource type="Texture2D" uid="uid://elbks83yvslo" path="res://images/ready/Windows/Window1HarvestA.png" id="27_hrjve"]
+[ext_resource type="Texture2D" uid="uid://bcqre1t06g17p" path="res://images/ready/Windows/Window1HarvestM.png" id="27_wo7fc"]
+[ext_resource type="Texture2D" uid="uid://b0igvm0p8l12p" path="res://images/ready/Windows/Window1HarvestC.png" id="28_gw4kb"]
 
 [node name="MainScene" type="Node2D"]
 scale = Vector2(0.440001, 0.44)
@@ -56,3 +68,137 @@ position = Vector2(684.09, 2.27273)
 scale = Vector2(0.527551, 0.527551)
 texture = ExtResource("12_t242j")
 centered = false
+
+[node name="Welcome" type="Node2D" parent="."]
+scale = Vector2(1, 1)
+script = ExtResource("19_s7wjd")
+metadata/closed = ExtResource("19_m2stx")
+metadata/t1 = ExtResource("21_y7kcy")
+metadata/t2 = ExtResource("22_tvf54")
+metadata/t3 = ExtResource("23_bcbhx")
+metadata/maxtrav = 3
+
+[node name="WelcomeSprite" type="Sprite2D" parent="Welcome"]
+position = Vector2(1815.91, 2.27273)
+scale = Vector2(0.811717, 0.811717)
+texture = ExtResource("19_m2stx")
+centered = false
+
+[node name="Windows" type="Node2D" parent="."]
+scale = Vector2(1, 1)
+script = ExtResource("24_bbqo7")
+metadata/Open = ExtResource("25_sg54n")
+metadata/closed = ExtResource("24_lf1t4")
+metadata/harvestAsparagus = ExtResource("27_hrjve")
+metadata/harvestCherry = ExtResource("28_gw4kb")
+metadata/harvestLemon = ExtResource("26_acpi7")
+metadata/harvestMushroom = ExtResource("27_wo7fc")
+
+[node name="Window1" type="Node2D" parent="Windows"]
+
+[node name="WindowSprite" type="Sprite2D" parent="Windows/Window1"]
+position = Vector2(552.272, 284.091)
+scale = Vector2(0.693744, 0.693744)
+texture = ExtResource("25_sg54n")
+centered = false
+
+[node name="WindowHarvest1" type="Sprite2D" parent="Windows/Window1"]
+visible = false
+position = Vector2(595.453, 363.636)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("26_acpi7")
+
+[node name="WindowHarvest2" type="Sprite2D" parent="Windows/Window1"]
+visible = false
+position = Vector2(595.453, 500)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("27_wo7fc")
+
+[node name="WindowHarvest3" type="Sprite2D" parent="Windows/Window1"]
+visible = false
+position = Vector2(599.999, 627.273)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("28_gw4kb")
+
+[node name="Window2" type="Node2D" parent="Windows"]
+position = Vector2(-113.636, 47.7273)
+
+[node name="WindowSprite" type="Sprite2D" parent="Windows/Window2"]
+position = Vector2(552.272, 284.091)
+scale = Vector2(0.693744, 0.693744)
+texture = ExtResource("25_sg54n")
+centered = false
+
+[node name="WindowHarvest1" type="Sprite2D" parent="Windows/Window2"]
+visible = false
+position = Vector2(595.453, 363.636)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("26_acpi7")
+
+[node name="WindowHarvest2" type="Sprite2D" parent="Windows/Window2"]
+visible = false
+position = Vector2(595.453, 500)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("27_wo7fc")
+
+[node name="WindowHarvest3" type="Sprite2D" parent="Windows/Window2"]
+visible = false
+position = Vector2(599.999, 627.273)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("28_gw4kb")
+
+[node name="Window3" type="Node2D" parent="Windows"]
+position = Vector2(-297.727, 56.8182)
+scale = Vector2(1.1, 1.1)
+
+[node name="WindowSprite" type="Sprite2D" parent="Windows/Window3"]
+position = Vector2(552.272, 284.091)
+scale = Vector2(0.693744, 0.693744)
+texture = ExtResource("25_sg54n")
+centered = false
+
+[node name="WindowHarvest1" type="Sprite2D" parent="Windows/Window3"]
+visible = false
+position = Vector2(595.453, 363.636)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("26_acpi7")
+
+[node name="WindowHarvest2" type="Sprite2D" parent="Windows/Window3"]
+visible = false
+position = Vector2(595.453, 500)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("27_wo7fc")
+
+[node name="WindowHarvest3" type="Sprite2D" parent="Windows/Window3"]
+visible = false
+position = Vector2(599.999, 627.273)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("28_gw4kb")
+
+[node name="Window4" type="Node2D" parent="Windows"]
+position = Vector2(-474.999, 61.3636)
+scale = Vector2(1.2, 1.2)
+
+[node name="WindowSprite" type="Sprite2D" parent="Windows/Window4"]
+position = Vector2(552.272, 284.091)
+scale = Vector2(0.693744, 0.693744)
+texture = ExtResource("25_sg54n")
+centered = false
+
+[node name="WindowHarvest1" type="Sprite2D" parent="Windows/Window4"]
+visible = false
+position = Vector2(595.453, 363.636)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("26_acpi7")
+
+[node name="WindowHarvest2" type="Sprite2D" parent="Windows/Window4"]
+visible = false
+position = Vector2(595.453, 500)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("27_wo7fc")
+
+[node name="WindowHarvest3" type="Sprite2D" parent="Windows/Window4"]
+visible = false
+position = Vector2(599.999, 627.273)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("28_gw4kb")

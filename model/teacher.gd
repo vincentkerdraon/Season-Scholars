@@ -33,6 +33,7 @@ func PlayerActionWelcome():
 	print_debug("Welcome {station}".format({"station":station}))
 	if BaseParam.IsValidStationToStudentCols(station):
 		emitCallback.call(PipeOverlord.EventName.WELCOME, BaseParam.StationToStudentCols(station))
+		emitCallback.call(PipeOverlord.EventName.WELCOME_AVAILABLE, BaseParam.WelcomeAvailableParam.new(false))
 	return
 
 func ListenStationChanged(sta :BaseParam.StationParam):

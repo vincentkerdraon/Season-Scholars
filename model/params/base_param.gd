@@ -68,3 +68,26 @@ class DoorEventParam extends BaseParam:
 	var isProtected: bool
 	func _init(p:bool):
 		isProtected = p
+
+class WelcomeAvailableParam extends BaseParam:
+	var isAvailable: bool
+	func _init(a:bool):
+		isAvailable = a
+
+class WindowChangedParam extends BaseParam:
+	var isOpen: bool
+	var windowId: int
+	func _init(o:bool, i:int):
+		isOpen = o
+		windowId=i
+
+class WindowHarvestChangedParam extends BaseParam:
+	var sea1: SEASON
+	var sea2: SEASON
+	var sea3: SEASON
+	var windowId: int
+	func _init(s1:SEASON, s2:SEASON, s3:SEASON, i:int):
+		windowId=i
+		sea1=s1
+		sea2=s2
+		sea3=s3

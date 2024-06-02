@@ -1,7 +1,7 @@
 class_name PipeOverlord extends Node
 
 enum EventName{
-	TEACH, GRADUATE, WELCOME, STATION_CHANGED, STUDENT_GRADUATED, DOOR_DESTROYED, OGRE_FED, GAME_OVER, SEASON_CHANGED, DOOR_CHANGED
+	TEACH, GRADUATE, WELCOME, STATION_CHANGED, STUDENT_GRADUATED, DOOR_DESTROYED, OGRE_FED, GAME_OVER, SEASON_CHANGED, DOOR_CHANGED, WELCOME_AVAILABLE, WINDOW_CHANGED, WINDOW_HARVEST_CHANGED
 }
 
 var listenerDict={}
@@ -87,6 +87,11 @@ func BeginGame():
 	seasonTimer.start(5)
 	Emit(EventName.SEASON_CHANGED, BaseParam.SeasonParam.new(currentSeason))
 	Emit(EventName.DOOR_CHANGED, BaseParam.DoorEventParam.new(true))
+	Emit(EventName.WELCOME_AVAILABLE, BaseParam.WelcomeAvailableParam.new(false))
+	Emit(EventName.WINDOW_CHANGED, BaseParam.WindowChangedParam.new(false,1))
+	Emit(EventName.WINDOW_CHANGED, BaseParam.WindowChangedParam.new(false,2))
+	Emit(EventName.WINDOW_CHANGED, BaseParam.WindowChangedParam.new(false,3))
+	Emit(EventName.WINDOW_CHANGED, BaseParam.WindowChangedParam.new(false,4))
 
 func _on_seasonTimer_timeout():
 	currentSeason = (currentSeason + 1) % BaseParam.SEASON.size() 
@@ -97,6 +102,8 @@ func _on_seasonTimer_timeout():
 func _ready():
 	AddListener(EventName.SEASON_CHANGED,$Classroom.listenSeason)
 	AddListener(EventName.DOOR_CHANGED, $Door.ListenDoorEvent)
+	AddListener(EventName.WELCOME_AVAILABLE, $Welcome.ListenWelcomeAvailable)
+	AddListener(EventName.WINDOW_CHANGED, $Windows.ListenWindowChanged)
 	InitGame()
 
 
