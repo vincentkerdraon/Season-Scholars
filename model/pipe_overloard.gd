@@ -1,7 +1,7 @@
 class_name PipeOverlord extends Node
 
 enum EventName{
-	TEACH, GRADUATE, WELCOME, STATION_CHANGED, STUDENT_GRADUATED, DOOR_DESTROYED, OGRE_FED, GAME_OVER, SEASON_CHANGED
+	TEACH, GRADUATE, WELCOME, STATION_CHANGED, STUDENT_GRADUATED, DOOR_DESTROYED, OGRE_FED, GAME_OVER, SEASON_CHANGED, DOOR_CHANGED
 }
 
 var listenerDict={}
@@ -86,6 +86,7 @@ func BeginGame():
 	currentSeason = BaseParam.SEASON.ASPARAGUS
 	seasonTimer.start(5)
 	Emit(EventName.SEASON_CHANGED, BaseParam.SeasonParam.new(currentSeason))
+	Emit(EventName.DOOR_CHANGED, BaseParam.DoorEventParam.new(true))
 
 func _on_seasonTimer_timeout():
 	currentSeason = (currentSeason + 1) % BaseParam.SEASON.size() 
@@ -94,6 +95,8 @@ func _on_seasonTimer_timeout():
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	AddListener(EventName.SEASON_CHANGED,$Classroom.listenSeason)
+	AddListener(EventName.DOOR_CHANGED, $Door.ListenDoorEvent)
 	InitGame()
 
 

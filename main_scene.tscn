@@ -1,6 +1,44 @@
-[gd_scene load_steps=2 format=3 uid="uid://cdq5oomu02ch8"]
+[gd_scene load_steps=13 format=3 uid="uid://cdq5oomu02ch8"]
 
 [ext_resource type="Script" path="res://model/pipe_overloard.gd" id="1_1crkf"]
+[ext_resource type="Texture2D" uid="uid://2s4kusnynw47" path="res://images/ready/Classroom/ClassroomAutumn.jpg" id="2_5u3vu"]
+[ext_resource type="Script" path="res://view/classroom.gd" id="3_wyo6d"]
+[ext_resource type="Texture2D" uid="uid://cgos0rv1j08m0" path="res://images/ready/Classroom/ClassroomSpring.jpg" id="4_10uvm"]
+[ext_resource type="Texture2D" uid="uid://m4jtypw7ojcw" path="res://images/ready/Classroom/ClassroomSummer.jpg" id="5_exln4"]
+[ext_resource type="Texture2D" uid="uid://kbojbbj5x3fh" path="res://images/ready/Classroom/ClassroomWinter.jpg" id="6_wbewd"]
+[ext_resource type="Script" path="res://view/door.gd" id="7_ul07v"]
+[ext_resource type="Texture2D" uid="uid://cclcr7v488gkb" path="res://images/ready/Door/DoorProtected1.png" id="8_pi56l"]
+[ext_resource type="Texture2D" uid="uid://dvwihqg6vdi4r" path="res://images/ready/Door/DoorProtected2.png" id="9_vmci1"]
+[ext_resource type="Texture2D" uid="uid://dfua65ty41i1o" path="res://images/ready/Door/DoorMonster1.png" id="10_gh3mb"]
+[ext_resource type="Texture2D" uid="uid://csnpgxnljyecf" path="res://images/ready/Door/DoorMonster2.png" id="11_gi6vq"]
+[ext_resource type="Texture2D" uid="uid://cqkl5sdg03xx4" path="res://images/ready/Door/DoorProtected10.png" id="12_t242j"]
 
 [node name="MainScene" type="Node2D"]
+scale = Vector2(0.440001, 0.44)
 script = ExtResource("1_1crkf")
+
+[node name="Classroom" type="Node2D" parent="."]
+scale = Vector2(1.04481, 1.09794)
+script = ExtResource("3_wyo6d")
+metadata/asparagus = ExtResource("4_10uvm")
+metadata/Cherry = ExtResource("5_exln4")
+metadata/Mushroom = ExtResource("2_5u3vu")
+metadata/Lemon = ExtResource("6_wbewd")
+
+[node name="ClassroomSprite" type="Sprite2D" parent="Classroom"]
+texture = ExtResource("2_5u3vu")
+centered = false
+
+[node name="Door" type="Node2D" parent="."]
+scale = Vector2(1, 1)
+script = ExtResource("7_ul07v")
+metadata/prot1 = ExtResource("8_pi56l")
+metadata/prot2 = ExtResource("9_vmci1")
+metadata/mon1 = ExtResource("10_gh3mb")
+metadata/Mon2 = ExtResource("11_gi6vq")
+
+[node name="DoorSprite" type="Sprite2D" parent="Door"]
+position = Vector2(684.09, 2.27273)
+scale = Vector2(0.527551, 0.527551)
+texture = ExtResource("12_t242j")
+centered = false

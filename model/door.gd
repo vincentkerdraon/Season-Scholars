@@ -59,8 +59,9 @@ func ListenSeasonChanged(_season :BaseParam.SeasonParam):
 	seasonBeforeAttack -=1
 	currentSeasonForMonsterAdded -=1
 	if seasonBeforeAttack == 0:
-		print_debug("Game Over - Door Destroyed by HUUUUNNGRY MONSTERS")
-		emitCallback.call(PipeOverlord.EventName.DOOR_DESTROYED, BaseParam.new())
+		emitCallback.call(PipeOverlord.EventName.DOOR_CHANGED, BaseParam.DoorEventParam.new(false))
+		#print_debug("Game Over - Door Destroyed by HUUUUNNGRY MONSTERS")
+		#emitCallback.call(PipeOverlord.EventName.DOOR_DESTROYED, BaseParam.new())
 	if currentSeasonForMonsterAdded == 0:
 		CreateMonster()
 	

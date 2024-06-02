@@ -63,3 +63,8 @@ class ScoreParam extends BaseParam:
 	var score: int
 	func _init(s:int):
 		score = s
+		
+class DoorEventParam extends BaseParam:
+	var isProtected: bool
+	func _init(p:bool):
+		isProtected = p

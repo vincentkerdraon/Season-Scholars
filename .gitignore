@@ -1,2 +1,4 @@
 # Godot 4+ specific ignores
 .godot/
+images/selected/*.import
+images/WIP/*.import
