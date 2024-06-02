@@ -2,3 +2,8 @@
 .godot/
 images/selected/*.import
 images/WIP/*.import
+images/selected/*/*.import
+images/WIP/*/*.import
+images/selected/*/*/*.import
+images/WIP/*/*/*.import
+images/WIP/*/*/*/*.import
