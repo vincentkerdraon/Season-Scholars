@@ -4,15 +4,19 @@ class_name BaseParam extends Object
 ### UTIL
 
 enum STUDENT_COLS{
-	COL0=0, COL1, COL2
+	COL_LEFT=0, COL_CENTER, COL_RIGHT
 }
 
 enum STATION{
-	NONE=-1, ST_COL0=0, ST_COL1= 1, ST_COL2=2
+	NONE=-1, ST_COL_LEFT=0, ST_COL_CENTER= 1, ST_COL_RIGHT=2, WELCOME
 }
 
 enum SEASON{
 	ASPARAGUS, CHERRY, MUSHROOM, LEMON
+}
+
+enum DIR{
+	UP, UPRIGHT, RIGHT, RIGHTDOWN, DOWN, DOWNLEFT, LEFT, LEFTUP, NONE
 }
 
 static func IsValidStationToStudentCols(station) -> bool: 
@@ -27,6 +31,29 @@ static func IsValidStationToStudentCols(station) -> bool:
 static func StationToStudentCols(station) -> STUDENT_COLS:	
 	return STUDENT_COLS.find_key(station)
 
+static func GetDirFromVector2Snapped(v :Vector2i)->DIR:
+	match (v):
+		Vector2i(0,1):
+			return DIR.DOWN
+		Vector2i(1,1):
+			return DIR.RIGHTDOWN
+		Vector2i(1,0):
+			return DIR.RIGHT
+		Vector2i(1,-1):
+			return DIR.UPRIGHT
+		Vector2i(0,-1):
+			return DIR.UP
+		Vector2i(-1,-1):
+			return DIR.LEFTUP
+		Vector2i(-1,0):
+			return DIR.LEFT
+		Vector2i(-1,1):
+			return DIR.DOWNLEFT
+		Vector2i(0,0):
+			return DIR.NONE
+		_: 
+			printerr("Direction not reconized: %v" % v)
+			return DIR.NONE
 
 ### SUBCLASS
 
@@ -91,3 +118,10 @@ class WindowHarvestChangedParam extends BaseParam:
 		sea1=s1
 		sea2=s2
 		sea3=s3
+
+class PlayerActionParam extends BaseParam:
+	var longAction: bool
+	var shortAction: bool
+	func _init(s: bool, l: bool):
+		longAction = l
+		shortAction = s

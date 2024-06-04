@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://cdq5oomu02ch8"]
+[gd_scene load_steps=36 format=3 uid="uid://cdq5oomu02ch8"]
 
 [ext_resource type="Script" path="res://model/pipe_overloard.gd" id="1_1crkf"]
 [ext_resource type="Texture2D" uid="uid://2s4kusnynw47" path="res://images/ready/Classroom/ClassroomAutumn.jpg" id="2_5u3vu"]
@@ -30,6 +30,11 @@
 [ext_resource type="Texture2D" uid="uid://elbks83yvslo" path="res://images/ready/Windows/Window1HarvestA.png" id="27_hrjve"]
 [ext_resource type="Texture2D" uid="uid://bcqre1t06g17p" path="res://images/ready/Windows/Window1HarvestM.png" id="27_wo7fc"]
 [ext_resource type="Texture2D" uid="uid://b0igvm0p8l12p" path="res://images/ready/Windows/Window1HarvestC.png" id="28_gw4kb"]
+[ext_resource type="Script" path="res://view/teacher.gd" id="31_105dm"]
+[ext_resource type="Texture2D" uid="uid://ce34y26gcpv3f" path="res://images/selected/TeacherA/TeacherATeachingWelcoming.png" id="34_k5bou"]
+[ext_resource type="Texture2D" uid="uid://bb8rraqvfhoso" path="res://images/ready/Students/c0.png" id="34_n4rye"]
+[ext_resource type="Texture2D" uid="uid://twt0id85n54r" path="res://images/ready/Students/s0.png" id="35_g1x4s"]
+[ext_resource type="Texture2D" uid="uid://dp1v8w0f3udq1" path="res://images/selected/Cooking/FoodA1.png" id="36_y8rao"]
 
 [node name="MainScene" type="Node2D"]
 scale = Vector2(0.440001, 0.44)
@@ -48,7 +53,6 @@ texture = ExtResource("2_5u3vu")
 centered = false
 
 [node name="Door" type="Node2D" parent="."]
-scale = Vector2(1, 1)
 script = ExtResource("7_ul07v")
 metadata/prot1 = ExtResource("8_pi56l")
 metadata/prot2 = ExtResource("9_vmci1")
@@ -70,7 +74,6 @@ texture = ExtResource("12_t242j")
 centered = false
 
 [node name="Welcome" type="Node2D" parent="."]
-scale = Vector2(1, 1)
 script = ExtResource("19_s7wjd")
 metadata/closed = ExtResource("19_m2stx")
 metadata/t1 = ExtResource("21_y7kcy")
@@ -85,7 +88,6 @@ texture = ExtResource("19_m2stx")
 centered = false
 
 [node name="Windows" type="Node2D" parent="."]
-scale = Vector2(1, 1)
 script = ExtResource("24_bbqo7")
 metadata/Open = ExtResource("25_sg54n")
 metadata/closed = ExtResource("24_lf1t4")
@@ -202,3 +204,52 @@ visible = false
 position = Vector2(599.999, 627.273)
 scale = Vector2(0.8, 0.8)
 texture = ExtResource("28_gw4kb")
+
+[node name="Teacher" type="Node2D" parent="."]
+script = ExtResource("31_105dm")
+
+[node name="ST_COL_LEFT" type="Sprite2D" parent="Teacher"]
+visible = false
+z_index = 10
+position = Vector2(1306.82, 827.273)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("34_k5bou")
+
+[node name="ST_COL_CENTER" type="Sprite2D" parent="Teacher"]
+z_index = 10
+position = Vector2(1745.45, 825.001)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("34_k5bou")
+
+[node name="ST_COL_RIGHT" type="Sprite2D" parent="Teacher"]
+visible = false
+z_index = 10
+position = Vector2(2538.63, 829.546)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("34_k5bou")
+
+[node name="ST_COL_LEFT_TO_ST_COL_CENTER" type="Sprite2D" parent="Teacher"]
+visible = false
+position = Vector2(1527.27, 1004.55)
+texture = ExtResource("36_y8rao")
+centered = false
+
+[node name="ST_COL_CENTER_TO_ST_COL_RIGHT" type="Sprite2D" parent="Teacher"]
+visible = false
+position = Vector2(2104.54, 1043.18)
+texture = ExtResource("36_y8rao")
+
+[node name="C0" type="Sprite2D" parent="."]
+position = Vector2(1936.36, 825)
+texture = ExtResource("34_n4rye")
+
+[node name="S0" type="Sprite2D" parent="."]
+position = Vector2(1522.72, 845.455)
+scale = Vector2(0.454547, 0.454547)
+texture = ExtResource("35_g1x4s")
+
+[node name="S1" type="Sprite2D" parent="."]
+position = Vector2(2343.18, 845.455)
+scale = Vector2(0.454547, 0.454547)
+texture = ExtResource("35_g1x4s")
+flip_h = true
