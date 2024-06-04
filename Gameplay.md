@@ -1,4 +1,3 @@
-init game
 
 -> meta commands
     - exit
@@ -39,9 +38,9 @@ init game
 -> algo for new students
     - only if classroom not full
     - classroom less than 3 students
-    - either a monster is fulfilled
-    - either every season with a random (20% chance)
-    - goes to the next random available space (front row or behind student)
+    - a monster is fulfilled
+    - every season with a random (20% chance)
+    - student goes to the next random available space (front row or behind student)
 
 -> algo for monster
     - difficulty = nb monsters defeated
@@ -64,3 +63,22 @@ init game
     - 1 point per student taught
     - 10 points per student graduated
     - 20 points per monster fulfilled
+
+-> Buttons
+(following game jam guidelines + special additions for keyboard )
+    - common
+        - Reset: mouse 3 || escape
+    - player1
+        - Move up: arrow up 
+        - Move left: arrow left
+        - Move down: arrow down
+        - Move right: arrow right
+        - Short action: shift left || shift right
+        - Long action: ctrl left || ctrl right
+    - player2
+        - Move up: R || 8
+        - Move left: D || 4
+        - Move down: F || 2
+        - Move right: G || 6
+        - Short action: A || 0 || - || Page Up
+        - Long action: Q || W || . || + || Page Down
