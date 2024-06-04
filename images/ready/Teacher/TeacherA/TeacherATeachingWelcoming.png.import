@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b1cwje75ic53a"
-path="res://.godot/imported/teacher-watch.png-3e54178c7f4e9b3a3d3e39ef0d671616.ctex"
+uid="uid://ce34y26gcpv3f"
+path="res://.godot/imported/TeacherATeachingWelcoming.png-8edbcdca990a36afc5a1a9e34b676286.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/ready/Teacher/teacher-watch.png"
-dest_files=["res://.godot/imported/teacher-watch.png-3e54178c7f4e9b3a3d3e39ef0d671616.ctex"]
+source_file="res://images/ready/Teacher/TeacherA/TeacherATeachingWelcoming.png"
+dest_files=["res://.godot/imported/TeacherATeachingWelcoming.png-8edbcdca990a36afc5a1a9e34b676286.ctex"]
 
 [params]
 
