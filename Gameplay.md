@@ -1,20 +1,35 @@
+Game name: Season Scholars
 
 -> meta commands
     - exit
 
 -> show Welcome screen.
-    - join player (toggle on press short action)
-    - start game (press long action)
-    - show input instructions
-    - show objectives
-    - show story?
-    - show leaderboard (1 player / 2 players)
+    - goal
+```
+You play as a wise teacher guiding farmers through the changing seasons. Each season brings new crops to learn: asparagus, cherries, chanterelles and lemons. But beware! Monsters with unique needs threaten your village. To protect your people, you must graduate students with the precise knowledge to combat these threats. Will you rise to the challenge?
+```
+    - howto
+```
+- Move your teacher from station to station by selecting a direction and pressing "short action."
+- In front of the students, you can teach them about the current season (short action) or graduate them.
+- At the door in the back, you can welcome a new student (short action) or find a new one (long action).
+- Through the magical windows on the left, you can spy on incoming monsters to learn their needs (short action).
+- You can defend (short action) the monster portal on the left or repair it (long action).
+- At the cooking station, you can eat (short action) or cook (long action).
+```
+    - show input mapping (see images: arcade + keyboard)
+    - join + start game 
+```
+press "short action" to join/leave
+press "long action" to start the game
+press "reset" to exit
+```
 
 -> show game screen
     - spring
     - 6 students in class (R0C0,R0C1,R0C2,R1C0,R1C1,R1C2) and 3 desks empty (R2C0,R2C1,R2C2). No lesson
-    - 1 monster revealed (1 need = autumn)
-    - 1 monster hidden (1 need)
+    - 1 monster revealed (need = autumn)
+    - 1 monster hidden (need=spring)
 
 -> teacher actions
     - move to stations
@@ -28,7 +43,6 @@
     - [s] welcome: 5s
     - [l] recruit: 10s
     - [s] watch: 5s
-    - [s] defend: 5s
     - [l] repair: 10s
     - [s] eat: 5s
     - [l] cook: 10s
@@ -43,6 +57,7 @@
     - student goes to the next random available space (front row or behind student)
 
 -> algo for monster
+    - monsters arrive every season, they wait in line until they reach the portal. At the portal, they wait a moment hidden, then become visible. They attack if they are visible for too long and damage the door. The door can hold a few hits, then game over.
     - difficulty = nb monsters defeated
         - 1 => need=autumn, wait=40s, attack=60s
         - 2 => need=spring, wait=40s, attack=60s
@@ -58,6 +73,7 @@
         - n<50 => need=random(3 needs), wait=10s, attack=10s
         - n>=50 => need=random(3 needs), wait=5s, attack=10s
     - if no monster, add monster
+   
 
 -> score:
     - 1 point per student taught
