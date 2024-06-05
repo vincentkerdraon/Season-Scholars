@@ -3,7 +3,7 @@ Game name: Season Scholars
 -> meta commands
     - exit
 
--> show Welcome screen.
+-> Welcome screen.
     - goal
 ```
 You play as a wise teacher guiding farmers through the changing seasons. Each season brings new crops to learn: asparagus, cherries, chanterelles and lemons. But beware! Monsters with unique needs threaten your village. To protect your people, you must graduate students with the precise knowledge to combat these threats. Will you rise to the challenge?
@@ -25,7 +25,22 @@ press "long action" to start the game
 press "reset" to exit
 ```
 
--> show game screen
+-> Game over screen
+    - reason of death
+    - score and duration of the game
+    - one of these
+        - `The village falls as the monsters overrun the fields. Better luck next time, scholar.`
+        - `The students couldn't keep up with the monsters' demands. Try again and teach them better!`
+        - `The knowledge wasn't enough to protect the village. The monsters have won this season.`
+        - `Despite your efforts, the monsters have breached the village. Prepare for the next challenge.`
+        - `Your teachings couldn't save the village this time. Study hard and try again!`
+        - `The crops are trampled, and the village is lost. Will you return to save it?`
+        - `The monsters have conquered the village. Can you devise a better strategy next time?`
+        - `The students weren't ready, and the village has fallen. Regroup and educate them anew.`
+        - `Your defense failed, and the monsters reign supreme. Can you rise to the challenge next season?`
+        - `The village is lost to the monster horde. Sharpen your knowledge and return for revenge.`
+
+-> game screen
     - spring
     - 6 students in class (R0C0,R0C1,R0C2,R1C0,R1C1,R1C2) and 3 desks empty (R2C0,R2C1,R2C2). No lesson
     - 1 monster revealed (need = autumn)
@@ -96,5 +111,5 @@ press "reset" to exit
         - Move left: D || 4
         - Move down: F || 2
         - Move right: G || 6
-        - Short action: A || 0 || - || Page Up
-        - Long action: Q || W || . || + || Page Down
+        - Short action: Q || 0 || - || Page Up
+        - Long action: A || W || . || + || Page Down
