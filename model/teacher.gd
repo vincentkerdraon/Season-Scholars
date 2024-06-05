@@ -10,39 +10,61 @@ class_name TeacherModel extends BaseModel
 
 var station: BaseParam.STATION = BaseParam.STATION.NONE
 var endCurrentAction: int=0
+var isWelcomeAvailable: bool = false
 
-const TIME_TEACH_SHORT = 5
+const TIME_MOVE = 2000
+const TIME_TEACH_SHORT = 5000
+const TIME_GRAD_LONG = 10000
+const TIME_WELCOME_SHORT = 5000
+const TIME_RECRUIT_LONG = 10000
+#const TIME_WATCH_SHORT = 5000
 
 ### FUNC
 
 func _init(arg, addListener: Callable):
 	addListener.call(PipeOverlord.EventName.CHANGE_STATION, ListenChangeStation)
 	addListener.call(PipeOverlord.EventName.PLAYER_ACTION, ListenPlayerAction)
+	addListener.call(PipeOverlord.EventName.WELCOME_AVAILABLE, ListenWelcomeAvailable)
 	super(arg)
+
+func Reset():
+	station = BaseParam.STATION.NONE
+	isWelcomeAvailable = false
 
 func PlayerActionTeach():
 	print_debug("Teach {station}".format({"station":station}))
-	if BaseParam.IsValidStationToStudentCols(station):
-		emitCallback.call(PipeOverlord.EventName.TEACH, BaseParam.StationToStudentCols(station))
+	emitCallback.call(PipeOverlord.EventName.TEACH, BaseParam.StationParam.new(station))
 	return
 
 func PlayerActionGraduate():
 	print_debug("Graduate {station}".format({"station":station}))
-	if BaseParam.IsValidStationToStudentCols(station):
-		emitCallback.call(PipeOverlord.EventName.GRADUATE, BaseParam.StationToStudentCols(station))
+	emitCallback.call(PipeOverlord.EventName.GRADUATE, BaseParam.StationParam.new(station))
 	return
 
 func PlayerActionWelcome():
 	print_debug("Welcome {station}".format({"station":station}))
-	if BaseParam.IsValidStationToStudentCols(station):
-		emitCallback.call(PipeOverlord.EventName.WELCOME, BaseParam.StationToStudentCols(station))
-		emitCallback.call(PipeOverlord.EventName.WELCOME_AVAILABLE, BaseParam.WelcomeAvailableParam.new(false))
+	emitCallback.call(PipeOverlord.EventName.WELCOME_AVAILABLE, BaseParam.WelcomeAvailableParam.new(false))
+	emitCallback.call(PipeOverlord.EventName.WELCOME, BaseParam.StationParam.new(station))
+	return
+
+func PlayerActionRecruit():
+	print_debug("Recruit {station}".format({"station":station}))
+	emitCallback.call(PipeOverlord.EventName.WELCOME_AVAILABLE, BaseParam.WelcomeAvailableParam.new(true))
 	return
 
 func ListenChangeStation(sta :BaseParam.StationParam):
+	var now=Time.get_ticks_msec()
+	if(now < endCurrentAction):
+		print_debug("Current move not completed. Should finish at %d and it is %d" % [endCurrentAction, now])
+		emitCallback.call(PipeOverlord.EventName.INVALID_ACTION_STATION, BaseParam.StationParam.new(station))
+		return
+	endCurrentAction= now + TIME_MOVE
 	station = sta.station
 	emitCallback.call(PipeOverlord.EventName.STATION_CHANGED, sta)
 	return
+	
+func ListenWelcomeAvailable(param: BaseParam.WelcomeAvailableParam):
+	isWelcomeAvailable=param.isAvailable
 	
 func ListenPlayerAction(act: BaseParam.PlayerActionParam):
 	var now=Time.get_ticks_msec()
@@ -61,8 +83,18 @@ func ListenPlayerAction(act: BaseParam.PlayerActionParam):
 	match(station):
 		BaseParam.STATION.ST_COL_LEFT, BaseParam.STATION.ST_COL_CENTER, BaseParam.STATION.ST_COL_RIGHT:
 			if(act.shortAction):
-				endCurrentAction = now + TIME_TEACH_SHORT * 1000
+				endCurrentAction = now + TIME_TEACH_SHORT 
 				PlayerActionTeach()
+			else:
+				endCurrentAction = now + TIME_GRAD_LONG
+				PlayerActionGraduate()
+		BaseParam.STATION.WELCOME:
+			if(act.shortAction):
+				endCurrentAction = now + TIME_WELCOME_SHORT
+				PlayerActionWelcome()
+			else:
+				endCurrentAction = now + TIME_RECRUIT_LONG
+				PlayerActionRecruit()
 		_:
 			printerr("Action not yet implemented in station %s" % BaseParam.STATION.find_key(station))
 			emitCallback.call(PipeOverlord.EventName.ERROR_ACTION_STATION, BaseParam.StationParam.new(station))

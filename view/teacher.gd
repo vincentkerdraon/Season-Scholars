@@ -58,6 +58,8 @@ func GetPointedStation(dir:BaseParam.DIR) -> BaseParam.STATION:
 			match(dir):
 				BaseParam.DIR.RIGHT:
 					return BaseParam.STATION.ST_COL_CENTER
+				BaseParam.DIR.UP:
+					return BaseParam.STATION.WELCOME
 				_:
 					return BaseParam.STATION.NONE
 		BaseParam.STATION.ST_COL_CENTER:
@@ -72,6 +74,8 @@ func GetPointedStation(dir:BaseParam.DIR) -> BaseParam.STATION:
 			match(dir):
 				BaseParam.DIR.LEFT:
 					return BaseParam.STATION.ST_COL_CENTER
+				BaseParam.DIR.UP:
+					return BaseParam.STATION.WELCOME
 				_:
 					return BaseParam.STATION.NONE
 		_:
