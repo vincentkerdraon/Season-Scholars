@@ -15,8 +15,8 @@ var isWelcomeAvailable: bool = false
 const TIME_MOVE = 2000
 const TIME_TEACH_SHORT = 5000
 const TIME_GRAD_LONG = 10000
-const TIME_WELCOME_SHORT = 5000
-const TIME_RECRUIT_LONG = 10000
+const TIME_WELCOME_SHORT = 500
+const TIME_RECRUIT_LONG = 1000
 #const TIME_WATCH_SHORT = 5000
 
 ### FUNC

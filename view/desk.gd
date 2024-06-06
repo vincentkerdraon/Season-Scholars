@@ -41,16 +41,18 @@ func DrawNewStudent(col: int, row: int, guid: String):
 		currentStudentCenter-=1
 		if (currentStudentCenter == 0):
 			currentStudentCenter=get_meta("stcmax")
-		students[guid]=GraphicStudent.new(col, row, get_meta("stc%d" % currentStudentCenter))
+		students[guid]=GraphicStudent.new(col, row, get_meta("stc%d" % currentStudentCenter), get_meta("stc%dr0" % currentStudentCenter))
 	else:
 		currentStudentSide-=1
 		if (currentStudentSide == 0):
 			currentStudentSide=get_meta("stsmax")
-		students[guid]=GraphicStudent.new(col, row, get_meta("sts%d" % currentStudentSide))
+		students[guid]=GraphicStudent.new(col, row, get_meta("sts%d" % currentStudentSide), get_meta("sts%dr0" % currentStudentSide))
 	DrawStudent(guid)
 
 func DrawStudent(guid: String):
-	find_child("R%dC%d"%[students[guid].row,students[guid].col]).texture = students[guid].res
+	var res = students[guid].res
+	if(students[guid].row == 0) : res = students[guid].resR0
+	find_child("R%dC%d"%[students[guid].row,students[guid].col]).texture = res
 
 func DrawEmptyDesc(col, row):
 	if col == 1:
@@ -63,7 +65,9 @@ class GraphicStudent:
 	var col
 	var row
 	var res: CompressedTexture2D
-	func _init(c:int, r:int, rs: CompressedTexture2D):
+	var resR0: CompressedTexture2D
+	func _init(c:int, r:int, rs: CompressedTexture2D, r0: CompressedTexture2D):
 		col = c
 		res = rs
 		row = r
+		resR0 =r0

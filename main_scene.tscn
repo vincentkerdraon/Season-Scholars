@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3 uid="uid://cdq5oomu02ch8"]
+[gd_scene load_steps=59 format=3 uid="uid://cdq5oomu02ch8"]
 
 [ext_resource type="Script" path="res://model/pipe_overloard.gd" id="1_1crkf"]
 [ext_resource type="Texture2D" uid="uid://2s4kusnynw47" path="res://images/ready/Classroom/ClassroomAutumn.jpg" id="2_5u3vu"]
@@ -35,9 +35,7 @@
 [ext_resource type="Texture2D" uid="uid://wr2up144ob8a" path="res://images/selected/Students/c1.png" id="32_lxmd1"]
 [ext_resource type="Texture2D" uid="uid://d2c72pkotf2um" path="res://images/selected/Students/c2.png" id="33_duu5u"]
 [ext_resource type="Texture2D" uid="uid://ce34y26gcpv3f" path="res://images/selected/TeacherA/TeacherATeachingWelcoming.png" id="34_k5bou"]
-[ext_resource type="Texture2D" uid="uid://bb8rraqvfhoso" path="res://images/ready/Students/c0.png" id="34_n4rye"]
 [ext_resource type="Texture2D" uid="uid://ddjwc2un0egi4" path="res://images/selected/Students/c3.png" id="34_pok71"]
-[ext_resource type="Texture2D" uid="uid://twt0id85n54r" path="res://images/ready/Students/s0.png" id="35_g1x4s"]
 [ext_resource type="Texture2D" uid="uid://c0xa6rrmdsk2n" path="res://images/selected/Students/c4.png" id="35_hpm83"]
 [ext_resource type="Texture2D" uid="uid://du2x4rl31l10g" path="res://images/selected/Students/c5.png" id="36_ueflp"]
 [ext_resource type="Texture2D" uid="uid://dp1v8w0f3udq1" path="res://images/selected/Cooking/FoodA1.png" id="36_y8rao"]
@@ -48,7 +46,18 @@
 [ext_resource type="Texture2D" uid="uid://hll33ya0h3xf" path="res://images/selected/Students/s5.png" id="41_6oqdk"]
 [ext_resource type="Texture2D" uid="uid://1tt7ssla5v0j" path="res://images/selected/Students/c0.png" id="42_gurbb"]
 [ext_resource type="Texture2D" uid="uid://bwgsaix3xl83h" path="res://images/selected/Students/s0.png" id="43_ustb7"]
-[ext_resource type="Texture2D" uid="uid://c117v8patrwg8" path="res://images/selected/Harvest/EmptyDesk.png" id="46_nhccy"]
+[ext_resource type="Texture2D" uid="uid://cibvefno3gmde" path="res://images/selected/Students/c1_empty.png" id="44_garqp"]
+[ext_resource type="Texture2D" uid="uid://djeg70wvbhydn" path="res://images/selected/Students/c2_empty.png" id="45_d6ri7"]
+[ext_resource type="Texture2D" uid="uid://dhfk7qo0dgivn" path="res://images/selected/Students/c3_empty.png" id="46_6wiiu"]
+[ext_resource type="Texture2D" uid="uid://5q2280qq3o8a" path="res://images/selected/Students/c4_empty.png" id="47_ip5h7"]
+[ext_resource type="Texture2D" uid="uid://do55xw80dvq3d" path="res://images/selected/Students/c5_empty.png" id="48_gtrfu"]
+[ext_resource type="Texture2D" uid="uid://dicphkrlm18d7" path="res://images/selected/Students/s1_empty.png" id="49_8mmon"]
+[ext_resource type="Texture2D" uid="uid://x5a4i4aic0ql" path="res://images/selected/Students/s2_empty.png" id="50_b5sfj"]
+[ext_resource type="Texture2D" uid="uid://o3c81bct0fiw" path="res://images/selected/Students/s3_empty.png" id="51_1omxq"]
+[ext_resource type="Texture2D" uid="uid://bdnq1l056if28" path="res://images/selected/Students/s4_empty.png" id="52_f38gd"]
+[ext_resource type="Texture2D" uid="uid://y2h3h8gvxvfw" path="res://images/selected/Students/s5_empty.png" id="53_5dy7s"]
+[ext_resource type="Texture2D" uid="uid://cx6rskofdxtt8" path="res://images/selected/Students/s6.png" id="54_ckcaj"]
+[ext_resource type="Texture2D" uid="uid://dth0nhyhmo66e" path="res://images/selected/Students/s6_empty.png" id="55_23yw7"]
 
 [node name="MainScene" type="Node2D"]
 scale = Vector2(0.440001, 0.44)
@@ -237,70 +246,78 @@ metadata/sts3 = ExtResource("39_sw1du")
 metadata/sts4 = ExtResource("40_saxna")
 metadata/sts5 = ExtResource("41_6oqdk")
 metadata/stcmax = 5
-metadata/stsmax = 5
+metadata/stsmax = 6
 metadata/emptyc = ExtResource("42_gurbb")
 metadata/emptys = ExtResource("43_ustb7")
+metadata/stc1r0 = ExtResource("44_garqp")
+metadata/stc2r0 = ExtResource("45_d6ri7")
+metadata/stc3r0 = ExtResource("46_6wiiu")
+metadata/stc4r0 = ExtResource("47_ip5h7")
+metadata/stc5r0 = ExtResource("48_gtrfu")
+metadata/sts1r0 = ExtResource("49_8mmon")
+metadata/sts2r0 = ExtResource("50_b5sfj")
+metadata/sts3r0 = ExtResource("51_1omxq")
+metadata/sts4r0 = ExtResource("52_f38gd")
+metadata/sts5r0 = ExtResource("53_5dy7s")
+metadata/sts6 = ExtResource("54_ckcaj")
+metadata/sts6r0 = ExtResource("55_23yw7")
 
 [node name="R2C0" type="Sprite2D" parent="Desks"]
 z_index = 10
-position = Vector2(1522.72, 465.909)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("35_g1x4s")
+position = Vector2(1540.91, 409.091)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("43_ustb7")
 
 [node name="R2C1" type="Sprite2D" parent="Desks"]
 z_index = 10
-position = Vector2(1838.63, 486.364)
-scale = Vector2(1.1, 1.1)
-texture = ExtResource("34_n4rye")
+position = Vector2(1843.18, 404.545)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("42_gurbb")
 
 [node name="R2C2" type="Sprite2D" parent="Desks"]
 z_index = 10
-position = Vector2(2165.9, 465.909)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("35_g1x4s")
+position = Vector2(2147.72, 413.636)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("43_ustb7")
 flip_h = true
 
 [node name="R1C0" type="Sprite2D" parent="Desks"]
 z_index = 10
-position = Vector2(1402.29, 677.536)
-scale = Vector2(0.7, 0.7)
-texture = ExtResource("35_g1x4s")
+position = Vector2(1422.04, 652.727)
+scale = Vector2(1.1, 1.1)
+texture = ExtResource("43_ustb7")
 
 [node name="R1C1" type="Sprite2D" parent="Desks"]
 z_index = 10
-position = Vector2(1827.29, 686.627)
-scale = Vector2(1.4, 1.4)
-texture = ExtResource("34_n4rye")
+position = Vector2(1828.86, 641.364)
+scale = Vector2(1.1, 1.1)
+texture = ExtResource("42_gurbb")
 
 [node name="R1C2" type="Sprite2D" parent="Desks"]
 z_index = 10
-position = Vector2(2265.9, 672.727)
-scale = Vector2(0.7, 0.7)
-texture = ExtResource("35_g1x4s")
+position = Vector2(2270.45, 663.636)
+scale = Vector2(1.1, 1.1)
+texture = ExtResource("43_ustb7")
 flip_h = true
 
 [node name="R0C0" type="Sprite2D" parent="Desks"]
 z_index = 10
-position = Vector2(1200, 1061.36)
-texture = ExtResource("35_g1x4s")
+position = Vector2(1240.91, 972.727)
+scale = Vector2(1.6, 1.6)
+texture = ExtResource("43_ustb7")
 
 [node name="R0C1" type="Sprite2D" parent="Desks"]
 z_index = 10
-position = Vector2(1797.72, 1075)
-scale = Vector2(2, 2)
-texture = ExtResource("34_n4rye")
+position = Vector2(1813.63, 956.818)
+scale = Vector2(1.6, 1.6)
+texture = ExtResource("42_gurbb")
 
 [node name="R0C2" type="Sprite2D" parent="Desks"]
 z_index = 10
-position = Vector2(2390.9, 1077.27)
-texture = ExtResource("35_g1x4s")
+position = Vector2(2424.99, 972.727)
+scale = Vector2(1.6, 1.6)
+texture = ExtResource("43_ustb7")
 flip_h = true
-
-[node name="EmptyDesk" type="Sprite2D" parent="."]
-z_index = 15
-position = Vector2(1838.63, 861.364)
-scale = Vector2(1.56757, 2.08405)
-texture = ExtResource("46_nhccy")
 
 [node name="Teacher" type="Node2D" parent="."]
 z_index = 50

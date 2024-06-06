@@ -59,7 +59,8 @@ func CreateAndPlaceStudent()->StudentModel:
 	cols[BaseParam.STUDENT_COLS.COL_CENTER] = 0
 	cols[BaseParam.STUDENT_COLS.COL_RIGHT] = 0
 	for s in allStudents:
-		cols[allStudents[s].position["col"]]+=1
+		if(allStudents[s]!=null):
+			cols[allStudents[s].position["col"]]+=1
 	var mins = []
 	if(cols[BaseParam.STUDENT_COLS.COL_LEFT] <= cols[BaseParam.STUDENT_COLS.COL_CENTER] && cols[BaseParam.STUDENT_COLS.COL_LEFT] <= cols[BaseParam.STUDENT_COLS.COL_RIGHT]):
 		mins.append(BaseParam.STUDENT_COLS.COL_LEFT)

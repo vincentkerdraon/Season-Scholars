@@ -78,6 +78,14 @@ func GetPointedStation(dir:BaseParam.DIR) -> BaseParam.STATION:
 					return BaseParam.STATION.WELCOME
 				_:
 					return BaseParam.STATION.NONE
+		BaseParam.STATION.WELCOME:
+			match(dir):
+				BaseParam.DIR.DOWNLEFT:
+					return BaseParam.STATION.ST_COL_LEFT
+				BaseParam.DIR.RIGHTDOWN:
+					return BaseParam.STATION.ST_COL_RIGHT
+				_:
+					return BaseParam.STATION.NONE
 		_:
 			return BaseParam.STATION.NONE
 			
@@ -92,6 +100,8 @@ func DrawPathToNextStation(nextStation):
 func ClearPathToNextStation():
 	$ST_COL_CENTER_TO_ST_COL_RIGHT.visible =false
 	$ST_COL_LEFT_TO_ST_COL_CENTER.visible =false
+	$ST_COL_LEFT_TO_WELCOME.visible =false
+	$ST_COL_RIGHT_TO_WELCOME.visible =false
 	
 func CalculateAction():
 	var velocity = Input.get_vector("pointLeftP1", "pointRightP1", "pointUpP1", "pointDownP1").snapped(Vector2.ONE)
@@ -108,4 +118,5 @@ func ListenStationChanged(ev: BaseParam.StationParam):
 	$ST_COL_CENTER.visible = false
 	$ST_COL_LEFT.visible = false
 	$ST_COL_RIGHT.visible = false
+	$WELCOME.visible = false
 	find_child(BaseParam.STATION.find_key(ev.station)).visible = true
