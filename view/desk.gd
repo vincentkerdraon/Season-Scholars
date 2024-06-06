@@ -67,10 +67,18 @@ func DrawStudent(guid: String):
 		DrawLessonLearned(guid)
 
 func DrawEmptyDesc(col, row):
+	var d = find_child("R%dC%d" % [row,col])
+	if(row == 0):
+		var h0 = d.find_child("Harvest0")
+		var h1 = d.find_child("Harvest1")
+		var h2 = d.find_child("Harvest2")
+		h0.visible = false
+		h1.visible = false
+		h2.visible = false
 	if col == 1:
-		find_child("R%dC%d"%[row,col]).texture = get_meta("emptyc")
+		d.texture = get_meta("emptyc")
 	else:
-		find_child("R%dC%d"%[row,col]).texture = get_meta("emptys")
+		d.texture = get_meta("emptys")
 	
 func DrawLessonLearned(guid: String):
 	var k = students[guid].knowledges

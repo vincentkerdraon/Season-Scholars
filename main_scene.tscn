@@ -1,4 +1,4 @@
-[gd_scene load_steps=63 format=3 uid="uid://cdq5oomu02ch8"]
+[gd_scene load_steps=67 format=3 uid="uid://cdq5oomu02ch8"]
 
 [ext_resource type="Script" path="res://model/pipe_overloard.gd" id="1_1crkf"]
 [ext_resource type="Texture2D" uid="uid://2s4kusnynw47" path="res://images/ready/Classroom/ClassroomAutumn.jpg" id="2_5u3vu"]
@@ -38,7 +38,6 @@
 [ext_resource type="Texture2D" uid="uid://ddjwc2un0egi4" path="res://images/selected/Students/c3.png" id="34_pok71"]
 [ext_resource type="Texture2D" uid="uid://c0xa6rrmdsk2n" path="res://images/selected/Students/c4.png" id="35_hpm83"]
 [ext_resource type="Texture2D" uid="uid://du2x4rl31l10g" path="res://images/selected/Students/c5.png" id="36_ueflp"]
-[ext_resource type="Texture2D" uid="uid://dp1v8w0f3udq1" path="res://images/selected/Cooking/FoodA1.png" id="36_y8rao"]
 [ext_resource type="Texture2D" uid="uid://cb083j2cwsphn" path="res://images/selected/Students/s1.png" id="37_x8te0"]
 [ext_resource type="Texture2D" uid="uid://bxsdsq6prbjlu" path="res://images/selected/Students/s2.png" id="38_b8gib"]
 [ext_resource type="Texture2D" uid="uid://oj4o4qrfh4vd" path="res://images/selected/Students/s3.png" id="39_sw1du"]
@@ -58,10 +57,15 @@
 [ext_resource type="Texture2D" uid="uid://y2h3h8gvxvfw" path="res://images/selected/Students/s5_empty.png" id="53_5dy7s"]
 [ext_resource type="Texture2D" uid="uid://cx6rskofdxtt8" path="res://images/selected/Students/s6.png" id="54_ckcaj"]
 [ext_resource type="Texture2D" uid="uid://dth0nhyhmo66e" path="res://images/selected/Students/s6_empty.png" id="55_23yw7"]
+[ext_resource type="Texture2D" uid="uid://dv8nr71j8oh" path="res://images/ready/Harvest/HarvestA0.png" id="56_b0ddx"]
 [ext_resource type="Texture2D" uid="uid://ci4e4hxk6qh1c" path="res://images/selected/Harvest/HarvestC0.png" id="56_eqi1l"]
-[ext_resource type="Texture2D" uid="uid://c7g8ef571rehr" path="res://images/selected/Harvest/HarvestA0.png" id="56_sn00c"]
 [ext_resource type="Texture2D" uid="uid://pearq7c3guw3" path="res://images/selected/Harvest/HarvestM0.png" id="57_ythv0"]
 [ext_resource type="Texture2D" uid="uid://c7qg625271rgw" path="res://images/selected/Harvest/HarvestL0.png" id="58_180gs"]
+[ext_resource type="Texture2D" uid="uid://nhtcgohu1ai1" path="res://images/ready/Harvest/HarvestL0.png" id="59_gikht"]
+[ext_resource type="Texture2D" uid="uid://doniv03dnsdoc" path="res://images/ready/Path/ST_COL_LEFT_TO_ST_COL_CENTER.png" id="63_dvdoj"]
+[ext_resource type="Texture2D" uid="uid://dgircn6alkqae" path="res://images/ready/Path/ST_COL_RIGHT_TO_ST_COL_CENTER.png" id="64_k1t7f"]
+[ext_resource type="Texture2D" uid="uid://k7k5exru167x" path="res://images/ready/Path/WELCOME_TO_DOOR.png" id="65_8youd"]
+[ext_resource type="Texture2D" uid="uid://cf863kcedyer5" path="res://images/ready/Path/WECOME_TO_COOKING.png" id="66_uyy7f"]
 
 [node name="MainScene" type="Node2D"]
 scale = Vector2(0.440001, 0.44)
@@ -265,10 +269,10 @@ metadata/sts4r0 = ExtResource("52_f38gd")
 metadata/sts5r0 = ExtResource("53_5dy7s")
 metadata/sts6 = ExtResource("54_ckcaj")
 metadata/sts6r0 = ExtResource("55_23yw7")
-metadata/hasp = ExtResource("56_sn00c")
+metadata/hasp = ExtResource("56_b0ddx")
 metadata/hche = ExtResource("56_eqi1l")
 metadata/hmus = ExtResource("57_ythv0")
-metadata/hlem = ExtResource("58_180gs")
+metadata/hlem = ExtResource("59_gikht")
 
 [node name="R2C0" type="Sprite2D" parent="Desks"]
 z_index = 10
@@ -415,27 +419,29 @@ texture = ExtResource("34_k5bou")
 [node name="ST_COL_LEFT_TO_ST_COL_CENTER" type="Sprite2D" parent="Teacher"]
 visible = false
 z_index = 30
-position = Vector2(1065.91, 1118.18)
-texture = ExtResource("36_y8rao")
+position = Vector2(1056.82, 1304.55)
+texture = ExtResource("63_dvdoj")
 centered = false
 
 [node name="ST_COL_CENTER_TO_ST_COL_RIGHT" type="Sprite2D" parent="Teacher"]
 visible = false
 z_index = 30
-position = Vector2(1797.72, 1175)
-texture = ExtResource("36_y8rao")
+position = Vector2(1784.09, 1370.45)
+texture = ExtResource("64_k1t7f")
 
 [node name="ST_COL_LEFT_TO_WELCOME" type="Sprite2D" parent="Teacher"]
 visible = false
 z_index = 30
-position = Vector2(970.452, 559.091)
-texture = ExtResource("36_y8rao")
+position = Vector2(1211.36, 302.273)
+scale = Vector2(1.12937, 1.21385)
+texture = ExtResource("65_8youd")
 centered = false
 
 [node name="ST_COL_RIGHT_TO_WELCOME" type="Sprite2D" parent="Teacher"]
 visible = false
 z_index = 30
-position = Vector2(2461.36, 370.455)
+position = Vector2(2361.36, 250)
 rotation = 0.8402
-texture = ExtResource("36_y8rao")
+scale = Vector2(1.88525, 1.15922)
+texture = ExtResource("66_uyy7f")
 centered = false

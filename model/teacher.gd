@@ -8,7 +8,7 @@ class_name TeacherModel extends BaseModel
 
 ### MEMBERS
 
-var station: BaseParam.STATION = BaseParam.STATION.NONE
+var station: BaseParam.STATION = BaseParam.STATION.ST_COL_CENTER
 var endCurrentAction: int=0
 var isWelcomeAvailable: bool = false
 
