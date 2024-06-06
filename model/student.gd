@@ -22,6 +22,11 @@ func _init(arg, addListener: Callable, i: String):
 	addListener.call(PipeOverlord.EventName.GRADUATE, ListenGraduate)
 	guid = i
 	super(arg)
+	
+func RemoveListeners(removeListener: Callable):
+	removeListener.call(PipeOverlord.EventName.SEASON_CHANGED, ListenSeasonChanged)
+	removeListener.call(PipeOverlord.EventName.TEACH, ListenTeach)
+	removeListener.call(PipeOverlord.EventName.GRADUATE, ListenGraduate)
 
 func ListenSeasonChanged(season :BaseParam.SeasonParam):
 	currentSeason = season.season
@@ -37,7 +42,7 @@ func ListenGraduate(col:BaseParam.StationParam):
 		emitCallback.call(PipeOverlord.EventName.STUDENT_GRADUATED, BaseParam.KnowledgesParam.new(knowledge, guid))
 	if col.station == position["col"] && position["row"]>0:
 		position["row"]-=1
-		emitCallback.call(PipeOverlord.EventName.STUDENT_CHANGED, BaseParam.NewStudentParam.new(position["col"], position["row"], guid))
+		emitCallback.call(PipeOverlord.EventName.STUDENT_CHANGED, BaseParam.ChangeStudentParam.new(position["col"], position["row"]+1, position["row"], guid))
 	return	
 
 func SetPosition(col: BaseParam.STUDENT_COLS, row: int):

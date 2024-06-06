@@ -20,9 +20,9 @@ const TIME_SEASON = 15
 func _init():
 	for ev in EventName.values():
 		listenerDict[ev]=Array([])
-	listenerDict[EventName.STUDENT_GRADUATED].append(ListenStudentGraduated)
-	listenerDict[EventName.GAME_OVER].append(ListenGameOver)
-	listenerDict[EventName.WELCOME].append(ListenWelcome)
+	AddListener(EventName.STUDENT_GRADUATED, ListenStudentGraduated)
+	AddListener(EventName.GAME_OVER, ListenGameOver)
+	AddListener(EventName.WELCOME, ListenWelcome)
 	#CreateGame()
 
 func CleanUp():
@@ -33,11 +33,15 @@ func CleanUp():
 func AddListener(event: EventName, callback: Callable):
 	listenerDict[event].append(callback)
 	return
+	
+func RemoveListener(event: EventName, callback: Callable):
+	listenerDict[event].erase(callback)
 
 func Emit(event: EventName, param: BaseParam):
 	print_debug("New Event emitted: {event}, with params {param}".format({"event":EventName.find_key(event), "param":BaseModel.object_to_json(param)}))
 	for callback in listenerDict[event]:
-		callback.call(param)
+		if(callback.is_valid()):
+			callback.call(param)
 	return
 
 func CreateTeacher()->TeacherModel:
@@ -143,11 +147,14 @@ func _ready():
 	AddListener(EventName.STATION_CHANGED, $Teacher.ListenStationChanged)
 	AddListener(EventName.STUDENT_WELCOMED, $Desks.ListenStudentWelcomed)
 	AddListener(EventName.STUDENT_CHANGED, $Desks.ListenStudentChanged)
+	AddListener(EventName.STUDENT_GRADUATED, $Desks.ListenStudentGraduated)
 	InitGame()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	for st in studentToFree:
+		st.RemoveListeners(RemoveListener)
 		st.free()
+	studentToFree = []
 	pass

@@ -139,3 +139,14 @@ class NewStudentParam extends BaseParam:
 		studentGuid = guid
 		studentPosCol = col
 		studentPosRow = row
+
+class ChangeStudentParam extends BaseParam:
+	var studentPosCol: STUDENT_COLS
+	var studentGuid: String
+	var studentPosRowPrev: int
+	var studentPosRowNew: int
+	func _init(col: STUDENT_COLS, rowOld: int, rowNew: int, guid: String):
+		studentGuid = guid
+		studentPosCol = col
+		studentPosRowNew = rowNew
+		studentPosRowPrev = rowOld

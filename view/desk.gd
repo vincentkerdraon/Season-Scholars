@@ -14,8 +14,8 @@ func _ready():
 func _process(delta):
 	pass
 
-func ListenStudentGraduated(sta: BaseParam.StationParam):
-	#students.erase()
+func ListenStudentGraduated(sta: BaseParam.KnowledgesParam):
+	DrawEmptyDesc(students[sta.studentGuid].col, students[sta.studentGuid].row)
 	pass
 
 func ListenStudentTeached(stu: BaseParam.StudentTeachParam):
@@ -27,12 +27,13 @@ func ListenStudentWelcomed(stu: BaseParam.NewStudentParam):
 		return
 	DrawNewStudent(stu.studentPosCol, stu.studentPosRow, stu.studentGuid)
 	
-func ListenStudentChanged(stu: BaseParam.NewStudentParam):
+func ListenStudentChanged(stu: BaseParam.ChangeStudentParam):
 	if(!students.has(stu.studentGuid)):
 		printerr("No key with same guid already exists: %s" % stu.studentGuid)
 		return
+	DrawEmptyDesc(stu.studentPosCol, stu.studentPosRowPrev)
 	students[stu.studentGuid].col = stu.studentPosCol
-	students[stu.studentGuid].row = stu.studentPosRow
+	students[stu.studentGuid].row = stu.studentPosRowNew
 	DrawStudent(stu.studentGuid)
 
 func DrawNewStudent(col: int, row: int, guid: String):
