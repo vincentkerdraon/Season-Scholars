@@ -80,9 +80,9 @@ class KnowledgeParam extends BaseParam:
 		value=val
 
 class KnowledgesParam extends BaseParam:
-	var knowledges: Array[KnowledgeParam]
+	var knowledges: Array[SEASON]
 	var studentGuid: String
-	func _init(know:Array[KnowledgeParam], guid:String):
+	func _init(know:Array[SEASON], guid:String):
 		knowledges = know
 		studentGuid = guid
 
@@ -126,10 +126,13 @@ class PlayerActionParam extends BaseParam:
 		longAction = l
 		shortAction = s
 
-class StudentTeachParam extends BaseParam:
-	var studentPosCol: STUDENT_COLS
+class StudentTaughtParam extends BaseParam:
+	#var studentPosCol: STUDENT_COLS
 	var studentGuid: String
 	var acquiredKnowledge: Array[SEASON]
+	func _init(guid: String, knowledges: Array[SEASON]):
+		studentGuid = guid
+		acquiredKnowledge = knowledges
 
 class NewStudentParam extends BaseParam:
 	var studentPosCol: STUDENT_COLS

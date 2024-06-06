@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=3 uid="uid://cdq5oomu02ch8"]
+[gd_scene load_steps=63 format=3 uid="uid://cdq5oomu02ch8"]
 
 [ext_resource type="Script" path="res://model/pipe_overloard.gd" id="1_1crkf"]
 [ext_resource type="Texture2D" uid="uid://2s4kusnynw47" path="res://images/ready/Classroom/ClassroomAutumn.jpg" id="2_5u3vu"]
@@ -58,6 +58,10 @@
 [ext_resource type="Texture2D" uid="uid://y2h3h8gvxvfw" path="res://images/selected/Students/s5_empty.png" id="53_5dy7s"]
 [ext_resource type="Texture2D" uid="uid://cx6rskofdxtt8" path="res://images/selected/Students/s6.png" id="54_ckcaj"]
 [ext_resource type="Texture2D" uid="uid://dth0nhyhmo66e" path="res://images/selected/Students/s6_empty.png" id="55_23yw7"]
+[ext_resource type="Texture2D" uid="uid://ci4e4hxk6qh1c" path="res://images/selected/Harvest/HarvestC0.png" id="56_eqi1l"]
+[ext_resource type="Texture2D" uid="uid://c7g8ef571rehr" path="res://images/selected/Harvest/HarvestA0.png" id="56_sn00c"]
+[ext_resource type="Texture2D" uid="uid://pearq7c3guw3" path="res://images/selected/Harvest/HarvestM0.png" id="57_ythv0"]
+[ext_resource type="Texture2D" uid="uid://c7qg625271rgw" path="res://images/selected/Harvest/HarvestL0.png" id="58_180gs"]
 
 [node name="MainScene" type="Node2D"]
 scale = Vector2(0.440001, 0.44)
@@ -261,6 +265,10 @@ metadata/sts4r0 = ExtResource("52_f38gd")
 metadata/sts5r0 = ExtResource("53_5dy7s")
 metadata/sts6 = ExtResource("54_ckcaj")
 metadata/sts6r0 = ExtResource("55_23yw7")
+metadata/hasp = ExtResource("56_sn00c")
+metadata/hche = ExtResource("56_eqi1l")
+metadata/hmus = ExtResource("57_ythv0")
+metadata/hlem = ExtResource("58_180gs")
 
 [node name="R2C0" type="Sprite2D" parent="Desks"]
 z_index = 10
@@ -306,11 +314,47 @@ position = Vector2(1240.91, 972.727)
 scale = Vector2(1.6, 1.6)
 texture = ExtResource("43_ustb7")
 
+[node name="Harvest0" type="Sprite2D" parent="Desks/R0C0"]
+visible = false
+position = Vector2(-79.5453, 36.9319)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("56_eqi1l")
+
+[node name="Harvest1" type="Sprite2D" parent="Desks/R0C0"]
+visible = false
+position = Vector2(-4.26128, 31.25)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("57_ythv0")
+
+[node name="Harvest2" type="Sprite2D" parent="Desks/R0C0"]
+visible = false
+position = Vector2(59.6589, 26.9887)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("58_180gs")
+
 [node name="R0C1" type="Sprite2D" parent="Desks"]
 z_index = 10
 position = Vector2(1813.63, 956.818)
 scale = Vector2(1.6, 1.6)
 texture = ExtResource("42_gurbb")
+
+[node name="Harvest0" type="Sprite2D" parent="Desks/R0C1"]
+visible = false
+position = Vector2(-79.5453, 36.9319)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("56_eqi1l")
+
+[node name="Harvest1" type="Sprite2D" parent="Desks/R0C1"]
+visible = false
+position = Vector2(-4.26128, 31.25)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("57_ythv0")
+
+[node name="Harvest2" type="Sprite2D" parent="Desks/R0C1"]
+visible = false
+position = Vector2(59.6589, 26.9887)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("58_180gs")
 
 [node name="R0C2" type="Sprite2D" parent="Desks"]
 z_index = 10
@@ -318,6 +362,24 @@ position = Vector2(2424.99, 972.727)
 scale = Vector2(1.6, 1.6)
 texture = ExtResource("43_ustb7")
 flip_h = true
+
+[node name="Harvest0" type="Sprite2D" parent="Desks/R0C2"]
+visible = false
+position = Vector2(-79.5453, 36.9319)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("56_eqi1l")
+
+[node name="Harvest1" type="Sprite2D" parent="Desks/R0C2"]
+visible = false
+position = Vector2(-4.26128, 31.25)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("57_ythv0")
+
+[node name="Harvest2" type="Sprite2D" parent="Desks/R0C2"]
+visible = false
+position = Vector2(59.6589, 26.9887)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("58_180gs")
 
 [node name="Teacher" type="Node2D" parent="."]
 z_index = 50

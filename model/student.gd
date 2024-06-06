@@ -8,7 +8,7 @@ class_name StudentModel extends BaseModel
 
 ### MEMBERS
 
-var knowledge: Array[BaseParam.KnowledgeParam]=[]
+var knowledge: Array[BaseParam.SEASON]=[]
 var position = {"col":BaseParam.STUDENT_COLS.COL_LEFT, "row":-1}
 var currentSeason: BaseParam.SEASON
 var guid: String
@@ -34,7 +34,10 @@ func ListenSeasonChanged(season :BaseParam.SeasonParam):
 
 func ListenTeach(col: BaseParam.StationParam):
 	if col.station == position["col"]:
-		knowledge.append(BaseParam.KnowledgeParam.new(currentSeason,1))
+		print("Student %s pos R%dC%d" % [guid, position["row"], position["col"]])
+		knowledge.append(currentSeason)
+		print_debug(knowledge)
+		emitCallback.call(PipeOverlord.EventName.STUDENT_TAUGHT, BaseParam.StudentTaughtParam.new(guid, knowledge))
 	return
 	
 func ListenGraduate(col:BaseParam.StationParam):

@@ -79,14 +79,14 @@ func ListenStudentGraduated(knowledge: BaseParam.KnowledgesParam):
 		var defeat = true;
 		for need in monsters[0].needs:
 			for cook in knowledge.knowledges:
-				if(cook.season == need.season):
-					need.value -= cook.value
+				if(cook == need.season):
+					need.value -= 1
 			if(need.value>0):
 				defeat = false
 		if(defeat):
 			var monster = monsters.pop_front()
 			emitCallback.call(PipeOverlord.EventName.OGRE_FED, BaseParam.ScoreParam.new(monster.score))
-			monster.queue_free()
+			monster.free()
 			seasonBeforeAttack += seasonCalmAdded
 			var id=0
 			for mon in monsters:
