@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c6q3yiq1qckee"
-path="res://.godot/imported/ShortAction.png-954e60238a53db2ab573aee6079977d9.ctex"
+uid="uid://djnm2j1hts0rr"
+path="res://.godot/imported/c4_empty.png-4fdf1e6a12489c87029b35f5bb730302.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/ready/Actions/ShortAction.png"
-dest_files=["res://.godot/imported/ShortAction.png-954e60238a53db2ab573aee6079977d9.ctex"]
+source_file="res://images/ready/Students/c4_empty.png"
+dest_files=["res://.godot/imported/c4_empty.png-4fdf1e6a12489c87029b35f5bb730302.ctex"]
 
 [params]
 

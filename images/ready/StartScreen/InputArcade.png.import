@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c6q3yiq1qckee"
-path="res://.godot/imported/ShortAction.png-954e60238a53db2ab573aee6079977d9.ctex"
+uid="uid://ctqvqdo6g1n7c"
+path="res://.godot/imported/InputArcade.png-22910d0baa9238ad735428231d1c209b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/ready/Actions/ShortAction.png"
-dest_files=["res://.godot/imported/ShortAction.png-954e60238a53db2ab573aee6079977d9.ctex"]
+source_file="res://images/ready/StartScreen/InputArcade.png"
+dest_files=["res://.godot/imported/InputArcade.png-22910d0baa9238ad735428231d1c209b.ctex"]
 
 [params]
 
