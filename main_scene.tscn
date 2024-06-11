@@ -1,4 +1,4 @@
-[gd_scene load_steps=67 format=3 uid="uid://cdq5oomu02ch8"]
+[gd_scene load_steps=68 format=3 uid="uid://cdq5oomu02ch8"]
 
 [ext_resource type="Script" path="res://model/pipe_overloard.gd" id="1_1crkf"]
 [ext_resource type="Texture2D" uid="uid://2s4kusnynw47" path="res://images/ready/Classroom/ClassroomAutumn.jpg" id="2_5u3vu"]
@@ -62,6 +62,7 @@
 [ext_resource type="Texture2D" uid="uid://pearq7c3guw3" path="res://images/selected/Harvest/HarvestM0.png" id="57_ythv0"]
 [ext_resource type="Texture2D" uid="uid://c7qg625271rgw" path="res://images/selected/Harvest/HarvestL0.png" id="58_180gs"]
 [ext_resource type="Texture2D" uid="uid://nhtcgohu1ai1" path="res://images/ready/Harvest/HarvestL0.png" id="59_gikht"]
+[ext_resource type="Texture2D" uid="uid://ca2ee5p2yokvm" path="res://images/ready/Reactions/fail.png" id="63_3fyfl"]
 [ext_resource type="Texture2D" uid="uid://doniv03dnsdoc" path="res://images/ready/Path/ST_COL_LEFT_TO_ST_COL_CENTER.png" id="63_dvdoj"]
 [ext_resource type="Texture2D" uid="uid://dgircn6alkqae" path="res://images/ready/Path/ST_COL_RIGHT_TO_ST_COL_CENTER.png" id="64_k1t7f"]
 [ext_resource type="Texture2D" uid="uid://k7k5exru167x" path="res://images/ready/Path/WELCOME_TO_DOOR.png" id="65_8youd"]
@@ -401,6 +402,24 @@ z_index = 10
 position = Vector2(1490.91, 1043.18)
 scale = Vector2(0.593145, 0.593145)
 texture = ExtResource("34_k5bou")
+
+[node name="Feedback" type="Sprite2D" parent="Teacher/ST_COL_CENTER"]
+visible = false
+position = Vector2(15.3193, -333.351)
+scale = Vector2(4.45492, 4.98841)
+texture = ExtResource("63_3fyfl")
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="Teacher/ST_COL_CENTER"]
+offset_left = -352.519
+offset_top = -586.24
+offset_right = -94.5187
+offset_bottom = -274.24
+scale = Vector2(2.79153, 2.87977)
+value = 78.0
+fill_mode = 4
+texture_progress = ExtResource("63_3fyfl")
+tint_over = Color(1, 0.376471, 1, 1)
+tint_progress = Color(0.978898, 0.846809, 0.791318, 1)
 
 [node name="ST_COL_RIGHT" type="Sprite2D" parent="Teacher"]
 visible = false
