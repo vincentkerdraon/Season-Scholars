@@ -44,7 +44,7 @@ pub enum EventName {
 
 
 
-#[derive(Event)]
+#[derive(Event,Debug)]
 pub struct StudentColEvent {
     pub student_col: StudentCols,
 }

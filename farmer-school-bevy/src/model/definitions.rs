@@ -16,7 +16,7 @@ pub enum Station {
     Welcome,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Season {
     Spring,
     Summer,
@@ -24,20 +24,20 @@ pub enum Season {
     Winter,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum Direction {
-    None,
-    Up,
-    UpRight,
-    Right,
-    RightDown,
-    Down,
-    DownLeft,
-    Left,
-    LeftUp
-}
+// pub enum Direction {
+//     None = 0,
+//     Up = 1,
+//     Right = 2,
+//     Down = 4,
+//     Left = 8,
+//     UpRight = 3,
+//     RightDown = 6,
+//     DownLeft = 12,
+//     LeftUp = 9,
+// }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Teacher {
-    A,B
+    A = 2,
+    B,
 }

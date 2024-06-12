@@ -2,7 +2,7 @@
 
 use super::events::*;
 use crate::{
-    components::teacher::events::TeacherMovedEvent,
+    components::{player_input::events::PlayerInputEvent, teacher::events::TeacherMovedEvent},
     model::{definitions::Teacher, events::*},
 };
 use bevy::prelude::*;
@@ -12,7 +12,7 @@ pub struct Welcome;
 pub fn welcome_system(
     mut commands: Commands,
     mut welcome_events: EventReader<TeacherMovedEvent>,
-    mut player_input_events: EventReader<PlayerInput>,
+    mut player_input_events: EventReader<PlayerInputEvent>,
     mut welcome_available_events: EventWriter<WelcomeAvailableEvent>,
     mut welcome_student_events: EventWriter<WelcomeStudentEvent>,
     mut student_welcomed_events: EventWriter<StudentWelcomedEvent>,

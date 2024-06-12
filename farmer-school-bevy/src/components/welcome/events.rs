@@ -3,19 +3,19 @@ use bevy::prelude::*;
 
 
 /// A new student is waiting and available to welcome (or not)
-#[derive(Event)]
+#[derive(Event,Debug)]
 pub struct WelcomeAvailableEvent {
     pub is_available: bool,
 }
 
 /// Action of accepting a new student at the door
-#[derive(Event)]
+#[derive(Event,Debug)]
 pub struct WelcomeStudentEvent{
     pub teacher: Teacher,
 }
 
 /// Action of accepting a new student at the door
-#[derive(Event)]
+#[derive(Event,Debug)]
 pub struct StudentWelcomedEvent {
     pub teacher: Teacher,
     pub student_pos_col: StudentCols,
