@@ -1,0 +1,152 @@
+// src/model/events.rs
+
+use crate::model::definitions::*;
+use bevy::prelude::Event;
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Event)]
+pub enum EventName {
+    // The teacher is teaching a column
+    Teach(StudentColEvent),
+    // The students in the column all learn the season 
+    StudentTaught(StudentTaughtEvent),
+    // Teacher action to graduate a student
+    Graduate(StudentColEvent),
+    // The first student of the col exits the classroom and will fulfill the monsters need with what he learned
+    Graduated(KnowledgeEvent),
+    // Action of accepting a new student at the door
+    WelcomeStudent,
+    // Add a new student in the classroom
+    StudentWelcomed(NewStudentEvent),
+    // A new student is waiting and available to welcome (or not)
+    WelcomeAvailable,
+    // A player action, like pointing to the left and pressing the Long action button
+    PlayerInput(PlayerActionEvent),
+    // The teacher moves from one station to the next one
+    TeacherMove(StationEvent),
+    // The teacher has moved to a new station
+    TeacherMoved(StationEvent),
+    // The current monster at the portal has some needs fulfilled
+    MonsterFed(MonsterFedEvent),
+    // The monster in the portal attacked the portal
+    PortalAttacked(PortalAttackedEvent),
+    // The teacher is gathering information on the next monster needs
+    ObservePortal,
+    // Show information on the monsters needs (current or in line)
+    PortalObserved(WindowChangedEvent),
+    // After some time, the season switched to the next one
+    SeasonChanged(SeasonEvent),
+    // End of game
+    GameOver(GameOverEvent),
+    // Functional error because the action is not possible
+    InvalidActionStation(StationEvent),
+}
+
+
+
+#[derive(Event)]
+pub struct StudentColEvent {
+    pub student_col: StudentCols,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct StationEvent {
+    pub station: Station,
+    pub teacher: Teacher,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct SeasonEvent {
+    pub season: Season,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct KnowledgeEvent {
+    pub knowledge: Vec<Season>,
+    pub student_guid: String,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct GameOverEvent {
+    pub score: i32,
+    pub reason: String,
+    pub time_since_start: i64,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct DoorEvent {
+    pub remaining_life: i32,
+    pub is_open: bool,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct WelcomeAvailableEvent {
+    pub is_available: bool,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct WindowChangedEvent {
+    pub is_open: bool,
+    pub window_id: i32,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct WindowHarvestChangedEvent {
+    pub window_id: i32,
+    pub season1: Season,
+    pub season2: Season,
+    pub season3: Season,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct PlayerActionEvent {
+    pub direction: Direction,
+    pub long_action: bool,
+    pub short_action: bool,
+    pub teacher: Teacher,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct StudentTaughtEvent {
+    pub student_guid: String,
+    pub acquired_knowledge: Vec<Season>,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct NewStudentEvent {
+    pub student_pos_col: StudentCols,
+    pub student_guid: String,
+    pub student_pos_row: i32,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ChangeStudentEvent {
+    pub student_pos_col: StudentCols,
+    pub student_guid: String,
+    pub student_pos_row_prev: i32,
+    pub student_pos_row_new: i32,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct MonsterFedEvent {
+    pub remaining_needs: i32,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct PortalAttackedEvent {
+    pub remaining_life: i32,
+}
