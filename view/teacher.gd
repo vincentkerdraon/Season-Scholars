@@ -7,12 +7,30 @@ var nextStationP1 = BaseParam.STATION.NONE
 
 var previousDirP1: BaseParam.DIR =  BaseParam.DIR.NONE
 
+var feedbackP1TimerBegin: int 
+var feedbackP1TimerEnd: int  
+var feedbackP1Enabled: bool = false
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	#if(feedbackP1TimerEnd < Time.get_ticks_msec()):
+		#feedbackP1TimerEnd = Time.get_ticks_msec() +5000
+		#feedbackP1TimerBegin = Time.get_ticks_msec() 
+		#print("Restarting %d %d"% [feedbackP1TimerBegin,feedbackP1TimerEnd])
+	#var timerNow =Time.get_ticks_msec() - feedbackP1TimerBegin
+	#var timerEnd = feedbackP1TimerEnd - feedbackP1TimerBegin
+	#$ST_COL_CENTER/TextureProgressBar.value = int(100*timerNow/timerEnd)
+	if(feedbackP1Enabled):
+		var timerNow =Time.get_ticks_msec() - feedbackP1TimerBegin
+		var timerEnd = feedbackP1TimerEnd - feedbackP1TimerBegin
+		GetStationNode(activeStationP1).find_child("TextureProgressBar").value = int(100*timerNow/timerEnd)
+		if(feedbackP1TimerEnd <= Time.get_ticks_msec()):
+			feedbackP1Enabled = false
+			GetStationNode(activeStationP1).find_child("TextureProgressBar").visible = false
 	pass
 
 func LoadCallEvent(c: Callable):
@@ -111,6 +129,9 @@ func CalculateAction():
 		return
 	eventCall.call(PipeOverlord.EventName.PLAYER_ACTION, BaseParam.PlayerActionParam.new(Input.is_action_pressed("shortActionP1"),Input.is_action_pressed("longActionP1")))
 	pass
+	
+func GetStationNode(station: BaseParam.STATION)->Node2D:
+	return find_child(BaseParam.STATION.find_key(station))
 
 func ListenStationChanged(ev: BaseParam.StationParam):
 	activeStationP1 = ev.station
@@ -119,4 +140,17 @@ func ListenStationChanged(ev: BaseParam.StationParam):
 	$ST_COL_LEFT.visible = false
 	$ST_COL_RIGHT.visible = false
 	$WELCOME.visible = false
-	find_child(BaseParam.STATION.find_key(ev.station)).visible = true
+	GetStationNode(ev.station).visible = true
+
+func ListenFeedback(ev: BaseParam.FeedbackParam):
+	feedbackP1TimerBegin =Time.get_ticks_msec()
+	feedbackP1TimerEnd = ev.until
+	feedbackP1Enabled = true
+	GetStationNode(activeStationP1).find_child("TextureProgressBar").visible = true
+	if(ev.shortAction):
+		GetStationNode(activeStationP1).find_child("TextureProgressBar").texture_progress = get_meta("successShort")
+	if (ev.longAction) :
+		GetStationNode(activeStationP1).find_child("TextureProgressBar").texture_progress = get_meta("successLong")
+	if (ev.fail): 
+		GetStationNode(activeStationP1).find_child("TextureProgressBar").texture_progress = get_meta("fail")
+		

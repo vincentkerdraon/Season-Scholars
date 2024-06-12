@@ -8,6 +8,8 @@ var currentStudentCenter = 1
 
 var harvests: Array[CompressedTexture2D] = []
 
+const MAX_ROW = 2
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	harvests = [ get_meta("hasp"), get_meta("hche"),get_meta("hmus"),get_meta("hlem")]
@@ -62,6 +64,8 @@ func DrawStudent(guid: String):
 	var res = students[guid].res
 	if(students[guid].row == 0) : 
 		res = students[guid].resR0
+	if students[guid].row > MAX_ROW:
+		return
 	find_child("R%dC%d"%[students[guid].row,students[guid].col]).texture = res
 	if(students[guid].row == 0) : 
 		DrawLessonLearned(guid)
@@ -75,6 +79,7 @@ func DrawEmptyDesc(col, row):
 		h0.visible = false
 		h1.visible = false
 		h2.visible = false
+	if(row>MAX_ROW):return
 	if col == 1:
 		d.texture = get_meta("emptyc")
 	else:

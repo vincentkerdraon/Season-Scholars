@@ -3,7 +3,7 @@ class_name PipeOverlord extends Node
 enum EventName{
 	TEACH, GRADUATE, WELCOME, PLAYER_ACTION, CHANGE_STATION,
 	STATION_CHANGED, STUDENT_GRADUATED, OGRE_FED, STUDENT_CHANGED, STUDENT_WELCOMED, STUDENT_TAUGHT,
-	GAME_OVER, ERROR_ACTION_STATION, INVALID_ACTION_STATION,
+	GAME_OVER, ERROR_ACTION_STATION, INVALID_ACTION_STATION, FEEDBACK,
 	SEASON_CHANGED, DOOR_CHANGED, WELCOME_AVAILABLE, WINDOW_CHANGED, WINDOW_HARVEST_CHANGED, DOOR_DESTROYED, 
 }
 
@@ -146,6 +146,7 @@ func _ready():
 	AddListener(EventName.WINDOW_HARVEST_CHANGED, $Windows.ListenWindowHarvestChanged)
 	$Teacher.LoadCallEvent(Emit)
 	AddListener(EventName.STATION_CHANGED, $Teacher.ListenStationChanged)
+	AddListener(EventName.FEEDBACK, $Teacher.ListenFeedback)
 	AddListener(EventName.STUDENT_WELCOMED, $Desks.ListenStudentWelcomed)
 	AddListener(EventName.STUDENT_CHANGED, $Desks.ListenStudentChanged)
 	AddListener(EventName.STUDENT_GRADUATED, $Desks.ListenStudentGraduated)

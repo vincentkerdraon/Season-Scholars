@@ -153,3 +153,16 @@ class ChangeStudentParam extends BaseParam:
 		studentPosCol = col
 		studentPosRowNew = rowNew
 		studentPosRowPrev = rowOld
+
+class FeedbackParam extends BaseParam:
+	var longAction: bool
+	var shortAction: bool
+	var fail: bool
+	var until: int
+	var isP1: bool
+	func _init(l, s, f, u, p):
+		longAction = l
+		shortAction = s
+		fail = f
+		until = u
+		isP1 = p
