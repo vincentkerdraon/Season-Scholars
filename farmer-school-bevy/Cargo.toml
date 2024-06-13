@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.13.2" 
+rand = "0.8"
 
 [dev-dependencies]
 bevy_test = "0.0.1"

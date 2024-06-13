@@ -6,4 +6,6 @@ pub struct Config {
     pub students_max: usize,
     pub long_action_s: f64,
     pub short_action_s: f64,
+    pub portal_health_max: i8,
+    pub seasons_duration_s: f64,
 }

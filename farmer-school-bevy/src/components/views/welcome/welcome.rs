@@ -46,7 +46,6 @@ pub fn listen_events(
     mut res: ResMut<WelcomeResources>,
     mut query: Query<&mut Handle<Image>>,
 ) {
-    return;
     for _ in student_welcomed_events.read() {
         if let Ok(mut texture_handle) = query.get_mut(res.entity) {
             *texture_handle = res.get_closed().clone();

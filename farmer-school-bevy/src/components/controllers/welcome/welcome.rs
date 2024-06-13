@@ -3,7 +3,9 @@
 use super::events::*;
 use crate::{
     components::controllers::{
+        overlord::events::{InvalidActionStationEvent, InvalidMoveEvent},
         player_input::events::PlayerInputEvent,
+        portal::events::MonsterFedEvent,
         teacher::events::{MoveTeacherEvent, TeacherMovedEvent},
     },
     config::Config,
@@ -60,7 +62,7 @@ pub fn listen_events(
     let mut should_accept = false;
 
     for e in monster_fed_events.read() {
-        if e.needs.len() == 0 {
+        if e.needs == None {
             should_accept = true;
         }
     }

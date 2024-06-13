@@ -19,7 +19,12 @@ fn input_system(
     if keyboard_input.just_pressed(KeyCode::Escape)
         || mouse_button_input.just_pressed(MouseButton::Middle)
     {
-        warn!("//FIXME display menu");
+        let emit: PlayerInputEvent = PlayerInputEvent {
+            reset: true,
+            ..default()
+        };
+        debug!("{:?}", emit);
+        input_events.send(emit);
         return;
     }
 

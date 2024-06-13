@@ -47,3 +47,10 @@ pub enum Teacher {
     A = 1,
     B,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Screen {
+    Menu = 1,
+    Game,
+    GameOverRecap,
+}

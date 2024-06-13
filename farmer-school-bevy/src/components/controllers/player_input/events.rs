@@ -9,5 +9,6 @@ pub struct PlayerInputEvent {
     pub confirm_move: bool,
     pub long_action: bool,
     pub short_action: bool,
+    pub reset: bool,
     pub teacher: Teacher,
 }

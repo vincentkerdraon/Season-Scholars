@@ -2,12 +2,15 @@ mod config;
 mod model;
 mod components {
     pub mod controllers {
+        pub mod overlord;
         pub mod player_input;
+        pub mod portal;
         pub mod season;
         pub mod teacher;
         pub mod welcome;
     }
     pub mod views {
+        pub mod menu;
         pub mod room;
         pub mod welcome;
     }
@@ -29,19 +32,13 @@ fn main() {
             students_max: 9,
             long_action_s: 2.0,  //FIXME
             short_action_s: 1.0, //FIXME
+            portal_health_max: 10,
+            seasons_duration_s: 10.,
         })
         .add_event::<GraduateEvent>()
         .add_event::<GraduatedEvent>()
         .add_event::<TeachEvent>()
         .add_event::<TaughtEvent>()
-        .add_event::<ObservePortal>()
-        .add_event::<PortalObserved>()
-        .add_event::<PortalAttackedEvent>()
-        .add_event::<MonsterFedEvent>()
-        .add_event::<GameOverEvent>()
-        .add_event::<ResetGameEvent>()
-        .add_event::<InvalidActionStationEvent>()
-        .add_event::<InvalidMoveEvent>()
         .add_plugins(
             DefaultPlugins
                 .set(LogPlugin { ..default() })
@@ -59,12 +56,15 @@ fn main() {
                     ..Default::default()
                 }),
         )
+        .add_plugins(components::controllers::overlord::overlord::OverlordPlugin)
         .add_plugins(components::controllers::season::season::SeasonPlugin)
         .add_plugins(components::controllers::welcome::welcome::WelcomePlugin)
         .add_plugins(components::controllers::teacher::teacher::TeacherPlugin)
         .add_plugins(components::controllers::player_input::player_input::PlayerInputPlugin)
+        .add_plugins(components::controllers::portal::portal::PortalPlugin)
         .add_plugins(components::views::room::room::RoomPlugin)
         .add_plugins(components::views::welcome::welcome::WelcomePlugin)
+        .add_plugins(components::views::menu::menu::MenuPlugin)
         .add_systems(Startup, setup)
         .add_systems(Update, print_mouse_click_events)
         .run();
