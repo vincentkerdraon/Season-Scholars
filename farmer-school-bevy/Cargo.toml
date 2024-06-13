@@ -5,3 +5,19 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.13.2" 
+
+[dev-dependencies]
+bevy_test = "0.0.1"
+
+
+[profile.dev]
+incremental = true
+opt-level = 0
+debug = true
+lto = "off"
+codegen-units = 256
+
+[target.x86_64-unknown-linux-gnu]
+linker = "clang"
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+

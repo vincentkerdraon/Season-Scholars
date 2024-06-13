@@ -1,8 +1,7 @@
 // src/components/teacher.rs
 
 use crate::{
-    components::player_input::events::PlayerInputEvent,
-    model::{definitions::*, events::*},
+    components::controllers::player_input::events::PlayerInputEvent, model::definitions::*,
 };
 use bevy::prelude::*;
 
@@ -14,8 +13,8 @@ pub fn teacher_system(
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut teacher_moved_events: EventWriter<TeacherMovedEvent>,
 ) {
-    info!("teacher_system starting");
-    for event in player_input_events.read() {
+    debug!("teacher_system starting");
+    for _ in player_input_events.read() {
         info!("read teacher player_input_events");
         teacher_moved_events.send(TeacherMovedEvent {
             station_from: Station::None,

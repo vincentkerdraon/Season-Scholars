@@ -886,6 +886,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_test"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8054c69e9d370083290b13f47b85efd3dd92d282cfa2fe8938ccc7c256131cdb"
+
+[[package]]
 name = "bevy_text"
 version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1638,6 +1644,7 @@ name = "farmer-school-bevy"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_test",
 ]
 
 [[package]]

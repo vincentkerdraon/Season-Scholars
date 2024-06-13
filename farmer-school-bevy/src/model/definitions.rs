@@ -1,24 +1,29 @@
 // src/model/enums.rs
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum StudentCols {
-    Left,
+    #[default]
+    Left = 1,
     Center,
     Right,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum Station {
+    #[default]
     None,
     StudentLeft,
     StudentCenter,
     StudentRight,
     Welcome,
+    Portal,
+    Kitchen,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum Season {
-    Spring,
+    #[default]
+    Spring = 1,
     Summer,
     Autumn,
     Winter,
@@ -36,8 +41,9 @@ pub enum Season {
 //     LeftUp = 9,
 // }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum Teacher {
-    A = 2,
+    #[default]
+    A = 1,
     B,
 }

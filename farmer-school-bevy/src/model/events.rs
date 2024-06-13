@@ -70,7 +70,14 @@ pub struct GameOverEvent {
 
 /// Functional error because the requested action is not possible
 #[derive(Event, Debug)]
-pub struct InvalidActionStation {
+pub struct InvalidActionStationEvent {
+    pub station: Station,
+    pub teacher: Teacher,
+}
+
+/// Functional error because the requested move is not possible
+#[derive(Event, Debug)]
+pub struct InvalidMoveEvent {
     pub station: Station,
     pub teacher: Teacher,
 }

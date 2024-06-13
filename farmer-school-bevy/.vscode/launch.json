@@ -20,6 +20,9 @@
                 }
             },
             "args": [],
+            "env": {
+                "RUST_LOG": "info,farmer_school_bevy=debug"
+            },
             "cwd": "${workspaceFolder}"
         },
         {

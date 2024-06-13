@@ -1,25 +1,23 @@
 use crate::model::definitions::*;
 use bevy::prelude::*;
 
-
 /// A new student is waiting and available to welcome (or not)
-#[derive(Event,Debug)]
+#[derive(Event, Debug)]
 pub struct WelcomeAvailableEvent {
-    pub is_available: bool,
+    pub available: bool, //FIXME check needed
 }
 
 /// Action of accepting a new student at the door
-#[derive(Event,Debug)]
-pub struct WelcomeStudentEvent{
+#[derive(Event, Debug)]
+pub struct WelcomeStudentEvent {
     pub teacher: Teacher,
 }
 
 /// Action of accepting a new student at the door
-#[derive(Event,Debug)]
+#[derive(Event, Debug)]
 pub struct StudentWelcomedEvent {
     pub teacher: Teacher,
     pub student_pos_col: StudentCols,
     pub student_pos_row: i32,
     pub student_id: String,
 }
-
