@@ -38,12 +38,32 @@ impl Plugin for OverlordControllerPlugin {
         .add_event::<DisplayScreenMenuEvent>()
         .add_event::<InvalidActionStationEvent>()
         .add_event::<InvalidMoveEvent>()
-        .add_systems(Startup, start)
+        // .add_systems(Startup, start) //FIXME
+        .add_systems(Startup, debug_start_game)
         .add_systems(PreUpdate, listen_events_game_over)
         .add_systems(PreUpdate, listen_events_reset)
         .add_systems(PreUpdate, listen_events_score)
         .add_systems(PreUpdate, listen_events_menu);
     }
+}
+
+fn debug_start_game(
+    mut data: ResMut<Overlord>,
+    mut reset_game_events: EventWriter<ResetGameEvent>,
+    mut display_screen_game_events: EventWriter<DisplayScreenGameEvent>,
+) {
+    warn!("start game, no menu");
+    data.screen = Screen::Game;
+    let emit = DisplayScreenGameEvent {
+        teachers: vec![Teacher::A],
+    };
+    debug!("{:?}", emit);
+    display_screen_game_events.send(emit);
+
+    data.screen = Screen::Game;
+    let emit = ResetGameEvent {};
+    debug!("{:?}", emit);
+    reset_game_events.send(emit);
 }
 
 fn start(

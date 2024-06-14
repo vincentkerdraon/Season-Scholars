@@ -8,4 +8,6 @@ pub struct Config {
     pub short_action_s: f64,
     pub portal_health_max: i8,
     pub seasons_duration_s: f64,
+    pub portal_opened_nb: i8,
+    pub portal_closed_nb: i8,
 }

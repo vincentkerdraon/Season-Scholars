@@ -22,8 +22,8 @@ pub struct Welcome {
     teachers_present: HashMap<Teacher, Option<f64>>,
 }
 
-pub fn init(config: Res<Config>, mut res: ResMut<Welcome>) {
-    res.students_classroom_max = config.clone().students_max;
+pub fn init(config: Res<Config>, mut data: ResMut<Welcome>) {
+    data.students_classroom_max = config.clone().students_max;
 }
 
 pub fn listen_events(

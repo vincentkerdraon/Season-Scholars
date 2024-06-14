@@ -113,6 +113,7 @@ pub fn listen_events(
         let mut emit = MonsterFedEvent {
             needs: None,
             teacher: e.teacher,
+            monsters: data.monsters.clone(),
         };
         let first = data.monsters.first();
         if let Some(monster) = first {
@@ -183,9 +184,10 @@ fn pop_monster(
     data: &mut Portal,
     monster_popped_events: &mut EventWriter<MonsterPoppedEvent>,
 ) {
+    //first should be difficulty=id=1
+    data.difficulty = data.difficulty + 1;
     let m = generate_monster(now, data.difficulty);
     data.monsters.push(m);
-    data.difficulty = data.difficulty + 1;
 
     let emit = MonsterPoppedEvent {
         monsters: data.monsters.clone(),
@@ -267,6 +269,7 @@ fn generate_monster(now: f64, difficulty: i32) -> Monster {
             m.attack_interval_s = 10.;
         }
     }
+    m.id = difficulty;
     m.next_attack_s = m.next_wait_s + m.attack_interval_s;
     m
 }

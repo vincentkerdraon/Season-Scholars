@@ -23,6 +23,7 @@ pub struct MonsterPoppedEvent {
 
 #[derive(Resource, Default, Clone, Debug)]
 pub struct Monster {
+    pub id: i32,
     ///time in seconds when revealed
     pub next_wait_s: f64,
     ///duration in seconds between attacks
@@ -45,4 +46,5 @@ pub struct PortalAttackedEvent {
 pub struct MonsterFedEvent {
     pub teacher: Teacher,
     pub needs: Option<Vec<Season>>,
+    pub monsters: Vec<Monster>,
 }

@@ -36,6 +36,8 @@ fn main() {
             short_action_s: 1.0, //FIXME
             portal_health_max: 10,
             seasons_duration_s: 10.,
+            portal_opened_nb: 5,
+            portal_closed_nb: 10,
         })
         .add_event::<GraduateEvent>()
         .add_event::<GraduatedEvent>()
