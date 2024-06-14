@@ -5,5 +5,5 @@ use bevy::prelude::*;
 #[derive(Event, Debug)]
 pub struct SeasonChangedEvent {
     pub season: Season,
-    pub seasons_elapsed: i32,
+    pub seasons_elapsed: i64,
 }

@@ -11,6 +11,7 @@ mod components {
     }
     pub mod views {
         pub mod menu;
+        pub mod recap;
         pub mod room;
         pub mod welcome;
     }
@@ -65,6 +66,7 @@ fn main() {
         .add_plugins(components::views::room::room::RoomPlugin)
         .add_plugins(components::views::welcome::welcome::WelcomePlugin)
         .add_plugins(components::views::menu::menu::MenuPlugin)
+        .add_plugins(components::views::recap::recap::RecapPlugin)
         .add_systems(Startup, setup)
         .add_systems(Update, print_mouse_click_events)
         .run();

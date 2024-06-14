@@ -14,7 +14,7 @@ pub struct SeasonTimer {
     seasons_duration: f64,
     timer: Timer,
     current_season: Season,
-    seasons_elapsed: i32,
+    seasons_elapsed: i64,
 }
 
 impl SeasonTimer {

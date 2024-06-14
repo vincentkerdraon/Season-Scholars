@@ -12,11 +12,13 @@ pub struct GameOverEvent {
     // pub time_since_start_ms: i64,
 }
 
-#[derive(Event, Debug)]
+#[derive(Event, Debug, Default, Clone)]
 pub struct DisplayScreenGameOverRecapEvent {
+    pub teachers: Vec<Teacher>,
     pub score: i32,
     pub reason: String,
     pub time_since_start_s: f64,
+    pub seasons_elapsed: i64,
 }
 
 #[derive(Event, Debug)]

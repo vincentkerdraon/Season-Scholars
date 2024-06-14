@@ -1,5 +1,6 @@
 use super::events::*;
 use crate::components::controllers::portal::events::MonsterFedEvent;
+use crate::components::controllers::season::events::SeasonChangedEvent;
 use crate::{
     components::controllers::player_input::events::PlayerInputEvent, model::definitions::*,
 };
@@ -15,6 +16,7 @@ pub struct Overlord {
     last_reset_s: f64,
     teachers: HashMap<Teacher, bool>,
     game_started_s: f64,
+    seasons_elapsed: i64,
 }
 
 pub struct OverlordPlugin;
@@ -26,6 +28,7 @@ impl Plugin for OverlordPlugin {
             last_reset_s: 0.,
             game_started_s: 0.,
             score: 0,
+            seasons_elapsed: 0,
             teachers: HashMap::new(),
         })
         .add_event::<GameOverEvent>()
@@ -61,6 +64,7 @@ fn listen_events_score(
     mut taught_events: EventReader<TaughtEvent>,
     mut graduated_events: EventReader<GraduatedEvent>,
     mut monster_fed_events: EventReader<MonsterFedEvent>,
+    mut season_changed_events: EventReader<SeasonChangedEvent>,
 ) {
     for _ in taught_events.read() {
         data.score = data.score + 1;
@@ -72,6 +76,9 @@ fn listen_events_score(
         if e.needs.is_none() {
             data.score = data.score + 30;
         }
+    }
+    for e in season_changed_events.read() {
+        data.seasons_elapsed = e.seasons_elapsed;
     }
 }
 
@@ -134,9 +141,12 @@ fn listen_events_game_over(
     let now = time.elapsed_seconds_f64();
     for e in game_over_events.read() {
         data.screen = Screen::GameOverRecap;
+        let teachers: Vec<Teacher> = data.teachers.keys().copied().collect();
         let emit = DisplayScreenGameOverRecapEvent {
+            teachers: teachers,
             reason: e.reason.to_string(),
             score: data.score,
+            seasons_elapsed: data.seasons_elapsed,
             time_since_start_s: now - data.game_started_s,
         };
         debug!("{:?}", emit);
@@ -166,9 +176,12 @@ fn listen_events_reset(
         match data.screen {
             Screen::Game => {
                 data.screen = Screen::GameOverRecap;
+                let teachers: Vec<Teacher> = data.teachers.keys().copied().collect();
                 let emit = DisplayScreenGameOverRecapEvent {
-                    reason: "".to_string(),
+                    teachers: teachers,
+                    reason: "Reset button".to_string(),
                     score: data.score,
+                    seasons_elapsed: data.seasons_elapsed,
                     time_since_start_s: now - data.game_started_s,
                 };
                 debug!("{:?}", emit);
