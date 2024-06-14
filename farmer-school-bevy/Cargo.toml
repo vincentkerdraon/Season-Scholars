@@ -7,9 +7,17 @@ edition = "2021"
 bevy = "0.13.2" 
 rand = "0.8"
 
+[build]
+jobs = 32
+
 [dev-dependencies]
 bevy_test = "0.0.1"
 
+[profile.release]
+lto = "fat"
+
+[profile.dev.package."*"]
+opt-level = 3
 
 [profile.dev]
 incremental = true

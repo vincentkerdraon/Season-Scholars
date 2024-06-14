@@ -101,7 +101,7 @@ fn listen_events_menu(
             }
         }
 
-        if e.long_action {
+        if e.long_action && data.teachers.len() > 0 {
             let teachers: Vec<Teacher> = data.teachers.keys().copied().collect();
             let emit = DisplayScreenGameEvent { teachers: teachers };
             debug!("{:?}", emit);
@@ -109,6 +109,7 @@ fn listen_events_menu(
 
             data.game_started_s = time.elapsed_seconds_f64();
             data.score = 0;
+            data.screen = Screen::Game;
 
             let emit = ResetGameEvent {};
             debug!("{:?}", emit);

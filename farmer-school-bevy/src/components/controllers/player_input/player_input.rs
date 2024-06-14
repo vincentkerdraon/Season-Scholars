@@ -23,7 +23,7 @@ fn input_system(
             reset: true,
             ..default()
         };
-        debug!("{:?}", emit);
+        trace!("{:?}", emit);
         input_events.send(emit);
         return;
     }

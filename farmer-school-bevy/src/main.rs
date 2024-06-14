@@ -82,16 +82,6 @@ fn setup(mut commands: Commands) {
         },
         ..default()
     });
-    commands.spawn(TextBundle {
-        text: Text::from_section(
-            "Hello",
-            TextStyle {
-                font_size: 60.0,
-                ..default()
-            },
-        ),
-        ..default()
-    });
 }
 
 fn print_mouse_click_events(

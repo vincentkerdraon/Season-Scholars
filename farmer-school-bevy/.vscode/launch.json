@@ -12,7 +12,8 @@
                 "args": [
                     "build",
                     "--bin=farmer-school-bevy",
-                    "--package=farmer-school-bevy"
+                    "--package=farmer-school-bevy",
+                    // "--features=bevy/dynamic_linking",
                 ],
                 "filter": {
                     "name": "farmer-school-bevy",
@@ -21,7 +22,8 @@
             },
             "args": [],
             "env": {
-                "RUST_LOG": "info,farmer_school_bevy=debug"
+                "RUST_LOG": "info,farmer_school_bevy=debug",
+                "LD_LIBRARY_PATH": "${workspaceFolder}/target/debug/deps:${workspaceFolder}/target/debug",
             },
             "cwd": "${workspaceFolder}"
         },
