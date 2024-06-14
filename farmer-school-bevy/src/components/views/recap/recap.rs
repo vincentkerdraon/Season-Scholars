@@ -162,9 +162,9 @@ pub fn listen_events(
     }
 }
 
-pub struct RecapPlugin;
+pub struct RecapViewPlugin;
 
-impl Plugin for RecapPlugin {
+impl Plugin for RecapViewPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(RecapResources::new())
             .add_systems(PreUpdate, listen_events)

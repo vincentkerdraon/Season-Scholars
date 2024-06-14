@@ -397,9 +397,9 @@ pub fn listen_events_player_input(
     }
 }
 
-pub struct PortalPlugin;
+pub struct PortalControllerPlugin;
 
-impl Plugin for PortalPlugin {
+impl Plugin for PortalControllerPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<ObservePortalEvent>()
             .add_event::<PortalObservedEvent>()

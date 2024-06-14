@@ -164,9 +164,9 @@ pub fn listen_events(
     }
 }
 
-pub struct WelcomePlugin;
+pub struct WelcomeControllerPlugin;
 
-impl Plugin for WelcomePlugin {
+impl Plugin for WelcomeControllerPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<WelcomeAvailableEvent>()
             .add_event::<WelcomeStudentEvent>()

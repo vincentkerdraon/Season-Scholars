@@ -19,9 +19,9 @@ pub struct Overlord {
     seasons_elapsed: i64,
 }
 
-pub struct OverlordPlugin;
+pub struct OverlordControllerPlugin;
 
-impl Plugin for OverlordPlugin {
+impl Plugin for OverlordControllerPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(Overlord {
             screen: Screen::Menu,

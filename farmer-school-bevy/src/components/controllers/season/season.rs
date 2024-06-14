@@ -111,9 +111,9 @@ pub fn listen_game_over(
     }
 }
 
-pub struct SeasonPlugin;
+pub struct SeasonControllerPlugin;
 
-impl Plugin for SeasonPlugin {
+impl Plugin for SeasonControllerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, season_startup_system)
             .add_systems(PreUpdate, season_timer_system)

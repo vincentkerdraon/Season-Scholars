@@ -325,9 +325,9 @@ pub fn listen_events(
     }
 }
 
-pub struct MenuPlugin;
+pub struct MenuViewPlugin;
 
-impl Plugin for MenuPlugin {
+impl Plugin for MenuViewPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(MenuResources::new())
             .add_systems(PreUpdate, listen_events)

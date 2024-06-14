@@ -11,6 +11,7 @@ mod components {
     }
     pub mod views {
         pub mod menu;
+        pub mod portal;
         pub mod recap;
         pub mod room;
         pub mod welcome;
@@ -57,16 +58,19 @@ fn main() {
                     ..Default::default()
                 }),
         )
-        .add_plugins(components::controllers::overlord::overlord::OverlordPlugin)
-        .add_plugins(components::controllers::season::season::SeasonPlugin)
-        .add_plugins(components::controllers::welcome::welcome::WelcomePlugin)
-        .add_plugins(components::controllers::teacher::teacher::TeacherPlugin)
-        .add_plugins(components::controllers::player_input::player_input::PlayerInputPlugin)
-        .add_plugins(components::controllers::portal::portal::PortalPlugin)
-        .add_plugins(components::views::room::room::RoomPlugin)
-        .add_plugins(components::views::welcome::welcome::WelcomePlugin)
-        .add_plugins(components::views::menu::menu::MenuPlugin)
-        .add_plugins(components::views::recap::recap::RecapPlugin)
+        .add_plugins(components::controllers::overlord::overlord::OverlordControllerPlugin)
+        .add_plugins(components::controllers::season::season::SeasonControllerPlugin)
+        .add_plugins(components::controllers::welcome::welcome::WelcomeControllerPlugin)
+        .add_plugins(components::controllers::teacher::teacher::TeacherControllerPlugin)
+        .add_plugins(
+            components::controllers::player_input::player_input::PlayerInputControllerPlugin,
+        )
+        .add_plugins(components::controllers::portal::portal::PortalControllerPlugin)
+        .add_plugins(components::views::room::room::RoomViewPlugin)
+        .add_plugins(components::views::welcome::welcome::WelcomeViewPlugin)
+        .add_plugins(components::views::menu::menu::MenuViewPlugin)
+        .add_plugins(components::views::recap::recap::RecapViewPlugin)
+        .add_plugins(components::views::portal::portal::PortalViewPlugin)
         .add_systems(Startup, setup)
         .add_systems(Update, print_mouse_click_events)
         .run();

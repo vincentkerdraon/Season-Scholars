@@ -65,9 +65,9 @@ pub fn listen_events(
     }
 }
 
-pub struct RoomPlugin;
+pub struct RoomViewPlugin;
 
-impl Plugin for RoomPlugin {
+impl Plugin for RoomViewPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, listen_events)
             .insert_resource(RoomResources::new())

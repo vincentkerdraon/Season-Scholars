@@ -7,7 +7,7 @@ use bevy::prelude::*;
 
 use super::events::*;
 
-pub struct TeacherPlugin;
+pub struct TeacherControllerPlugin;
 
 pub fn teacher_system(
     mut player_input_events: EventReader<PlayerInputEvent>,
@@ -24,7 +24,7 @@ pub fn teacher_system(
     }
 }
 
-impl Plugin for TeacherPlugin {
+impl Plugin for TeacherControllerPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<MoveTeacherEvent>()
             .add_event::<TeacherMovedEvent>()

@@ -2,9 +2,9 @@ use super::events::*;
 use crate::model::definitions::*;
 use bevy::prelude::*;
 
-pub struct PlayerInputPlugin;
+pub struct PlayerInputControllerPlugin;
 
-impl Plugin for PlayerInputPlugin {
+impl Plugin for PlayerInputControllerPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<PlayerInputEvent>()
             .add_systems(PreUpdate, input_system);
@@ -170,7 +170,7 @@ mod tests {
     #[test]
     fn test_input_player_a() {
         let mut app = App::new();
-        app.add_plugins(PlayerInputPlugin);
+        app.add_plugins(PlayerInputControllerPlugin);
 
         app.world.insert_resource(ButtonInput::<KeyCode>::default());
         app.world
