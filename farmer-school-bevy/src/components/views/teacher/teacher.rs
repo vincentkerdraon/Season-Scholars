@@ -64,36 +64,36 @@ fn load_resources(
     let e = place_teacher(
         &mut commands,
         teacher_a_teaching.clone(),
-        (310., 370., 10.),
-        0.15,
+        (450., 400., 10.),
+        (-0.18, 0.18),
     );
     data.teachers.insert(Station::Welcome, e);
     let e = place_teacher(
         &mut commands,
         teacher_a_teaching.clone(),
         (630., -230., 50.),
-        0.35,
+        (0.35, 0.35),
     );
     data.teachers.insert(Station::StudentRight, e);
     let e = place_teacher(
         &mut commands,
         teacher_a_teaching.clone(),
-        (255., -230., 50.),
-        0.35,
+        (550., -230., 50.),
+        (0.4, 0.4),
     );
     data.teachers.insert(Station::StudentCenter, e);
     let e = place_teacher(
         &mut commands,
         teacher_a_teaching.clone(),
-        (-100., -230., 50.),
-        0.35,
+        (460., -230., 50.),
+        (-0.4, 0.4),
     );
     data.teachers.insert(Station::StudentLeft, e);
     let e = place_teacher(
         &mut commands,
         teacher_a_protecting,
-        (-200., 330., 10.),
-        0.35,
+        (-460., 330., 10.),
+        (0.4, 0.4),
     );
     data.teachers.insert(Station::Portal, e);
 
@@ -150,7 +150,7 @@ fn place_teacher(
     commands: &mut Commands,
     texture: Handle<Image>,
     pos: (f32, f32, f32),
-    scale: f32,
+    scale: (f32, f32),
 ) -> Entity {
     commands
         .spawn(SpriteBundle {
@@ -162,8 +162,8 @@ fn place_teacher(
                     z: pos.2,
                 },
                 scale: Vec3 {
-                    x: scale,
-                    y: scale,
+                    x: scale.0,
+                    y: scale.1,
                     z: 1.,
                 },
                 ..default()
@@ -442,7 +442,7 @@ impl TeacherData {
             display_reaction_fail_duration_s: 1.0,
             display_reaction_short_duration_s: 2.0,
             display_reaction_long_duration_s: 5.0,
-            display_path_duration_s: 10.0, //FIXME
+            display_path_duration_s: 1.0,
         }
     }
 

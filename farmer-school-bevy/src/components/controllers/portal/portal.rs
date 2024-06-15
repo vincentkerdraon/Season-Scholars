@@ -179,7 +179,6 @@ fn pop_monster(
 ) {
     // ignore if already too many
     if data.monsters.len() > 6 {
-        //FIXME keep?
         debug!("already too many monsters, skipping pop.");
         return;
     }

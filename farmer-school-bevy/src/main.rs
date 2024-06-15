@@ -37,8 +37,8 @@ fn main() {
         students_init: 6,
         students_center_nb: 5,
         students_side_nb: 6,
-        long_action_s: 2.0,  //FIXME
-        short_action_s: 1.0, //FIXME
+        long_action_s: 5.0,  //FIXME
+        short_action_s: 2.0, //FIXME
         portal_health_max: 10,
         seasons_duration_s: 10.,
         portal_opened_nb: 5,
@@ -51,7 +51,7 @@ fn main() {
                 primary_window: Some(Window {
                     title: "Season Scholars".to_string(),
                     resolution: WindowResolution::new(1920., 1080.),
-                    resizable: true, //FIXME
+                    resizable: false,
                     cursor: Cursor {
                         // visible: false, //FIXME
                         ..default()
@@ -79,7 +79,7 @@ fn main() {
 
     #[cfg(debug_assertions)]
     {
-        app.add_systems(Update, log_mouse_click);
+        app.add_systems(Update, _log_mouse_click);
         // app.add_systems(Update, log_fps);
 
         // use bevy::diagnostic::LogDiagnosticsPlugin;
@@ -106,7 +106,7 @@ fn setup(mut commands: Commands) {
     });
 }
 
-fn log_mouse_click(
+fn _log_mouse_click(
     windows: Query<&Window>,
     mut mouse_button_input_events: EventReader<MouseButtonInput>,
     mut cursor_moved_events: EventReader<CursorMoved>,
@@ -149,7 +149,7 @@ fn screen_to_world(
 use model::config::Config;
 use rand::Rng;
 
-fn log_fps(time: Res<Time>) {
+fn _log_fps(time: Res<Time>) {
     let mut rng = rand::thread_rng();
     if rng.gen_range(0..=1000) == 0 {
         let d = time.delta_seconds();

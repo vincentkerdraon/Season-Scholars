@@ -87,8 +87,85 @@ fn load_resources(
         place_desk(&mut commands, t.clone(), (330., 220., z2), (s2, s2)),
     );
 
-    //     knowledge
-    // seasons
+    data.seasons.insert(
+        Season::Spring,
+        asset_server.load(config.clone().base_path + "Harvest/HarvestA0.png"),
+    );
+    data.seasons.insert(
+        Season::Summer,
+        asset_server.load(config.clone().base_path + "Harvest/HarvestC0.png"),
+    );
+    data.seasons.insert(
+        Season::Autumn,
+        asset_server.load(config.clone().base_path + "Harvest/HarvestM0.png"),
+    );
+    data.seasons.insert(
+        Season::Winter,
+        asset_server.load(config.clone().base_path + "Harvest/HarvestL0.png"),
+    );
+
+    let t = data.seasons.get(&Season::Autumn).unwrap().clone();
+    data.knowledge.insert(
+        (StudentCol::Left, 0),
+        place_knowledge(&mut commands, t.clone(), (-330., -230.)),
+    );
+    data.knowledge.insert(
+        (StudentCol::Left, 1),
+        place_knowledge(&mut commands, t.clone(), (-230., -190.)),
+    );
+    data.knowledge.insert(
+        (StudentCol::Left, 2),
+        place_knowledge(&mut commands, t.clone(), (-110., -225.)),
+    );
+
+    data.knowledge.insert(
+        (StudentCol::Center, 0),
+        place_knowledge(&mut commands, t.clone(), (130., -230.)),
+    );
+    data.knowledge.insert(
+        (StudentCol::Center, 1),
+        place_knowledge(&mut commands, t.clone(), (250., -190.)),
+    );
+    data.knowledge.insert(
+        (StudentCol::Center, 2),
+        place_knowledge(&mut commands, t.clone(), (350., -225.)),
+    );
+
+    data.knowledge.insert(
+        (StudentCol::Right, 0),
+        place_knowledge(&mut commands, t.clone(), (700., -230.)),
+    );
+    data.knowledge.insert(
+        (StudentCol::Right, 1),
+        place_knowledge(&mut commands, t.clone(), (820., -190.)),
+    );
+    data.knowledge.insert(
+        (StudentCol::Right, 2),
+        place_knowledge(&mut commands, t.clone(), (920., -225.)),
+    );
+}
+
+fn place_knowledge(commands: &mut Commands, image: Handle<Image>, pos: (f32, f32)) -> Entity {
+    commands
+        .spawn(SpriteBundle {
+            texture: image,
+            transform: Transform {
+                translation: Vec3 {
+                    x: pos.0,
+                    y: pos.1,
+                    z: 26.,
+                },
+                scale: Vec3 {
+                    x: 0.5,
+                    y: 0.5,
+                    z: 1.,
+                },
+                ..default()
+            },
+            visibility: Visibility::Hidden,
+            ..default()
+        })
+        .id()
 }
 
 fn place_desk(
@@ -113,7 +190,6 @@ fn place_desk(
                 },
                 ..default()
             },
-            // visibility: Visibility::Hidden,
             ..default()
         })
         .id()
@@ -169,7 +245,9 @@ fn draw(mut data: ResMut<StudentData>, mut query: Query<(&mut Handle<Image>, &mu
                         if col == StudentCol::Center {
                             students_images = &data.students_center;
                         }
-                        if student.knowledge.len() == 0 {
+                        //only the first row displays their knowledge
+                        //the others have the basic art
+                        if row > 0 || student.knowledge.len() == 0 {
                             *texture_handle =
                                 students_images.get(*texture_index).unwrap().0.clone();
                             done = true;
@@ -184,6 +262,24 @@ fn draw(mut data: ResMut<StudentData>, mut query: Query<(&mut Handle<Image>, &mu
                 }
                 if !done {
                     *texture_handle = texture_empty.clone();
+                }
+            }
+        }
+    }
+
+    for col in StudentCol::iter() {
+        for student in &data.students {
+            if student.col != col || student.row != 0 {
+                continue;
+            }
+            for i in 0..=2 {
+                let e = *data.knowledge.get(&(col, i)).unwrap();
+                let (mut texture_handle, mut visibility) = query.get_mut(e).unwrap();
+                if let Some(s) = student.knowledge.get(i as usize) {
+                    *visibility = Visibility::Visible;
+                    *texture_handle = data.seasons.get(s).unwrap().clone();
+                } else {
+                    *visibility = Visibility::Hidden;
                 }
             }
         }
@@ -214,8 +310,8 @@ struct StudentData {
     desk_free_center: Handle<Image>,
     desk_free_side: Handle<Image>,
 
-    knowledge: HashMap<(StudentCol, StudentRow), Entity>,
-    seasons: HashMap<Season, Entity>,
+    knowledge: HashMap<(StudentCol, i8), Entity>,
+    seasons: HashMap<Season, Handle<Image>>,
 
     dirty: bool,
     mapping: HashMap<StudentId, (StudentCol, TextureIndex)>,
