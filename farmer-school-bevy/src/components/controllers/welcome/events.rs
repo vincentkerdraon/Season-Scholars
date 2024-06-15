@@ -17,7 +17,4 @@ pub struct WelcomeStudentEvent {
 #[derive(Event, Debug)]
 pub struct StudentWelcomedEvent {
     pub teacher: Teacher,
-    pub student_pos_col: StudentCols,
-    pub student_pos_row: i32,
-    pub student_id: String,
 }

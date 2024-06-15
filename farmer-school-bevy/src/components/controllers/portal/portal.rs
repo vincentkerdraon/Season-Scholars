@@ -1,34 +1,27 @@
 // src/components/Portal.rs
 
 use super::events::*;
+use crate::components::moves::moves::possible_move;
 use crate::{
-    components::controllers::{
-        overlord::events::{
-            GameOverEvent, InvalidActionStationEvent, InvalidMoveEvent, ResetGameEvent,
+    components::{
+        controllers::{
+            overlord::events::{
+                GameOverEvent, InvalidActionStationEvent, InvalidMoveEvent, ResetGameEvent,
+            },
+            player_input::events::PlayerInputEvent,
+            season::events::SeasonChangedEvent,
+            students::events::GraduatedEvent,
+            teacher::events::{MoveTeacherEvent, TeacherMovedEvent},
         },
-        player_input::events::PlayerInputEvent,
-        season::events::SeasonChangedEvent,
-        teacher::events::{MoveTeacherEvent, TeacherMovedEvent},
+        teacher_busy::teacher_busy::TeacherBusy,
     },
-    config::Config,
     model::{
-        definitions::{Season, Teacher},
-        events::*,
+        config::Config,
+        definitions::{Season, Station, Teacher},
     },
 };
 use bevy::prelude::*;
 use rand::Rng;
-use std::collections::HashMap;
-
-#[derive(Resource, Default)]
-pub struct PortalData {
-    activated: bool,
-    monsters: Vec<Monster>,
-    difficulty: i32,
-    health: i8,
-    health_max: i8,
-    teachers_present: HashMap<Teacher, Option<f64>>,
-}
 
 fn listen_game_over(
     mut data: ResMut<PortalData>,
@@ -41,7 +34,7 @@ fn listen_game_over(
     data.activated = false;
 }
 
-pub fn monster_attack(
+fn monster_attack(
     time: Res<Time>,
     mut data: ResMut<PortalData>,
     mut portal_attacked_events: EventWriter<PortalAttackedEvent>,
@@ -91,7 +84,6 @@ fn listen_events(
     time: Res<Time>,
     mut data: ResMut<PortalData>,
     mut graduated_events: EventReader<GraduatedEvent>,
-    mut teacher_moved_events: EventReader<TeacherMovedEvent>,
     mut monster_fed_events: EventWriter<MonsterFedEvent>,
     mut monster_popped_events: EventWriter<MonsterPoppedEvent>,
 ) {
@@ -127,14 +119,14 @@ fn listen_events(
             pop_monster(now, &mut data, &mut monster_popped_events)
         }
     }
+}
 
+fn listen_moved(
+    mut data: ResMut<PortalData>,
+    mut teacher_moved_events: EventReader<TeacherMovedEvent>,
+) {
     for e in teacher_moved_events.read() {
-        if e.station_to == crate::model::definitions::Station::Portal {
-            data.teachers_present.insert(e.teacher, None);
-        }
-        if e.station_from == crate::model::definitions::Station::Portal {
-            data.teachers_present.remove(&e.teacher);
-        }
+        data.teacher_busy.moved(e);
     }
 }
 
@@ -152,7 +144,7 @@ fn listen_reset(
     }
 }
 
-pub fn reset(
+fn reset(
     time: Res<Time>,
     config: Res<Config>,
     mut data: ResMut<PortalData>,
@@ -161,9 +153,10 @@ pub fn reset(
     data.health_max = config.clone().portal_health_max;
     data.health = data.health_max;
     data.difficulty = 0;
-    data.teachers_present = HashMap::new();
+    // data.teachers_present = HashMap::new();
     let now = time.elapsed_seconds_f64();
     data.monsters = Vec::new();
+    data.teacher_busy = TeacherBusy::new(vec![Station::Portal]);
     pop_monster(now, &mut data, &mut monster_popped_events);
 }
 
@@ -315,18 +308,9 @@ fn listen_events_player_input(
 ) {
     let now = time.elapsed_seconds_f64();
     for e in player_input_events.read() {
-        //ignore event if teacher is not at this station or if busy
-        let busy_until = match data.teachers_present.get(&e.teacher) {
-            Some(busy_until) => *busy_until, // Extract the value from Some(free)
-            None => continue,                // the teacher is not present
-        };
-        if let Some(busy_until) = busy_until {
-            if now < busy_until {
-                continue; // Skip if the teacher is not yet free
-            }
+        if data.teacher_busy.ready(e.teacher, now) != (true, true) {
+            continue;
         }
-
-        //FIXME, it is technically possible to do a short + long + move at the same time.
 
         if e.long_action {
             if data.health >= data.health_max {
@@ -337,10 +321,11 @@ fn listen_events_player_input(
                 debug!("{:?}", emit);
                 invalid_action_station_events.send(emit);
             } else {
-                data.teachers_present
-                    .insert(e.teacher, Some(now + config.long_action_s));
+                data.teacher_busy
+                    .action(e.teacher, now, config.long_action_s);
                 //repair //FIXME event
                 data.health = data.health + 1;
+                continue;
             }
         }
 
@@ -351,8 +336,8 @@ fn listen_events_player_input(
                     revealed = true;
                     monster.revealed = true;
 
-                    data.teachers_present
-                        .insert(e.teacher, Some(now + config.short_action_s));
+                    data.teacher_busy
+                        .action(e.teacher, now, config.short_action_s);
 
                     let emit = PortalObservedEvent {
                         teacher: Teacher::A,
@@ -375,33 +360,22 @@ fn listen_events_player_input(
         }
 
         if e.confirm_move {
-            match e.direction {
-                Vec2 { x: 1.0, y: 1.0 } => {
-                    let emit = MoveTeacherEvent {
-                        station_from: crate::model::definitions::Station::Portal,
-                        station_to: crate::model::definitions::Station::Welcome,
-                        teacher: e.teacher,
-                    };
-                    debug!("{:?}", emit);
-                    move_teacher_events.send(emit);
-                }
-                Vec2 { x: 1.0, y: -1.0 } => {
-                    let emit = MoveTeacherEvent {
-                        station_from: crate::model::definitions::Station::Portal,
-                        station_to: crate::model::definitions::Station::StudentLeft,
-                        teacher: e.teacher,
-                    };
-                    debug!("{:?}", emit);
-                    move_teacher_events.send(emit);
-                }
-                Vec2 { x: _, y: _ } => {
-                    let emit = InvalidMoveEvent {
-                        station: crate::model::definitions::Station::Portal,
-                        teacher: e.teacher,
-                    };
-                    debug!("{:?}", emit);
-                    invalid_move_events.send(emit);
-                }
+            let from = Station::Welcome;
+            if let Some(to) = possible_move(from, e.direction) {
+                let emit = MoveTeacherEvent {
+                    station_from: from,
+                    station_to: to,
+                    teacher: e.teacher,
+                };
+                debug!("{:?}", emit);
+                move_teacher_events.send(emit);
+            } else {
+                let emit = InvalidMoveEvent {
+                    station: from,
+                    teacher: e.teacher,
+                };
+                debug!("{:?}", emit);
+                invalid_move_events.send(emit);
             }
         }
     }
@@ -421,8 +395,19 @@ impl Plugin for PortalControllerPlugin {
             .add_systems(PreUpdate, listen_events)
             .add_systems(PreUpdate, listen_events_create_monster)
             .add_systems(PreUpdate, monster_attack)
+            .add_systems(PreUpdate, listen_moved)
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, listen_events_player_input);
     }
+}
+
+#[derive(Resource, Default)]
+struct PortalData {
+    activated: bool,
+    monsters: Vec<Monster>,
+    difficulty: i32,
+    health: i8,
+    health_max: i8,
+    teacher_busy: TeacherBusy,
 }

@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     components::controllers::welcome::events::{StudentWelcomedEvent, WelcomeAvailableEvent},
-    config::Config,
+    model::config::Config,
 };
 
 fn load_resources(

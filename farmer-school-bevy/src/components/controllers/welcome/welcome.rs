@@ -4,42 +4,44 @@ use super::events::*;
 use crate::{
     components::{
         controllers::{
-            overlord::events::{InvalidActionStationEvent, InvalidMoveEvent},
+            overlord::events::{InvalidActionStationEvent, InvalidMoveEvent, ResetGameEvent},
             player_input::events::PlayerInputEvent,
             portal::events::MonsterFedEvent,
+            students::events::GraduatedEvent,
             teacher::events::{MoveTeacherEvent, TeacherMovedEvent},
         },
         moves::moves::possible_move,
+        teacher_busy::teacher_busy::TeacherBusy,
     },
-    config::Config,
     model::{
+        config::Config,
         definitions::{Station, Teacher},
-        events::*,
     },
 };
 use bevy::prelude::*;
-use std::collections::HashMap;
 
-#[derive(Resource, Default)]
-pub struct Welcome {
-    students_classroom_nb: usize,
-    students_classroom_max: usize,
-    available: bool,
-    teachers_present: HashMap<Teacher, Option<f64>>,
+fn listen_moved(
+    mut data: ResMut<WelcomeData>,
+    mut teacher_moved_events: EventReader<TeacherMovedEvent>,
+) {
+    for e in teacher_moved_events.read() {
+        data.teacher_busy.moved(e);
+    }
 }
 
-pub fn init(config: Res<Config>, mut data: ResMut<Welcome>) {
-    data.students_classroom_max = config.clone().students_max;
+fn listen_reset(mut data: ResMut<WelcomeData>, mut reset_game_events: EventReader<ResetGameEvent>) {
+    if reset_game_events.read().last().is_some() {
+        data.teacher_busy = TeacherBusy::new(vec![Station::Welcome]);
+    }
 }
 
 fn listen_events(
     time: Res<Time>,
     config: Res<Config>,
-    mut data: ResMut<Welcome>,
+    mut data: ResMut<WelcomeData>,
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut student_welcomed_events: EventReader<StudentWelcomedEvent>,
     mut graduated_events: EventReader<GraduatedEvent>,
-    mut teacher_moved_events: EventReader<TeacherMovedEvent>,
     mut monster_fed_events: EventReader<MonsterFedEvent>,
     mut welcome_available_events: EventWriter<WelcomeAvailableEvent>,
     mut welcome_student_events: EventWriter<WelcomeStudentEvent>,
@@ -56,15 +58,6 @@ fn listen_events(
         data.students_classroom_nb = data.students_classroom_nb + 1;
     }
 
-    for e in teacher_moved_events.read() {
-        if e.station_to == crate::model::definitions::Station::Welcome {
-            data.teachers_present.insert(e.teacher, None);
-        }
-        if e.station_from == crate::model::definitions::Station::Welcome {
-            data.teachers_present.remove(&e.teacher);
-        }
-    }
-
     let mut should_accept = false;
 
     for e in monster_fed_events.read() {
@@ -76,14 +69,8 @@ fn listen_events(
     let now = time.elapsed_seconds_f64();
     for e in player_input_events.read() {
         //ignore event if teacher is not at this station or if busy
-        let busy_until = match data.teachers_present.get(&e.teacher) {
-            Some(busy_until) => *busy_until, // Extract the value from Some(free)
-            None => continue,                // the teacher is not present
-        };
-        if let Some(busy_until) = busy_until {
-            if now < busy_until {
-                continue; // Skip if the teacher is not yet free
-            }
+        if data.teacher_busy.ready(e.teacher, now) != (true, true) {
+            continue;
         }
 
         if e.long_action {
@@ -95,8 +82,8 @@ fn listen_events(
                 debug!("{:?}", emit);
                 invalid_action_station_events.send(emit);
             } else {
-                data.teachers_present
-                    .insert(e.teacher, Some(now + config.long_action_s));
+                data.teacher_busy
+                    .action(e.teacher, now, config.long_action_s);
                 //recruit //FIXME event
                 should_accept = true
             }
@@ -104,8 +91,8 @@ fn listen_events(
 
         if e.short_action {
             if data.available {
-                data.teachers_present
-                    .insert(e.teacher, Some(now + config.short_action_s));
+                data.teacher_busy
+                    .action(e.teacher, now, config.short_action_s);
                 let emit = WelcomeStudentEvent {
                     teacher: Teacher::A,
                 };
@@ -142,7 +129,7 @@ fn listen_events(
         }
     }
 
-    if data.students_classroom_nb == data.students_classroom_max {
+    if data.students_classroom_nb == config.students_max {
         return;
     }
 
@@ -166,8 +153,16 @@ impl Plugin for WelcomeControllerPlugin {
         app.add_event::<WelcomeAvailableEvent>()
             .add_event::<WelcomeStudentEvent>()
             .add_event::<StudentWelcomedEvent>()
-            .insert_resource(Welcome { ..default() })
-            .add_systems(Startup, init)
+            .insert_resource(WelcomeData { ..default() })
+            .add_systems(PreUpdate, listen_reset)
+            .add_systems(PreUpdate, listen_moved)
             .add_systems(PreUpdate, listen_events);
     }
+}
+
+#[derive(Resource, Default)]
+struct WelcomeData {
+    students_classroom_nb: usize,
+    available: bool,
+    teacher_busy: TeacherBusy,
 }

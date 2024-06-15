@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use crate::{
-    components::controllers::season::events::SeasonChangedEvent, config::Config,
-    model::definitions::Season,
+    components::controllers::season::events::SeasonChangedEvent,
+    model::{config::Config, definitions::Season},
 };
 
 fn load_resources(

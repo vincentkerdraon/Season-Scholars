@@ -228,7 +228,7 @@ mod tests {
 }
 
 #[derive(Resource)]
-pub struct InputData {
+struct InputData {
     active_player_a: bool,
     active_player_b: bool,
 }

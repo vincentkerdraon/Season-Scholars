@@ -8,14 +8,16 @@ use crate::{
             overlord::events::{GameOverEvent, InvalidActionStationEvent, ResetGameEvent},
             player_input::events::PlayerInputEvent,
             portal::events::PortalObservedEvent,
+            students::events::TaughtEvent,
             teacher::events::TeacherMovedEvent,
             welcome::events::StudentWelcomedEvent,
         },
         moves::moves::possible_move,
     },
-    config::Config,
-    model::definitions::{Reaction, Station, Teacher},
-    TaughtEvent,
+    model::{
+        config::Config,
+        definitions::{Reaction, Station, Teacher},
+    },
 };
 
 fn load_resources(

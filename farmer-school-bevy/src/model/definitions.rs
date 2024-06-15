@@ -1,7 +1,5 @@
-// src/model/enums.rs
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum StudentCols {
+pub enum StudentCol {
     #[default]
     Left = 1,
     Center,
@@ -60,4 +58,24 @@ pub enum Reaction {
     Long = 1,
     Short,
     Fail,
+}
+
+pub type StudentId = i64;
+pub type StudentRow = i8;
+
+#[derive(Debug, Default, Clone, Hash)]
+pub struct Student {
+    pub id: StudentId,
+    pub row: StudentRow,
+    pub col: StudentCol,
+    pub knowledge: Vec<Season>,
+}
+
+pub fn station_to_student_col(station: Station) -> StudentCol {
+    match station {
+        Station::StudentLeft => StudentCol::Left,
+        Station::StudentCenter => StudentCol::Center,
+        Station::StudentRight => StudentCol::Right,
+        _ => panic!(),
+    }
 }

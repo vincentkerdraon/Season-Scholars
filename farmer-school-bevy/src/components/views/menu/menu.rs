@@ -6,8 +6,7 @@ use crate::{
     components::controllers::overlord::events::{
         DisplayScreenGameEvent, DisplayScreenGameOverRecapEvent, DisplayScreenMenuEvent,
     },
-    config::Config,
-    model::definitions::Teacher,
+    model::{config::Config, definitions::Teacher},
 };
 
 const EXPLAIN: &str = "You play as a wise teacher guiding farmers through the changing seasons. \n

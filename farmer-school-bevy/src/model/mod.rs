@@ -1,4 +1,2 @@
-// src/model/mod.rs
-
+pub mod config;
 pub mod definitions;
-pub mod events;

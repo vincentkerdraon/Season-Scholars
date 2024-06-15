@@ -1,51 +1,13 @@
 use super::events::*;
 use crate::components::controllers::portal::events::MonsterFedEvent;
 use crate::components::controllers::season::events::SeasonChangedEvent;
+use crate::components::controllers::students::events::{GraduatedEvent, TaughtEvent};
 use crate::{
     components::controllers::player_input::events::PlayerInputEvent, model::definitions::*,
 };
-use crate::{GraduatedEvent, TaughtEvent};
 use bevy::prelude::*;
 use std::collections::HashMap;
 use std::process;
-
-#[derive(Resource)]
-pub struct Overlord {
-    screen: Screen,
-    score: i32,
-    last_reset_s: f64,
-    teachers: HashMap<Teacher, bool>,
-    game_started_s: f64,
-    seasons_elapsed: i64,
-}
-
-pub struct OverlordControllerPlugin;
-
-impl Plugin for OverlordControllerPlugin {
-    fn build(&self, app: &mut App) {
-        app.insert_resource(Overlord {
-            screen: Screen::Menu,
-            last_reset_s: 0.,
-            game_started_s: 0.,
-            score: 0,
-            seasons_elapsed: 0,
-            teachers: HashMap::new(),
-        })
-        .add_event::<GameOverEvent>()
-        .add_event::<ResetGameEvent>()
-        .add_event::<DisplayScreenGameOverRecapEvent>()
-        .add_event::<DisplayScreenGameEvent>()
-        .add_event::<DisplayScreenMenuEvent>()
-        .add_event::<InvalidActionStationEvent>()
-        .add_event::<InvalidMoveEvent>()
-        // .add_systems(Startup, start) //FIXME
-        .add_systems(Startup, debug_start_game)
-        .add_systems(PreUpdate, listen_events_game_over)
-        .add_systems(PreUpdate, listen_events_reset)
-        .add_systems(PreUpdate, listen_events_score)
-        .add_systems(PreUpdate, listen_events_menu);
-    }
-}
 
 fn debug_start_game(
     mut data: ResMut<Overlord>,
@@ -227,4 +189,42 @@ fn listen_events_reset(
             }
         }
     }
+}
+
+pub struct OverlordControllerPlugin;
+
+impl Plugin for OverlordControllerPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(Overlord {
+            screen: Screen::Menu,
+            last_reset_s: 0.,
+            game_started_s: 0.,
+            score: 0,
+            seasons_elapsed: 0,
+            teachers: HashMap::new(),
+        })
+        .add_event::<GameOverEvent>()
+        .add_event::<ResetGameEvent>()
+        .add_event::<DisplayScreenGameOverRecapEvent>()
+        .add_event::<DisplayScreenGameEvent>()
+        .add_event::<DisplayScreenMenuEvent>()
+        .add_event::<InvalidActionStationEvent>()
+        .add_event::<InvalidMoveEvent>()
+        // .add_systems(Startup, start) //FIXME
+        .add_systems(Startup, debug_start_game)
+        .add_systems(PreUpdate, listen_events_game_over)
+        .add_systems(PreUpdate, listen_events_reset)
+        .add_systems(PreUpdate, listen_events_score)
+        .add_systems(PreUpdate, listen_events_menu);
+    }
+}
+
+#[derive(Resource)]
+struct Overlord {
+    screen: Screen,
+    score: i32,
+    last_reset_s: f64,
+    teachers: HashMap<Teacher, bool>,
+    game_started_s: f64,
+    seasons_elapsed: i64,
 }

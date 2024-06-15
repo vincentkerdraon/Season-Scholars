@@ -4,7 +4,7 @@ use bevy::prelude::*;
 #[derive(Event, Debug)]
 pub struct GraduateEvent {
     pub teacher: Teacher,
-    pub student_col: StudentCols,
+    pub student_col: StudentCol,
 }
 
 /// The first student of the col exits the classroom and will fulfill the monsters need with what he learned
@@ -12,19 +12,26 @@ pub struct GraduateEvent {
 pub struct GraduatedEvent {
     pub teacher: Teacher,
     pub knowledge: Vec<Season>,
-    pub student_id: String,
+    pub student_id: StudentId,
+    pub students: Vec<Student>,
 }
 
 #[derive(Event, Debug)]
 pub struct TeachEvent {
-    pub station: Station,
+    pub student_col: StudentCol,
     pub teacher: Teacher,
 }
 
 /// All students in the column learn the season
 #[derive(Event, Debug)]
 pub struct TaughtEvent {
-    pub station: Station,
+    pub student_col: StudentCol,
     pub teacher: Teacher,
     pub knowledge: Season,
+    pub students: Vec<Student>,
+}
+
+#[derive(Event, Debug)]
+pub struct StudentsSeatedEvent {
+    pub students: Vec<Student>,
 }

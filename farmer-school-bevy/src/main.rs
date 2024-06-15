@@ -1,12 +1,13 @@
-mod config;
 mod model;
 mod components {
     pub mod moves;
+    pub mod teacher_busy;
     pub mod controllers {
         pub mod overlord;
         pub mod player_input;
         pub mod portal;
         pub mod season;
+        pub mod students;
         pub mod teacher;
         pub mod welcome;
     }
@@ -15,6 +16,7 @@ mod components {
         pub mod portal;
         pub mod recap;
         pub mod room;
+        pub mod student;
         pub mod teacher;
         pub mod welcome;
     }
@@ -26,14 +28,13 @@ use bevy::{
     prelude::*,
     window::{Cursor, WindowResolution},
 };
-use config::Config;
-use model::events::*;
 
 fn main() {
     let mut app: App = App::new();
     app.insert_resource(Config {
         base_path: "/home/korrident/Documents/farmer-school/images/ready/".to_string(),
         students_max: 9,
+        students_init: 6,
         long_action_s: 2.0,  //FIXME
         short_action_s: 1.0, //FIXME
         portal_health_max: 10,
@@ -41,10 +42,6 @@ fn main() {
         portal_opened_nb: 5,
         portal_closed_nb: 10,
     })
-    .add_event::<GraduateEvent>()
-    .add_event::<GraduatedEvent>()
-    .add_event::<TeachEvent>()
-    .add_event::<TaughtEvent>()
     .add_plugins(
         DefaultPlugins
             .set(LogPlugin { ..default() })
@@ -68,12 +65,14 @@ fn main() {
     .add_plugins(components::controllers::teacher::teacher::TeacherControllerPlugin)
     .add_plugins(components::controllers::player_input::player_input::PlayerInputControllerPlugin)
     .add_plugins(components::controllers::portal::portal::PortalControllerPlugin)
+    .add_plugins(components::controllers::students::students::StudentsControllerPlugin)
     .add_plugins(components::views::room::room::RoomViewPlugin)
     .add_plugins(components::views::welcome::welcome::WelcomeViewPlugin)
     .add_plugins(components::views::teacher::teacher::TeacherViewPlugin)
     .add_plugins(components::views::menu::menu::MenuViewPlugin)
     .add_plugins(components::views::recap::recap::RecapViewPlugin)
     .add_plugins(components::views::portal::portal::PortalViewPlugin)
+    .add_plugins(components::views::student::student::StudentViewPlugin)
     .add_systems(Startup, setup);
 
     #[cfg(debug_assertions)]
@@ -145,6 +144,7 @@ fn screen_to_world(
     Some(world_position.truncate())
 }
 
+use model::config::Config;
 use rand::Rng;
 
 fn log_fps(time: Res<Time>) {
