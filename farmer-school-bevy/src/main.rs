@@ -30,55 +30,65 @@ use config::Config;
 use model::events::*;
 
 fn main() {
-    App::new()
-        .insert_resource(Config {
-            base_path: "/home/korrident/Documents/farmer-school/images/ready/".to_string(),
-            students_max: 9,
-            long_action_s: 2.0,  //FIXME
-            short_action_s: 1.0, //FIXME
-            portal_health_max: 10,
-            seasons_duration_s: 10.,
-            portal_opened_nb: 5,
-            portal_closed_nb: 10,
-        })
-        .add_event::<GraduateEvent>()
-        .add_event::<GraduatedEvent>()
-        .add_event::<TeachEvent>()
-        .add_event::<TaughtEvent>()
-        .add_plugins(
-            DefaultPlugins
-                .set(LogPlugin { ..default() })
-                .set(WindowPlugin {
-                    primary_window: Some(Window {
-                        title: "Season Scholars".to_string(),
-                        resolution: WindowResolution::new(1920., 1080.),
-                        resizable: true, //FIXME
-                        cursor: Cursor {
-                            // visible: false, //FIXME
-                            ..default()
-                        },
-                        ..Default::default()
-                    }),
+    let mut app: App = App::new();
+    app.insert_resource(Config {
+        base_path: "/home/korrident/Documents/farmer-school/images/ready/".to_string(),
+        students_max: 9,
+        long_action_s: 2.0,  //FIXME
+        short_action_s: 1.0, //FIXME
+        portal_health_max: 10,
+        seasons_duration_s: 10.,
+        portal_opened_nb: 5,
+        portal_closed_nb: 10,
+    })
+    .add_event::<GraduateEvent>()
+    .add_event::<GraduatedEvent>()
+    .add_event::<TeachEvent>()
+    .add_event::<TaughtEvent>()
+    .add_plugins(
+        DefaultPlugins
+            .set(LogPlugin { ..default() })
+            .set(WindowPlugin {
+                primary_window: Some(Window {
+                    title: "Season Scholars".to_string(),
+                    resolution: WindowResolution::new(1920., 1080.),
+                    resizable: true, //FIXME
+                    cursor: Cursor {
+                        // visible: false, //FIXME
+                        ..default()
+                    },
                     ..Default::default()
                 }),
-        )
-        .add_plugins(components::controllers::overlord::overlord::OverlordControllerPlugin)
-        .add_plugins(components::controllers::season::season::SeasonControllerPlugin)
-        .add_plugins(components::controllers::welcome::welcome::WelcomeControllerPlugin)
-        .add_plugins(components::controllers::teacher::teacher::TeacherControllerPlugin)
-        .add_plugins(
-            components::controllers::player_input::player_input::PlayerInputControllerPlugin,
-        )
-        .add_plugins(components::controllers::portal::portal::PortalControllerPlugin)
-        .add_plugins(components::views::room::room::RoomViewPlugin)
-        .add_plugins(components::views::welcome::welcome::WelcomeViewPlugin)
-        .add_plugins(components::views::teacher::teacher::TeacherViewPlugin)
-        .add_plugins(components::views::menu::menu::MenuViewPlugin)
-        .add_plugins(components::views::recap::recap::RecapViewPlugin)
-        .add_plugins(components::views::portal::portal::PortalViewPlugin)
-        .add_systems(Startup, setup)
-        .add_systems(Update, print_mouse_click_events)
-        .run();
+                ..Default::default()
+            }),
+    )
+    .add_plugins(components::controllers::overlord::overlord::OverlordControllerPlugin)
+    .add_plugins(components::controllers::season::season::SeasonControllerPlugin)
+    .add_plugins(components::controllers::welcome::welcome::WelcomeControllerPlugin)
+    .add_plugins(components::controllers::teacher::teacher::TeacherControllerPlugin)
+    .add_plugins(components::controllers::player_input::player_input::PlayerInputControllerPlugin)
+    .add_plugins(components::controllers::portal::portal::PortalControllerPlugin)
+    .add_plugins(components::views::room::room::RoomViewPlugin)
+    .add_plugins(components::views::welcome::welcome::WelcomeViewPlugin)
+    .add_plugins(components::views::teacher::teacher::TeacherViewPlugin)
+    .add_plugins(components::views::menu::menu::MenuViewPlugin)
+    .add_plugins(components::views::recap::recap::RecapViewPlugin)
+    .add_plugins(components::views::portal::portal::PortalViewPlugin)
+    .add_systems(Startup, setup);
+
+    #[cfg(debug_assertions)]
+    {
+        app.add_systems(Update, log_mouse_click);
+        app.add_systems(Update, log_fps);
+
+        // use bevy::diagnostic::LogDiagnosticsPlugin;
+        // app.add_plugins(LogDiagnosticsPlugin {
+        //     debug: true,
+        //     ..default()
+        // });
+    }
+
+    app.run();
 }
 
 fn setup(mut commands: Commands) {
@@ -95,7 +105,7 @@ fn setup(mut commands: Commands) {
     });
 }
 
-fn print_mouse_click_events(
+fn log_mouse_click(
     windows: Query<&Window>,
     mut mouse_button_input_events: EventReader<MouseButtonInput>,
     mut cursor_moved_events: EventReader<CursorMoved>,
@@ -133,4 +143,14 @@ fn screen_to_world(
     let ndc_to_world = camera_transform.compute_matrix() * camera.projection_matrix().inverse();
     let world_position = ndc_to_world.project_point3(ndc.extend(-1.0));
     Some(world_position.truncate())
+}
+
+use rand::Rng;
+
+fn log_fps(time: Res<Time>) {
+    let mut rng = rand::thread_rng();
+    if rng.gen_range(0..=1000) == 0 {
+        let d = time.delta_seconds();
+        debug!("FPS={}", (1.0 / d).round());
+    }
 }

@@ -9,7 +9,7 @@ fn load_resources(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     config: Res<Config>,
-    mut data: ResMut<WelcomeData>,
+    mut data: ResMut<WelcomeResources>,
 ) {
     data.closed = asset_server.load(config.clone().base_path + "Welcome/DoorClosed.png");
     data.opened
@@ -40,10 +40,10 @@ fn load_resources(
         .id();
 }
 
-fn listen_events(
+pub fn listen_events(
     mut welcome_available_events: EventReader<WelcomeAvailableEvent>,
     mut student_welcomed_events: EventReader<StudentWelcomedEvent>,
-    mut data: ResMut<WelcomeData>,
+    mut data: ResMut<WelcomeResources>,
     mut query: Query<&mut Handle<Image>>,
 ) {
     for _ in student_welcomed_events.read() {
@@ -67,20 +67,20 @@ pub struct WelcomeViewPlugin;
 impl Plugin for WelcomeViewPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, listen_events)
-            .insert_resource(WelcomeData::new())
+            .insert_resource(WelcomeResources::new())
             .add_systems(Startup, load_resources);
     }
 }
 
 #[derive(Resource)]
-struct WelcomeData {
+pub struct WelcomeResources {
     door: Entity,
     closed: Handle<Image>,
     opened: Vec<Handle<Image>>,
     opened_last_used_index: usize,
 }
 
-impl WelcomeData {
+impl WelcomeResources {
     pub fn new() -> Self {
         Self {
             door: Entity::PLACEHOLDER,

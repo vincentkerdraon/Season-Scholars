@@ -1,6 +1,6 @@
-use std::{num::Wrapping, ops::Add};
+use std::{collections::HashMap, num::Wrapping};
 
-use bevy::{prelude::*, utils::hashbrown::HashMap};
+use bevy::prelude::*;
 
 use crate::{
     components::{
@@ -9,7 +9,7 @@ use crate::{
             player_input::events::PlayerInputEvent,
             portal::events::PortalObservedEvent,
             teacher::events::TeacherMovedEvent,
-            welcome::{events::StudentWelcomedEvent, welcome::Welcome},
+            welcome::events::StudentWelcomedEvent,
         },
         moves::moves::possible_move,
     },
@@ -290,7 +290,7 @@ fn listen_game_over(
 }
 
 fn listen_reset(mut data: ResMut<TeacherData>, mut reset_game_events: EventReader<ResetGameEvent>) {
-    if let Some(e) = reset_game_events.read().last() {
+    if reset_game_events.read().last().is_some() {
         data.activated = true;
         data.dirty = true;
 

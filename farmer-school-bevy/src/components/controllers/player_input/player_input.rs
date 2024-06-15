@@ -1,8 +1,6 @@
 use super::events::*;
 use crate::{
-    components::controllers::overlord::events::{
-        DisplayScreenGameEvent, DisplayScreenGameOverRecapEvent, DisplayScreenMenuEvent,
-    },
+    components::controllers::overlord::events::{DisplayScreenGameEvent, DisplayScreenMenuEvent},
     model::definitions::*,
 };
 use bevy::prelude::*;
