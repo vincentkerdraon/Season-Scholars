@@ -61,21 +61,40 @@ fn load_resources(
     data.reactions
         .insert((Station::Welcome, Reaction::Short), e);
 
-    let e = place_teacher(&mut commands, teacher_a_teaching.clone(), 310., 370., 0.15);
+    let e = place_teacher(
+        &mut commands,
+        teacher_a_teaching.clone(),
+        (310., 370., 10.),
+        0.15,
+    );
     data.teachers.insert(Station::Welcome, e);
-    let e = place_teacher(&mut commands, teacher_a_teaching.clone(), 630., -230., 0.35);
+    let e = place_teacher(
+        &mut commands,
+        teacher_a_teaching.clone(),
+        (630., -230., 50.),
+        0.35,
+    );
     data.teachers.insert(Station::StudentRight, e);
-    let e = place_teacher(&mut commands, teacher_a_teaching.clone(), 255., -230., 0.35);
+    let e = place_teacher(
+        &mut commands,
+        teacher_a_teaching.clone(),
+        (255., -230., 50.),
+        0.35,
+    );
     data.teachers.insert(Station::StudentCenter, e);
     let e = place_teacher(
         &mut commands,
         teacher_a_teaching.clone(),
-        -100.,
-        -230.,
+        (-100., -230., 50.),
         0.35,
     );
     data.teachers.insert(Station::StudentLeft, e);
-    let e = place_teacher(&mut commands, teacher_a_protecting, -200., 330., 0.35);
+    let e = place_teacher(
+        &mut commands,
+        teacher_a_protecting,
+        (-200., 330., 10.),
+        0.35,
+    );
     data.teachers.insert(Station::Portal, e);
 
     let e = place_path(&mut commands, path_left_center, 78., -300., 1.);
@@ -130,8 +149,7 @@ fn place_path(
 fn place_teacher(
     commands: &mut Commands,
     texture: Handle<Image>,
-    pos_x: f32,
-    pos_y: f32,
+    pos: (f32, f32, f32),
     scale: f32,
 ) -> Entity {
     commands
@@ -139,9 +157,9 @@ fn place_teacher(
             texture: texture,
             transform: Transform {
                 translation: Vec3 {
-                    x: pos_x,
-                    y: pos_y,
-                    z: 98.0,
+                    x: pos.0,
+                    y: pos.1,
+                    z: pos.2,
                 },
                 scale: Vec3 {
                     x: scale,
@@ -179,7 +197,7 @@ fn place_reaction(
                 },
                 ..default()
             },
-            // visibility: Visibility::Hidden,
+            visibility: Visibility::Hidden,
             ..default()
         })
         .id()
@@ -307,7 +325,7 @@ fn listen_reset(mut data: ResMut<TeacherData>, mut reset_game_events: EventReade
     }
 }
 
-fn redraw(time: Res<Time>, mut data: ResMut<TeacherData>, mut query: Query<&mut Visibility>) {
+fn draw(time: Res<Time>, mut data: ResMut<TeacherData>, mut query: Query<&mut Visibility>) {
     data.frame += Wrapping(1);
     //FIXME config
     if !data.dirty && data.frame.0 % 5 != 0 {
@@ -385,7 +403,7 @@ impl Plugin for TeacherViewPlugin {
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_teacher_move)
             .add_systems(PreUpdate, listen_reactions)
-            .add_systems(Update, redraw)
+            .add_systems(Update, draw)
             .add_systems(Startup, load_resources);
     }
 }

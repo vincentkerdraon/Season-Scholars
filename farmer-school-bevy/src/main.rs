@@ -35,6 +35,8 @@ fn main() {
         base_path: "/home/korrident/Documents/farmer-school/images/ready/".to_string(),
         students_max: 9,
         students_init: 6,
+        students_center_nb: 5,
+        students_side_nb: 6,
         long_action_s: 2.0,  //FIXME
         short_action_s: 1.0, //FIXME
         portal_health_max: 10,
@@ -78,7 +80,7 @@ fn main() {
     #[cfg(debug_assertions)]
     {
         app.add_systems(Update, log_mouse_click);
-        app.add_systems(Update, log_fps);
+        // app.add_systems(Update, log_fps);
 
         // use bevy::diagnostic::LogDiagnosticsPlugin;
         // app.add_plugins(LogDiagnosticsPlugin {

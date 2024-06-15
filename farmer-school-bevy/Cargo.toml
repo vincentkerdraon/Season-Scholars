@@ -6,6 +6,8 @@ edition = "2021"
 [dependencies]
 bevy = "0.13.2" 
 rand = "0.8"
+strum = "0.24.1"
+strum_macros = "0.24.3"
 
 [build]
 jobs = 32

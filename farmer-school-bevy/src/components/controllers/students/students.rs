@@ -19,6 +19,7 @@ use crate::{
 };
 use bevy::prelude::*;
 use std::collections::HashMap;
+use strum::IntoEnumIterator;
 
 fn listen_move(
     mut data: ResMut<StudentsData>,
@@ -76,7 +77,9 @@ fn listen_reset(
         ]);
 
         for _ in 0..config.students_init {
-            data.create_student();
+            if data.create_student().is_none() {
+                panic!();
+            }
         }
         let emit = StudentsSeatedEvent {
             students: data.students.values().cloned().collect(),
@@ -225,9 +228,9 @@ struct StudentsData {
 }
 
 impl StudentsData {
-    fn row_has_student(&mut self, col: StudentCol) -> bool {
-        return self.students.iter().any(|(_, student)| student.col != col);
-    }
+    // fn row_has_student(&mut self, col: StudentCol) -> bool {
+    //     return self.students.iter().any(|(_, student)| student.col != col);
+    // }
 
     fn teach(&mut self, col: StudentCol) -> Option<Season> {
         let mut res: Option<Season> = None;
@@ -286,6 +289,9 @@ impl StudentsData {
         if self.students.len() == 9 {
             return None;
         }
+        if self.students.len() == 0 {
+            return Some((StudentCol::Right, 0));
+        }
 
         let mut col_count: HashMap<StudentCol, usize> = HashMap::new();
 
@@ -293,16 +299,72 @@ impl StudentsData {
             *col_count.entry(student.col).or_insert(0) += 1;
         }
 
-        // Find the column with the minimum count
-        let col = col_count
-            .clone()
-            .into_iter()
-            .min_by_key(|&(_, count)| count)
-            .map(|(col, _)| col)
-            .unwrap();
+        let mut min = usize::MAX;
+        let mut col_min = StudentCol::Center;
+        for col in StudentCol::iter() {
+            if let Some(val) = col_count.get(&col) {
+                if *val < min {
+                    min = *val;
+                    col_min = col;
+                }
+            } else {
+                min = 0;
+                col_min = col;
+                break;
+            }
+        }
 
-        let row = col_count.get(&col).unwrap();
+        Some((col_min, (min) as StudentRow))
+    }
+}
 
-        Some((col, *row as StudentRow))
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_student() {
+        let mut data = StudentsData {
+            ..Default::default()
+        };
+
+        fn check_col_row(student: &Student, col: StudentCol, row: StudentRow) {
+            assert_eq!(student.row, row, "Wrong row");
+            assert_eq!(student.col, col, "Wrong col");
+        }
+
+        for i in 1..=10 {
+            let student = data.create_student();
+            if i <= 9 {
+                assert!(
+                    student.is_some(),
+                    "Student should be created when the desk is available."
+                );
+                let student = student.unwrap();
+                assert_eq!(student.id, i, "Student ID should be incremented correctly.");
+                match i {
+                    1 => check_col_row(&student, StudentCol::Right, 0),
+                    2 => check_col_row(&student, StudentCol::Left, 0),
+                    3 => check_col_row(&student, StudentCol::Center, 0),
+                    4 => check_col_row(&student, StudentCol::Left, 1),
+                    5 => check_col_row(&student, StudentCol::Center, 1),
+                    6 => check_col_row(&student, StudentCol::Right, 1),
+                    7 => check_col_row(&student, StudentCol::Left, 2),
+                    8 => check_col_row(&student, StudentCol::Center, 2),
+                    9 => check_col_row(&student, StudentCol::Right, 2),
+                    _ => panic!(),
+                }
+
+                assert!(
+                    data.students.contains_key(&student.id),
+                    "Student should be added to the students HashMap."
+                );
+            } else {
+                assert!(
+                    student.is_none(),
+                    "No student should be created when no desks are available."
+                );
+            }
+        }
     }
 }

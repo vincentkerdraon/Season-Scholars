@@ -11,4 +11,6 @@ pub struct Config {
     pub seasons_duration_s: f64,
     pub portal_opened_nb: i8,
     pub portal_closed_nb: i8,
+    pub students_center_nb: i8,
+    pub students_side_nb: i8,
 }

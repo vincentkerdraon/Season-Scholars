@@ -1,4 +1,6 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+use strum_macros::EnumIter;
+
+#[derive(Debug, EnumIter, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum StudentCol {
     #[default]
     Left = 1,

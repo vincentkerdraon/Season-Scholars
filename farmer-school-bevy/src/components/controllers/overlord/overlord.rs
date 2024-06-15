@@ -195,27 +195,33 @@ pub struct OverlordControllerPlugin;
 
 impl Plugin for OverlordControllerPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(Overlord {
-            screen: Screen::Menu,
-            last_reset_s: 0.,
-            game_started_s: 0.,
-            score: 0,
-            seasons_elapsed: 0,
-            teachers: HashMap::new(),
-        })
-        .add_event::<GameOverEvent>()
-        .add_event::<ResetGameEvent>()
-        .add_event::<DisplayScreenGameOverRecapEvent>()
-        .add_event::<DisplayScreenGameEvent>()
-        .add_event::<DisplayScreenMenuEvent>()
-        .add_event::<InvalidActionStationEvent>()
-        .add_event::<InvalidMoveEvent>()
-        // .add_systems(Startup, start) //FIXME
-        .add_systems(Startup, debug_start_game)
-        .add_systems(PreUpdate, listen_events_game_over)
-        .add_systems(PreUpdate, listen_events_reset)
-        .add_systems(PreUpdate, listen_events_score)
-        .add_systems(PreUpdate, listen_events_menu);
+        let app = app
+            .insert_resource(Overlord {
+                screen: Screen::Menu,
+                last_reset_s: 0.,
+                game_started_s: 0.,
+                score: 0,
+                seasons_elapsed: 0,
+                teachers: HashMap::new(),
+            })
+            .add_event::<GameOverEvent>()
+            .add_event::<ResetGameEvent>()
+            .add_event::<DisplayScreenGameOverRecapEvent>()
+            .add_event::<DisplayScreenGameEvent>()
+            .add_event::<DisplayScreenMenuEvent>()
+            .add_event::<InvalidActionStationEvent>()
+            .add_event::<InvalidMoveEvent>()
+            .add_systems(PreUpdate, listen_events_game_over)
+            .add_systems(PreUpdate, listen_events_reset)
+            .add_systems(PreUpdate, listen_events_score)
+            .add_systems(PreUpdate, listen_events_menu);
+
+        app.add_systems(Startup, start);
+        #[cfg(debug_assertions)]
+        {
+            //override normal start()
+            app.add_systems(Startup, debug_start_game);
+        }
     }
 }
 
