@@ -11,7 +11,7 @@ fn load_resources(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     config: Res<Config>,
-    mut data: ResMut<RoomResources>,
+    mut data: ResMut<RoomData>,
 ) {
     let spring = asset_server.load(config.clone().base_path + "Classroom/ClassroomSpring.png");
     let spring2 = spring.clone();
@@ -51,9 +51,9 @@ fn load_resources(
     data.entity = sprite_entity;
 }
 
-pub fn listen_events(
+fn listen_events(
     mut season_changed_events: EventReader<SeasonChangedEvent>,
-    data: Res<RoomResources>,
+    data: Res<RoomData>,
     mut query: Query<&mut Handle<Image>>,
 ) {
     for e in season_changed_events.read() {
@@ -70,18 +70,18 @@ pub struct RoomViewPlugin;
 impl Plugin for RoomViewPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, listen_events)
-            .insert_resource(RoomResources::new())
+            .insert_resource(RoomData::new())
             .add_systems(Startup, load_resources);
     }
 }
 
 #[derive(Resource)]
-pub struct RoomResources {
+struct RoomData {
     entity: Entity,
     seasons: HashMap<Season, Handle<Image>>,
 }
 
-impl RoomResources {
+impl RoomData {
     pub fn new() -> Self {
         Self {
             entity: Entity::PLACEHOLDER,

@@ -2,14 +2,20 @@
 
 use super::events::*;
 use crate::{
-    components::controllers::{
-        overlord::events::{InvalidActionStationEvent, InvalidMoveEvent},
-        player_input::events::PlayerInputEvent,
-        portal::events::MonsterFedEvent,
-        teacher::events::{MoveTeacherEvent, TeacherMovedEvent},
+    components::{
+        controllers::{
+            overlord::events::{InvalidActionStationEvent, InvalidMoveEvent},
+            player_input::events::PlayerInputEvent,
+            portal::events::MonsterFedEvent,
+            teacher::events::{MoveTeacherEvent, TeacherMovedEvent},
+        },
+        moves::moves::possible_move,
     },
     config::Config,
-    model::{definitions::Teacher, events::*},
+    model::{
+        definitions::{Station, Teacher},
+        events::*,
+    },
 };
 use bevy::prelude::*;
 use std::collections::HashMap;
@@ -26,7 +32,7 @@ pub fn init(config: Res<Config>, mut data: ResMut<Welcome>) {
     data.students_classroom_max = config.clone().students_max;
 }
 
-pub fn listen_events(
+fn listen_events(
     time: Res<Time>,
     config: Res<Config>,
     mut data: ResMut<Welcome>,
@@ -116,33 +122,22 @@ pub fn listen_events(
         }
 
         if e.confirm_move {
-            match e.direction {
-                Vec2 { x: -1.0, y: -1.0 } => {
-                    let emit = MoveTeacherEvent {
-                        station_from: crate::model::definitions::Station::Welcome,
-                        station_to: crate::model::definitions::Station::Portal,
-                        teacher: e.teacher,
-                    };
-                    debug!("{:?}", emit);
-                    move_teacher_events.send(emit);
-                }
-                Vec2 { x: 1.0, y: 0.0 } => {
-                    let emit = MoveTeacherEvent {
-                        station_from: crate::model::definitions::Station::Welcome,
-                        station_to: crate::model::definitions::Station::Kitchen,
-                        teacher: e.teacher,
-                    };
-                    debug!("{:?}", emit);
-                    move_teacher_events.send(emit);
-                }
-                Vec2 { x: _, y: _ } => {
-                    let emit = InvalidMoveEvent {
-                        station: crate::model::definitions::Station::Welcome,
-                        teacher: e.teacher,
-                    };
-                    debug!("{:?}", emit);
-                    invalid_move_events.send(emit);
-                }
+            let from = Station::Welcome;
+            if let Some(to) = possible_move(from, e.direction) {
+                let emit = MoveTeacherEvent {
+                    station_from: from,
+                    station_to: to,
+                    teacher: e.teacher,
+                };
+                debug!("{:?}", emit);
+                move_teacher_events.send(emit);
+            } else {
+                let emit = InvalidMoveEvent {
+                    station: from,
+                    teacher: e.teacher,
+                };
+                debug!("{:?}", emit);
+                invalid_move_events.send(emit);
             }
         }
     }

@@ -1,5 +1,10 @@
 use super::events::*;
-use crate::model::definitions::*;
+use crate::{
+    components::controllers::overlord::events::{
+        DisplayScreenGameEvent, DisplayScreenGameOverRecapEvent, DisplayScreenMenuEvent,
+    },
+    model::definitions::*,
+};
 use bevy::prelude::*;
 
 pub struct PlayerInputControllerPlugin;
@@ -7,11 +12,32 @@ pub struct PlayerInputControllerPlugin;
 impl Plugin for PlayerInputControllerPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<PlayerInputEvent>()
+            .insert_resource(InputData {
+                active_player_a: true,
+                active_player_b: false,
+            })
+            .add_systems(PreUpdate, listen_events)
             .add_systems(PreUpdate, input_system);
     }
 }
 
+fn listen_events(
+    mut data: ResMut<InputData>,
+    mut display_screen_game_events: EventReader<DisplayScreenGameEvent>,
+    mut display_screen_menu_events: EventReader<DisplayScreenMenuEvent>,
+) {
+    if let Some(e) = display_screen_game_events.read().last() {
+        data.active_player_a = e.teachers.contains(&Teacher::A);
+        data.active_player_b = e.teachers.contains(&Teacher::B);
+    }
+    if display_screen_menu_events.read().last().is_some() {
+        data.active_player_a = true;
+        data.active_player_b = true;
+    }
+}
+
 fn input_system(
+    data: Res<InputData>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut input_events: EventWriter<PlayerInputEvent>,
@@ -28,52 +54,56 @@ fn input_system(
         return;
     }
 
-    let keys_to_check = vec![
-        KeyCode::ArrowLeft,
-        KeyCode::ArrowRight,
-        KeyCode::ArrowUp,
-        KeyCode::ArrowDown,
-        KeyCode::ShiftLeft,
-        KeyCode::ControlLeft,
-        KeyCode::AltLeft,
-        KeyCode::ShiftRight,
-        KeyCode::ControlRight,
-        KeyCode::AltRight,
-        KeyCode::Enter,
-    ];
+    if data.active_player_a {
+        let keys_to_check = vec![
+            KeyCode::ArrowLeft,
+            KeyCode::ArrowRight,
+            KeyCode::ArrowUp,
+            KeyCode::ArrowDown,
+            KeyCode::ShiftLeft,
+            KeyCode::ControlLeft,
+            KeyCode::AltLeft,
+            KeyCode::ShiftRight,
+            KeyCode::ControlRight,
+            KeyCode::AltRight,
+            KeyCode::Enter,
+        ];
 
-    if detect_input_changed(&keyboard_input, keys_to_check) {
-        let out = input_player_a(&keyboard_input);
-        debug!("detect_input_changed A {:?}", out);
-        input_events.send(out);
+        if detect_input_changed(&keyboard_input, keys_to_check) {
+            let out = input_player_a(&keyboard_input);
+            trace!("player A {:?}", out);
+            input_events.send(out);
+        }
     }
 
-    let keys_to_check = vec![
-        KeyCode::Numpad8,
-        KeyCode::Numpad4,
-        KeyCode::Numpad2,
-        KeyCode::Numpad6,
-        KeyCode::Numpad0,
-        KeyCode::NumpadSubtract,
-        KeyCode::NumpadAdd,
-        KeyCode::KeyR,
-        KeyCode::KeyD,
-        KeyCode::KeyF,
-        KeyCode::KeyG,
-        KeyCode::KeyQ,
-        KeyCode::KeyA,
-        KeyCode::KeyW,
-        KeyCode::PageUp,
-        KeyCode::PageDown,
-        KeyCode::KeyS,
-        KeyCode::NumpadEnter,
-        //FIXME move confirm
-    ];
+    if data.active_player_b {
+        let keys_to_check = vec![
+            KeyCode::Numpad8,
+            KeyCode::Numpad4,
+            KeyCode::Numpad2,
+            KeyCode::Numpad6,
+            KeyCode::Numpad0,
+            KeyCode::NumpadSubtract,
+            KeyCode::NumpadAdd,
+            KeyCode::KeyR,
+            KeyCode::KeyD,
+            KeyCode::KeyF,
+            KeyCode::KeyG,
+            KeyCode::KeyQ,
+            KeyCode::KeyA,
+            KeyCode::KeyW,
+            KeyCode::PageUp,
+            KeyCode::PageDown,
+            KeyCode::KeyS,
+            KeyCode::NumpadEnter,
+            //FIXME move_confirm in menu
+        ];
 
-    if detect_input_changed(&keyboard_input, keys_to_check) {
-        let out = input_player_b(&keyboard_input);
-        debug!("{:?}", out);
-        input_events.send(out);
+        if detect_input_changed(&keyboard_input, keys_to_check) {
+            let out = input_player_b(&keyboard_input);
+            trace!("player B {:?}", out);
+            input_events.send(out);
+        }
     }
 }
 
@@ -197,4 +227,10 @@ mod tests {
             assert_eq!(event.direction, Vec2::new(0.0, 1.0));
         }
     }
+}
+
+#[derive(Resource)]
+pub struct InputData {
+    active_player_a: bool,
+    active_player_b: bool,
 }

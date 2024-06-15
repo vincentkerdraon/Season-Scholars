@@ -10,7 +10,7 @@ fn load_resources(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     config: Res<Config>,
-    mut data: ResMut<PortalResources>,
+    mut data: ResMut<PortalData>,
 ) {
     data.window_closed = asset_server.load(config.clone().base_path + "Windows/Window1Closed.png");
     data.window_available =
@@ -99,9 +99,9 @@ fn load_resources(
     data.windows.insert(3, e);
 }
 
-pub fn place_window(
+fn place_window(
     commands: &mut Commands,
-    data: &mut PortalResources,
+    data: &mut PortalData,
     pos_x: f32,
     pos_: f32,
     scale_x: f32,
@@ -129,9 +129,9 @@ pub fn place_window(
         .id()
 }
 
-pub fn place_need(
+fn place_need(
     commands: &mut Commands,
-    data: &mut PortalResources,
+    data: &mut PortalData,
     x: f32,
     y: f32,
     scale: f32,
@@ -153,12 +153,12 @@ pub fn place_need(
         })
         .id()
 }
-pub fn listen_events(
+fn listen_events(
     mut portal_observed_events: EventReader<PortalObservedEvent>,
     mut monster_popped_events: EventReader<MonsterPoppedEvent>,
     mut portal_attacked_events: EventReader<PortalAttackedEvent>,
     mut monster_fed_events: EventReader<MonsterFedEvent>,
-    mut data: ResMut<PortalResources>,
+    mut data: ResMut<PortalData>,
     mut query: Query<(&mut Handle<Image>, &mut Visibility)>,
 ) {
     let mut dirty = false;
@@ -215,7 +215,7 @@ pub fn listen_events(
 }
 
 fn display_window(
-    data: &mut PortalResources,
+    data: &mut PortalData,
     query: &mut Query<(&mut Handle<Image>, &mut Visibility)>,
     i: i8,
     revealed: bool,
@@ -254,7 +254,7 @@ fn display_window(
 }
 
 fn display_monster(
-    data: &mut PortalResources,
+    data: &mut PortalData,
     query: &mut Query<(&mut Handle<Image>, &mut Visibility)>,
     revealed: bool,
 ) {
@@ -303,13 +303,13 @@ pub struct PortalViewPlugin;
 impl Plugin for PortalViewPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, listen_events)
-            .insert_resource(PortalResources::new())
+            .insert_resource(PortalData::new())
             .add_systems(Startup, load_resources);
     }
 }
 
 #[derive(Resource)]
-pub struct PortalResources {
+struct PortalData {
     // 0 => current monster ; 1 => next monster
     windows: HashMap<i8, Entity>,
     /// (x=0,y=2) => third need for current monster ; (x=1,y=0) => first need for next waiting monster
@@ -328,7 +328,7 @@ pub struct PortalResources {
     health: i8,
 }
 
-impl PortalResources {
+impl PortalData {
     pub fn new() -> Self {
         Self {
             windows: HashMap::new(),

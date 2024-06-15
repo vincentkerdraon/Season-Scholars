@@ -61,7 +61,9 @@ fn debug_start_game(
     display_screen_game_events.send(emit);
 
     data.screen = Screen::Game;
-    let emit = ResetGameEvent {};
+    let emit = ResetGameEvent {
+        teachers: vec![Teacher::A],
+    };
     debug!("{:?}", emit);
     reset_game_events.send(emit);
 }
@@ -130,7 +132,9 @@ fn listen_events_menu(
 
         if e.long_action && data.teachers.len() > 0 {
             let teachers: Vec<Teacher> = data.teachers.keys().copied().collect();
-            let emit = DisplayScreenGameEvent { teachers: teachers };
+            let emit = DisplayScreenGameEvent {
+                teachers: teachers.clone(),
+            };
             debug!("{:?}", emit);
             display_screen_game_events.send(emit);
 
@@ -138,7 +142,9 @@ fn listen_events_menu(
             data.score = 0;
             data.screen = Screen::Game;
 
-            let emit = ResetGameEvent {};
+            let emit = ResetGameEvent {
+                teachers: teachers.clone(),
+            };
             debug!("{:?}", emit);
             reset_game_events.send(emit);
         }

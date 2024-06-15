@@ -1,15 +1,16 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, utils::HashMap};
 
 use crate::{
     components::controllers::welcome::events::{StudentWelcomedEvent, WelcomeAvailableEvent},
     config::Config,
+    model::definitions::{Station, Teacher},
 };
 
 fn load_resources(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     config: Res<Config>,
-    mut data: ResMut<WelcomeResources>,
+    mut data: ResMut<WelcomeData>,
 ) {
     data.closed = asset_server.load(config.clone().base_path + "Welcome/DoorClosed.png");
     data.opened
@@ -40,10 +41,10 @@ fn load_resources(
         .id();
 }
 
-pub fn listen_events(
+fn listen_events(
     mut welcome_available_events: EventReader<WelcomeAvailableEvent>,
     mut student_welcomed_events: EventReader<StudentWelcomedEvent>,
-    mut data: ResMut<WelcomeResources>,
+    mut data: ResMut<WelcomeData>,
     mut query: Query<&mut Handle<Image>>,
 ) {
     for _ in student_welcomed_events.read() {
@@ -67,20 +68,20 @@ pub struct WelcomeViewPlugin;
 impl Plugin for WelcomeViewPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, listen_events)
-            .insert_resource(WelcomeResources::new())
+            .insert_resource(WelcomeData::new())
             .add_systems(Startup, load_resources);
     }
 }
 
 #[derive(Resource)]
-pub struct WelcomeResources {
+struct WelcomeData {
     door: Entity,
     closed: Handle<Image>,
     opened: Vec<Handle<Image>>,
     opened_last_used_index: usize,
 }
 
-impl WelcomeResources {
+impl WelcomeData {
     pub fn new() -> Self {
         Self {
             door: Entity::PLACEHOLDER,

@@ -1,6 +1,7 @@
 mod config;
 mod model;
 mod components {
+    pub mod moves;
     pub mod controllers {
         pub mod overlord;
         pub mod player_input;
@@ -14,6 +15,7 @@ mod components {
         pub mod portal;
         pub mod recap;
         pub mod room;
+        pub mod teacher;
         pub mod welcome;
     }
 }
@@ -70,6 +72,7 @@ fn main() {
         .add_plugins(components::controllers::portal::portal::PortalControllerPlugin)
         .add_plugins(components::views::room::room::RoomViewPlugin)
         .add_plugins(components::views::welcome::welcome::WelcomeViewPlugin)
+        .add_plugins(components::views::teacher::teacher::TeacherViewPlugin)
         .add_plugins(components::views::menu::menu::MenuViewPlugin)
         .add_plugins(components::views::recap::recap::RecapViewPlugin)
         .add_plugins(components::views::portal::portal::PortalViewPlugin)

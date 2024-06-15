@@ -22,7 +22,7 @@
             },
             "args": [],
             "env": {
-                "RUST_LOG": "info,farmer_school_bevy=debug",
+                "RUST_LOG": "info,farmer_school_bevy=trace",
                 "LD_LIBRARY_PATH": "${workspaceFolder}/target/debug/deps:${workspaceFolder}/target/debug",
             },
             "cwd": "${workspaceFolder}"

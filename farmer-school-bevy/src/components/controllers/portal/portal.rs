@@ -21,7 +21,7 @@ use rand::Rng;
 use std::collections::HashMap;
 
 #[derive(Resource, Default)]
-pub struct Portal {
+pub struct PortalData {
     activated: bool,
     monsters: Vec<Monster>,
     difficulty: i32,
@@ -30,8 +30,8 @@ pub struct Portal {
     teachers_present: HashMap<Teacher, Option<f64>>,
 }
 
-pub fn listen_game_over(
-    mut data: ResMut<Portal>,
+fn listen_game_over(
+    mut data: ResMut<PortalData>,
     mut game_over_events: EventReader<GameOverEvent>,
 ) {
     if game_over_events.read().last().is_none() {
@@ -43,7 +43,7 @@ pub fn listen_game_over(
 
 pub fn monster_attack(
     time: Res<Time>,
-    mut data: ResMut<Portal>,
+    mut data: ResMut<PortalData>,
     mut portal_attacked_events: EventWriter<PortalAttackedEvent>,
     mut game_over_events: EventWriter<GameOverEvent>,
 ) {
@@ -87,9 +87,9 @@ pub fn monster_attack(
     }
 }
 
-pub fn listen_events(
+fn listen_events(
     time: Res<Time>,
-    mut data: ResMut<Portal>,
+    mut data: ResMut<PortalData>,
     mut graduated_events: EventReader<GraduatedEvent>,
     mut teacher_moved_events: EventReader<TeacherMovedEvent>,
     mut monster_fed_events: EventWriter<MonsterFedEvent>,
@@ -138,10 +138,10 @@ pub fn listen_events(
     }
 }
 
-pub fn listen_reset(
+fn listen_reset(
     time: Res<Time>,
     config: Res<Config>,
-    mut data: ResMut<Portal>,
+    mut data: ResMut<PortalData>,
     mut reset_game_events: EventReader<ResetGameEvent>,
     monster_popped_events: EventWriter<MonsterPoppedEvent>,
 ) {
@@ -155,7 +155,7 @@ pub fn listen_reset(
 pub fn reset(
     time: Res<Time>,
     config: Res<Config>,
-    mut data: ResMut<Portal>,
+    mut data: ResMut<PortalData>,
     mut monster_popped_events: EventWriter<MonsterPoppedEvent>,
 ) {
     data.health_max = config.clone().portal_health_max;
@@ -167,9 +167,9 @@ pub fn reset(
     pop_monster(now, &mut data, &mut monster_popped_events);
 }
 
-pub fn listen_events_create_monster(
+fn listen_events_create_monster(
     time: Res<Time>,
-    mut data: ResMut<Portal>,
+    mut data: ResMut<PortalData>,
     mut season_changed_events: EventReader<SeasonChangedEvent>,
     mut monster_popped_events: EventWriter<MonsterPoppedEvent>,
 ) {
@@ -181,9 +181,16 @@ pub fn listen_events_create_monster(
 
 fn pop_monster(
     now: f64,
-    data: &mut Portal,
+    data: &mut PortalData,
     monster_popped_events: &mut EventWriter<MonsterPoppedEvent>,
 ) {
+    // ignore if already too many
+    if data.monsters.len() > 6 {
+        //FIXME keep?
+        debug!("already too many monsters, skipping pop.");
+        return;
+    }
+
     //first should be difficulty=id=1
     data.difficulty = data.difficulty + 1;
     let m = generate_monster(now, data.difficulty);
@@ -296,10 +303,10 @@ fn random_needs(min: i8, max: i8) -> Vec<Season> {
     res
 }
 
-pub fn listen_events_player_input(
+fn listen_events_player_input(
     time: Res<Time>,
     config: Res<Config>,
-    mut data: ResMut<Portal>,
+    mut data: ResMut<PortalData>,
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut portal_observed_events: EventWriter<PortalObservedEvent>,
     mut move_teacher_events: EventWriter<MoveTeacherEvent>,
@@ -409,7 +416,7 @@ impl Plugin for PortalControllerPlugin {
             .add_event::<PortalAttackedEvent>()
             .add_event::<MonsterFedEvent>()
             .add_event::<MonsterPoppedEvent>()
-            .insert_resource(Portal { ..default() })
+            .insert_resource(PortalData { ..default() })
             .add_systems(Startup, reset)
             .add_systems(PreUpdate, listen_events)
             .add_systems(PreUpdate, listen_events_create_monster)

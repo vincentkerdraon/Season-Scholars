@@ -3,7 +3,9 @@ use bevy::prelude::*;
 
 ///Start from zero
 #[derive(Event, Debug)]
-pub struct ResetGameEvent {}
+pub struct ResetGameEvent {
+    pub teachers: Vec<Teacher>,
+}
 
 #[derive(Event, Debug)]
 pub struct GameOverEvent {

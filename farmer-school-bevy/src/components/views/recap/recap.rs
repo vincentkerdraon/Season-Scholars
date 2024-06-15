@@ -7,7 +7,7 @@ use crate::components::controllers::overlord::events::{
 const INSTRUCTION: &str = "press \"reset\" to reach menu";
 const TITLE: &str = "Season Scholars";
 
-fn load_resources(mut commands: Commands, mut data: ResMut<RecapResources>) {
+fn load_resources(mut commands: Commands, mut data: ResMut<RecapData>) {
     data.background = commands
         .spawn(NodeBundle {
             style: Style {
@@ -95,8 +95,8 @@ fn load_resources(mut commands: Commands, mut data: ResMut<RecapResources>) {
         .id();
 }
 
-pub fn listen_events(
-    mut data: ResMut<RecapResources>,
+fn listen_events(
+    mut data: ResMut<RecapData>,
     mut display_screen_menu_events: EventReader<DisplayScreenMenuEvent>,
     mut display_screen_game_events: EventReader<DisplayScreenGameEvent>,
     mut display_screen_game_over_recap_events: EventReader<DisplayScreenGameOverRecapEvent>,
@@ -166,14 +166,14 @@ pub struct RecapViewPlugin;
 
 impl Plugin for RecapViewPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(RecapResources::new())
+        app.insert_resource(RecapData::new())
             .add_systems(PreUpdate, listen_events)
             .add_systems(Startup, load_resources);
     }
 }
 
 #[derive(Resource)]
-pub struct RecapResources {
+struct RecapData {
     title: Entity,
     recap: Entity,
     instructions: Entity,
@@ -183,7 +183,7 @@ pub struct RecapResources {
     event_data: DisplayScreenGameOverRecapEvent,
 }
 
-impl RecapResources {
+impl RecapData {
     pub fn new() -> Self {
         Self {
             title: Entity::PLACEHOLDER,

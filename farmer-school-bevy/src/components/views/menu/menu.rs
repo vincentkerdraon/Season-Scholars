@@ -30,7 +30,7 @@ fn load_resources(
     config: Res<Config>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut data: ResMut<MenuResources>,
+    mut data: ResMut<MenuData>,
 ) {
     data.background = commands
         .spawn(NodeBundle {
@@ -204,9 +204,9 @@ fn load_resources(
         .id();
 }
 
-pub fn listen_events(
+fn listen_events(
     time: Res<Time>,
-    mut data: ResMut<MenuResources>,
+    mut data: ResMut<MenuData>,
     mut display_screen_menu_events: EventReader<DisplayScreenMenuEvent>,
     mut display_screen_game_events: EventReader<DisplayScreenGameEvent>,
     mut display_screen_game_over_recap_events: EventReader<DisplayScreenGameOverRecapEvent>,
@@ -329,14 +329,14 @@ pub struct MenuViewPlugin;
 
 impl Plugin for MenuViewPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(MenuResources::new())
+        app.insert_resource(MenuData::new())
             .add_systems(PreUpdate, listen_events)
             .add_systems(Startup, load_resources);
     }
 }
 
 #[derive(Resource)]
-pub struct MenuResources {
+struct MenuData {
     title: Entity,
     explain: Entity,
     input_arcade: Entity,
@@ -352,7 +352,7 @@ pub struct MenuResources {
     teachers: HashMap<Teacher, bool>,
 }
 
-impl MenuResources {
+impl MenuData {
     pub fn new() -> Self {
         Self {
             title: Entity::PLACEHOLDER,

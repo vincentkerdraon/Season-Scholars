@@ -54,3 +54,10 @@ pub enum Screen {
     Game,
     GameOverRecap,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Reaction {
+    Long = 1,
+    Short,
+    Fail,
+}

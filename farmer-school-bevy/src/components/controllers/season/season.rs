@@ -67,7 +67,7 @@ pub fn season_startup_system(mut commands: Commands, config: Res<Config>) {
     commands.spawn(SeasonTimer::new(config.clone().seasons_duration_s));
 }
 
-pub fn listen_reset(
+fn listen_reset(
     mut q: Query<(Entity, &mut SeasonTimer)>,
     mut reset_game_events: EventReader<ResetGameEvent>,
 ) {
@@ -99,7 +99,7 @@ pub fn season_timer_system(
     }
 }
 
-pub fn listen_game_over(
+fn listen_game_over(
     mut q: Query<(Entity, &mut SeasonTimer)>,
     mut game_over_events: EventReader<GameOverEvent>,
 ) {
