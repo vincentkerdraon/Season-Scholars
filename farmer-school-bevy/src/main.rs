@@ -40,7 +40,7 @@ fn main() {
         long_action_s: 5.0,  //FIXME
         short_action_s: 2.0, //FIXME
         portal_health_max: 10,
-        seasons_duration_s: 10.,
+        seasons_duration_s: 20.,
         portal_opened_nb: 5,
         portal_closed_nb: 10,
     })
@@ -51,7 +51,7 @@ fn main() {
                 primary_window: Some(Window {
                     title: "Season Scholars".to_string(),
                     resolution: WindowResolution::new(1920., 1080.),
-                    resizable: false,
+                    resizable: true,
                     cursor: Cursor {
                         // visible: false, //FIXME
                         ..default()
@@ -140,7 +140,7 @@ fn screen_to_world(
     screen_position: Vec2,
 ) -> Option<Vec2> {
     let window_size = Vec2::new(window.width() as f32, window.height() as f32);
-    let ndc = (screen_position / window_size) * 2.0 - Vec2::ONE; // normalize coordinates to range [-1, 1]
+    let ndc = (screen_position / window_size) * 2.0 - Vec2::ONE;
     let ndc_to_world = camera_transform.compute_matrix() * camera.projection_matrix().inverse();
     let world_position = ndc_to_world.project_point3(ndc.extend(-1.0));
     Some(world_position.truncate())

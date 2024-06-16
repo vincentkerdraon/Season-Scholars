@@ -1,5 +1,3 @@
-// src/components/Portal.rs
-
 use super::events::*;
 use crate::{
     components::{
@@ -68,14 +66,16 @@ fn listen_reset(
     mut reset_game_events: EventReader<ResetGameEvent>,
     mut students_seated_events: EventWriter<StudentsSeatedEvent>,
 ) {
-    if reset_game_events.read().next().is_some() {
+    if reset_game_events.read().last().is_some() {
         data.activated = true;
         data.teacher_busy = TeacherBusy::new(vec![
+            //FIXME
             Station::StudentLeft,
             Station::StudentCenter,
             Station::StudentRight,
         ]);
 
+        data.reset();
         for _ in 0..config.students_init {
             if data.create_student().is_none() {
                 panic!();
@@ -113,6 +113,10 @@ fn listen_events_player_input(
 ) {
     let now = time.elapsed_seconds_f64();
     for e in player_input_events.read() {
+        if !data.activated {
+            continue;
+        }
+
         if data.teacher_busy.ready(e.teacher, now) != (true, true) {
             continue;
         }
@@ -178,10 +182,9 @@ fn listen_events_player_input(
         }
 
         if e.confirm_move {
-            let from = Station::Welcome;
-            if let Some(to) = possible_move(from, e.direction) {
+            if let Some(to) = possible_move(station, e.direction) {
                 let emit = MoveTeacherEvent {
-                    station_from: from,
+                    station_from: station,
                     station_to: to,
                     teacher: e.teacher,
                 };
@@ -189,7 +192,7 @@ fn listen_events_player_input(
                 move_teacher_events.send(emit);
             } else {
                 let emit = InvalidMoveEvent {
-                    station: from,
+                    station: station,
                     teacher: e.teacher,
                 };
                 debug!("{:?}", emit);
@@ -209,12 +212,12 @@ impl Plugin for StudentsControllerPlugin {
             .add_event::<TaughtEvent>()
             .add_event::<StudentsSeatedEvent>()
             .insert_resource(StudentsData { ..default() })
-            .add_systems(Startup, listen_move)
-            .add_systems(Startup, listen_game_over)
-            .add_systems(Startup, listen_welcomed)
-            .add_systems(Startup, listen_events_player_input)
-            .add_systems(Startup, listen_season)
-            .add_systems(Startup, listen_reset);
+            .add_systems(Update, listen_move)
+            .add_systems(Update, listen_game_over)
+            .add_systems(Update, listen_welcomed)
+            .add_systems(Update, listen_events_player_input)
+            .add_systems(Update, listen_season)
+            .add_systems(Update, listen_reset);
     }
 }
 
@@ -231,6 +234,10 @@ impl StudentsData {
     // fn row_has_student(&mut self, col: StudentCol) -> bool {
     //     return self.students.iter().any(|(_, student)| student.col != col);
     // }
+
+    fn reset(&mut self) {
+        self.students.clear();
+    }
 
     fn teach(&mut self, col: StudentCol) -> Option<Season> {
         let mut res: Option<Season> = None;

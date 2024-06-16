@@ -9,9 +9,7 @@ pub struct ResetGameEvent {
 
 #[derive(Event, Debug)]
 pub struct GameOverEvent {
-    // pub score: i32,
     pub reason: String,
-    // pub time_since_start_ms: i64,
 }
 
 #[derive(Event, Debug, Default, Clone)]

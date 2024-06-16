@@ -1,5 +1,3 @@
-// src/components/Portal.rs
-
 use super::events::*;
 use crate::components::moves::moves::possible_move;
 use crate::{
@@ -359,7 +357,7 @@ fn listen_events_player_input(
         }
 
         if e.confirm_move {
-            let from = Station::Welcome;
+            let from = Station::Portal;
             if let Some(to) = possible_move(from, e.direction) {
                 let emit = MoveTeacherEvent {
                     station_from: from,

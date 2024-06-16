@@ -42,13 +42,14 @@ impl TeacherBusy {
         false
     }
 
+    /// returns (present_at_station, not_busy)
     pub fn ready(&mut self, t: Teacher, now: f64) -> (bool, bool) {
         if self.here.len() == 0 {
             panic!();
         }
         if let Some(d) = self.teachers.get(&t) {
             if let Some((_, until)) = d {
-                if *until < now {
+                if *until > now {
                     return (true, false);
                 }
                 return (true, true);

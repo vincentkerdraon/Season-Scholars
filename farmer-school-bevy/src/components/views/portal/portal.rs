@@ -49,7 +49,7 @@ fn load_resources(
                 translation: Vec3 {
                     x: -340.0,
                     y: 310.0,
-                    z: 50.0,
+                    z: 5.0,
                 },
                 scale: Vec3 {
                     x: 0.40,
@@ -154,67 +154,6 @@ fn place_need(
         })
         .id()
 }
-fn listen_events(
-    mut portal_observed_events: EventReader<PortalObservedEvent>,
-    mut monster_popped_events: EventReader<MonsterPoppedEvent>,
-    mut portal_attacked_events: EventReader<PortalAttackedEvent>,
-    mut monster_fed_events: EventReader<MonsterFedEvent>,
-    mut data: ResMut<PortalData>,
-    mut query: Query<(&mut Handle<Image>, &mut Visibility)>,
-) {
-    let mut dirty = false;
-    let mut monsters: Vec<Monster> = Vec::new();
-    let mut health: i8 = 0;
-
-    if let Some(e) = monster_popped_events.read().last() {
-        monsters = e.monsters.clone();
-        dirty = true;
-    }
-
-    if let Some(e) = portal_attacked_events.read().last() {
-        health = e.health;
-        monsters = e.monsters.clone();
-        dirty = true;
-    }
-
-    if let Some(e) = monster_fed_events.read().last() {
-        monsters = e.monsters.clone();
-        dirty = true;
-    }
-
-    if let Some(e) = portal_observed_events.read().last() {
-        health = e.health;
-        monsters = e.monsters.clone();
-        dirty = true;
-    }
-
-    if !dirty {
-        return;
-    }
-
-    for i in 0..=3 {
-        let monster_new = monsters.get(i);
-        let monster_old = data.monsters.get(i);
-
-        if should_redraw_monster(monster_new, monster_old) {
-            let mut needs = Vec::new();
-            let mut revealed = false;
-            if let Some(new) = monster_new {
-                needs = new.needs.clone();
-                revealed = new.revealed;
-            }
-            display_window(&mut data, &mut query, i as i8, revealed, needs);
-
-            if i == 0 {
-                display_monster(&mut data, &mut query, revealed);
-            }
-        }
-    }
-
-    data.monsters = monsters;
-    data.health = health;
-}
-
 fn display_window(
     data: &mut PortalData,
     query: &mut Query<(&mut Handle<Image>, &mut Visibility)>,
@@ -299,6 +238,67 @@ fn should_redraw_monster(monster_new: Option<&Monster>, monster_old: Option<&Mon
     false
 }
 
+fn listen_events(
+    mut portal_observed_events: EventReader<PortalObservedEvent>,
+    mut monster_popped_events: EventReader<MonsterPoppedEvent>,
+    mut portal_attacked_events: EventReader<PortalAttackedEvent>,
+    mut monster_fed_events: EventReader<MonsterFedEvent>,
+    mut data: ResMut<PortalData>,
+    mut query: Query<(&mut Handle<Image>, &mut Visibility)>,
+) {
+    let mut dirty = false;
+    let mut monsters: Vec<Monster> = Vec::new();
+    let mut health: i8 = 0;
+
+    if let Some(e) = monster_popped_events.read().last() {
+        monsters = e.monsters.clone();
+        dirty = true;
+    }
+
+    if let Some(e) = portal_attacked_events.read().last() {
+        health = e.health;
+        monsters = e.monsters.clone();
+        dirty = true;
+    }
+
+    if let Some(e) = monster_fed_events.read().last() {
+        monsters = e.monsters.clone();
+        dirty = true;
+    }
+
+    if let Some(e) = portal_observed_events.read().last() {
+        health = e.health;
+        monsters = e.monsters.clone();
+        dirty = true;
+    }
+
+    if !dirty {
+        return;
+    }
+
+    for i in 0..=3 {
+        let monster_new = monsters.get(i);
+        let monster_old = data.monsters.get(i);
+
+        if should_redraw_monster(monster_new, monster_old) {
+            let mut needs = Vec::new();
+            let mut revealed = false;
+            if let Some(new) = monster_new {
+                needs = new.needs.clone();
+                revealed = new.revealed;
+            }
+            display_window(&mut data, &mut query, i as i8, revealed, needs);
+
+            if i == 0 {
+                display_monster(&mut data, &mut query, revealed);
+            }
+        }
+    }
+
+    data.monsters = monsters;
+    data.health = health;
+}
+
 pub struct PortalViewPlugin;
 
 impl Plugin for PortalViewPlugin {
@@ -311,7 +311,7 @@ impl Plugin for PortalViewPlugin {
 
 #[derive(Resource)]
 struct PortalData {
-    // 0 => current monster ; 1 => next monster
+    /// 0 => current monster ; 1 => next monster
     windows: HashMap<i8, Entity>,
     /// (x=0,y=2) => third need for current monster ; (x=1,y=0) => first need for next waiting monster
     needs: HashMap<(i8, i8), Entity>,

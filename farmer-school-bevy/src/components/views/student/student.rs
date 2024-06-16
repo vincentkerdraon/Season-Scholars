@@ -320,13 +320,7 @@ struct StudentData {
 
 impl StudentData {
     fn new() -> Self {
-        Self {
-            // door: Entity::PLACEHOLDER,
-            // opened: Vec::new(),
-            // closed: Handle::default(),
-            // opened_last_used_index: 0,
-            ..default()
-        }
+        Self { ..default() }
     }
 
     fn refresh(&mut self, students: &Vec<Student>) {
@@ -393,17 +387,6 @@ impl StudentData {
 
     // fn graduate(&mut self, id: StudentId) {
     //     self.mapping.remove(&id);
-    // }
-
-    // fn get_student_center(&mut self, index: usize) -> Option<&Handle<Image>> {
-    //     self.opened_last_used_index = self.opened_last_used_index + 1;
-    //     if self.opened_last_used_index == self.opened.len() {
-    //         self.opened_last_used_index = 0;
-    //     }
-    //     self.opened.get(self.opened_last_used_index)
-    // }
-    // fn _get_opened(&self, index: usize) -> Option<&Handle<Image>> {
-    //     self.opened.get(index)
     // }
 }
 

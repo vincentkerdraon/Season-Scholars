@@ -29,18 +29,6 @@ pub enum Season {
     Winter,
 }
 
-// pub enum Direction {
-//     None = 0,
-//     Up = 1,
-//     Right = 2,
-//     Down = 4,
-//     Left = 8,
-//     UpRight = 3,
-//     RightDown = 6,
-//     DownLeft = 12,
-//     LeftUp = 9,
-// }
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum Teacher {
     #[default]

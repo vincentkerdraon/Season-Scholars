@@ -20,7 +20,7 @@ pub fn possible_move(from: Station, direction: Vec2) -> Option<Station> {
             Vec2 { x: _, y: _ } => None,
         },
         Station::StudentLeft => match direction {
-            Vec2 { x: 1.0, y: -1.0 } => Some(Station::Portal),
+            Vec2 { x: -1.0, y: 1.0 } => Some(Station::Portal),
             Vec2 { x: 1.0, y: 0.0 } => Some(Station::StudentCenter),
             Vec2 { x: _, y: _ } => None,
         },

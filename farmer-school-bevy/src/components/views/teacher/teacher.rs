@@ -64,8 +64,8 @@ fn load_resources(
     let e = place_teacher(
         &mut commands,
         teacher_a_teaching.clone(),
-        (450., 400., 10.),
-        (-0.18, 0.18),
+        (450., 380., 10.),
+        (-0.15, 0.15),
     );
     data.teachers.insert(Station::Welcome, e);
     let e = place_teacher(
@@ -78,22 +78,22 @@ fn load_resources(
     let e = place_teacher(
         &mut commands,
         teacher_a_teaching.clone(),
-        (550., -230., 50.),
-        (0.4, 0.4),
+        (500., -230., 50.),
+        (-0.4, 0.4),
     );
     data.teachers.insert(Station::StudentCenter, e);
     let e = place_teacher(
         &mut commands,
         teacher_a_teaching.clone(),
-        (460., -230., 50.),
+        (65., -230., 50.),
         (-0.4, 0.4),
     );
     data.teachers.insert(Station::StudentLeft, e);
     let e = place_teacher(
         &mut commands,
         teacher_a_protecting,
-        (-460., 330., 10.),
-        (0.4, 0.4),
+        (-220., 260., 12.),
+        (0.38, 0.38),
     );
     data.teachers.insert(Station::Portal, e);
 
@@ -203,7 +203,7 @@ fn place_reaction(
         .id()
 }
 
-fn listen_teacher_move(
+fn listen_teacher_moved(
     mut teacher_moved_events: EventReader<TeacherMovedEvent>,
     mut data: ResMut<TeacherData>,
 ) {
@@ -213,19 +213,20 @@ fn listen_teacher_move(
 }
 
 fn listen_player_input(
-    time: Res<Time>,
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut data: ResMut<TeacherData>,
 ) {
-    let now = time.elapsed_seconds_f64();
-    let display_path_duration_s = data.display_path_duration_s;
     let mut dirty = false;
 
     for e in player_input_events.read() {
         if e.confirm_move {
             continue;
         }
-        if e.direction == Vec2::ZERO {
+
+        let direction_last = data.direction_last;
+        data.direction_last = e.direction;
+        if e.direction == Vec2::ZERO || e.direction != direction_last {
+            //cleanup all path preview
             data.dirty = true;
             data.display_path_until
                 .iter_mut()
@@ -242,15 +243,12 @@ fn listen_player_input(
         if let Some(to) = possible_move(from, e.direction) {
             //don't override the reference if it already exists
             if let Some((until, _)) = data.display_path_until.get_mut(&(e.teacher, from, to)) {
-                *until = now + display_path_duration_s;
+                *until = f64::MAX;
                 continue;
             }
-
             dirty = true;
-            data.display_path_until.insert(
-                (e.teacher, from, to),
-                (now + display_path_duration_s, Entity::PLACEHOLDER),
-            );
+            data.display_path_until
+                .insert((e.teacher, from, to), (f64::MAX, Entity::PLACEHOLDER));
         } else {
             //for now, nothing when pointing toward the wrong direction.
             //We could display something here, or see also InvalidMoveEvent
@@ -401,7 +399,7 @@ impl Plugin for TeacherViewPlugin {
             .insert_resource(TeacherData::new())
             .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, listen_reset)
-            .add_systems(PreUpdate, listen_teacher_move)
+            .add_systems(PreUpdate, listen_teacher_moved)
             .add_systems(PreUpdate, listen_reactions)
             .add_systems(Update, draw)
             .add_systems(Startup, load_resources);
@@ -417,13 +415,13 @@ struct TeacherData {
     teachers_moved: Vec<(Teacher, Option<Station>, Option<Station>)>,
     activated: bool,
     dirty: bool,
+    direction_last: Vec2,
     frame: Wrapping<i8>,
     display_reaction_until: HashMap<(Teacher, Station, Reaction), (f64, Entity)>,
     display_path_until: HashMap<(Teacher, Station, Station), (f64, Entity)>,
     display_reaction_short_duration_s: f64,
     display_reaction_long_duration_s: f64,
     display_reaction_fail_duration_s: f64,
-    display_path_duration_s: f64,
 }
 
 impl TeacherData {
@@ -436,13 +434,13 @@ impl TeacherData {
             teachers_moved: Vec::new(),
             activated: false,
             dirty: false,
+            direction_last: Vec2::ZERO,
             frame: Wrapping(0),
             display_reaction_until: HashMap::new(),
             display_path_until: HashMap::new(),
             display_reaction_fail_duration_s: 1.0,
             display_reaction_short_duration_s: 2.0,
             display_reaction_long_duration_s: 5.0,
-            display_path_duration_s: 1.0,
         }
     }
 

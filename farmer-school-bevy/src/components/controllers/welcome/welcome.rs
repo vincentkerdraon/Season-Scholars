@@ -1,5 +1,3 @@
-// src/components/welcome.rs
-
 use super::events::*;
 use crate::{
     components::{
@@ -49,13 +47,13 @@ fn listen_events(
     mut invalid_action_station_events: EventWriter<InvalidActionStationEvent>,
     mut invalid_move_events: EventWriter<InvalidMoveEvent>,
 ) {
-    for _ in graduated_events.read() {
-        data.students_classroom_nb = data.students_classroom_nb - 1;
+    for e in graduated_events.read() {
+        data.students_classroom_nb = e.students.len();
     }
 
     for _ in student_welcomed_events.read() {
         data.available = false;
-        data.students_classroom_nb = data.students_classroom_nb + 1;
+        data.students_classroom_nb += 1;
     }
 
     let mut should_accept = false;

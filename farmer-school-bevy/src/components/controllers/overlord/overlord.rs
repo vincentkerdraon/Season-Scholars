@@ -216,7 +216,7 @@ impl Plugin for OverlordControllerPlugin {
             .add_systems(PreUpdate, listen_events_score)
             .add_systems(PreUpdate, listen_events_menu);
 
-        app.add_systems(Startup, start);
+        // app.add_systems(Startup, start); //FIXME
         #[cfg(debug_assertions)]
         {
             //override normal start()

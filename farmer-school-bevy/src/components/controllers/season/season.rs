@@ -14,7 +14,6 @@ impl SeasonTimer {
             seasons_duration: seasons_duration,
             current_season: Season::Spring,
             seasons_elapsed: 0,
-            // timer: Timer::new(Duration::from_secs(5), TimerMode::Repeating),
             timer: Timer::new(
                 Duration::from_secs_f64(seasons_duration),
                 TimerMode::Repeating,
