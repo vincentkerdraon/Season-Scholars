@@ -35,14 +35,17 @@ fn main() {
         base_path: "/home/korrident/Documents/farmer-school/images/ready/".to_string(),
         students_max: 9,
         students_init: 6,
-        students_center_nb: 5,
-        students_side_nb: 6,
+        students_rows_nb: 3,
+        students_img_center_nb: 5,
+        students_img_side_nb: 6,
         long_action_s: 5.0,  //FIXME
         short_action_s: 2.0, //FIXME
-        portal_health_max: 10,
         seasons_duration_s: 20.,
+        portal_health_max: 10,
         portal_opened_nb: 5,
         portal_closed_nb: 10,
+        portal_windows_nb: 4,
+        portal_windows_seasons_nb: 3,
     })
     .add_plugins(
         DefaultPlugins

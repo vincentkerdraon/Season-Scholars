@@ -18,7 +18,7 @@ fn load_resources(
     mut data: ResMut<StudentData>,
 ) {
     //images name start at 1
-    for i in 1..=config.clone().students_center_nb {
+    for i in 1..=config.clone().students_img_center_nb {
         let path_with_desk_full = format!("{}Students/c{}.png", config.clone().base_path, i);
         let path_with_desk_empty = format!("{}Students/c{}_empty.png", config.clone().base_path, i);
         data.students_center.push((
@@ -28,7 +28,7 @@ fn load_resources(
     }
 
     //images name start at 1
-    for i in 1..=config.clone().students_center_nb {
+    for i in 1..=config.clone().students_img_center_nb {
         let path_with_desk_full = format!("{}Students/s{}.png", config.clone().base_path, i);
         let path_with_desk_empty = format!("{}Students/s{}_empty.png", config.clone().base_path, i);
         data.students_side.push((
@@ -219,7 +219,11 @@ fn listen_events(
     }
 }
 
-fn draw(mut data: ResMut<StudentData>, mut query: Query<(&mut Handle<Image>, &mut Visibility)>) {
+fn draw(
+    config: Res<Config>,
+    mut data: ResMut<StudentData>,
+    mut query: Query<(&mut Handle<Image>, &mut Visibility)>,
+) {
     if !data.dirty {
         return;
     }
@@ -230,7 +234,7 @@ fn draw(mut data: ResMut<StudentData>, mut query: Query<(&mut Handle<Image>, &mu
         if col == StudentCol::Center {
             texture_empty = data.desk_free_center.clone();
         }
-        for row in 0..=2 {
+        for row in 0..config.students_rows_nb {
             let e = *data.desks.get(&(col, row)).unwrap();
             if let Ok((mut texture_handle, _)) = query.get_mut(e) {
                 //now we have the image ref for this {row;col}, let's find the texture
@@ -272,7 +276,7 @@ fn draw(mut data: ResMut<StudentData>, mut query: Query<(&mut Handle<Image>, &mu
             if student.col != col || student.row != 0 {
                 continue;
             }
-            for i in 0..=2 {
+            for i in 0..config.students_rows_nb {
                 let e = *data.knowledge.get(&(col, i)).unwrap();
                 let (mut texture_handle, mut visibility) = query.get_mut(e).unwrap();
                 if let Some(s) = student.knowledge.get(i as usize) {

@@ -67,6 +67,7 @@ fn listen_reset(
     mut students_seated_events: EventWriter<StudentsSeatedEvent>,
 ) {
     if reset_game_events.read().last().is_some() {
+        data.students_rows_nb = config.students_rows_nb;
         data.activated = true;
         data.teacher_busy = TeacherBusy::new(vec![
             //FIXME
@@ -223,6 +224,7 @@ impl Plugin for StudentsControllerPlugin {
 
 #[derive(Resource, Default)]
 struct StudentsData {
+    students_rows_nb: i8,
     students: HashMap<StudentId, Student>,
     last_id: i64,
     activated: bool,
@@ -259,7 +261,7 @@ impl StudentsData {
         //move all others students in the col toward the front
 
         let mut res: Option<Student> = None;
-        for i in 0..=2 {
+        for i in 0..=self.students_rows_nb {
             self.students.iter_mut().for_each(|(_, student)| {
                 if student.col != col {
                     return;

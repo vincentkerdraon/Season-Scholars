@@ -155,6 +155,7 @@ fn place_need(
         .id()
 }
 fn display_window(
+    config: &Config,
     data: &mut PortalData,
     query: &mut Query<(&mut Handle<Image>, &mut Visibility)>,
     i: i8,
@@ -178,7 +179,7 @@ fn display_window(
         }
     }
 
-    for j in 0..=2 {
+    for j in 0..config.portal_windows_seasons_nb {
         if let Ok((mut texture_handle, mut visibility)) =
             query.get_mut(*data.needs.get(&(i, j)).unwrap())
         {
@@ -239,12 +240,13 @@ fn should_redraw_monster(monster_new: Option<&Monster>, monster_old: Option<&Mon
 }
 
 fn listen_events(
+    config: Res<Config>,
+    mut data: ResMut<PortalData>,
+    mut query: Query<(&mut Handle<Image>, &mut Visibility)>,
     mut portal_observed_events: EventReader<PortalObservedEvent>,
     mut monster_popped_events: EventReader<MonsterPoppedEvent>,
     mut portal_attacked_events: EventReader<PortalAttackedEvent>,
     mut monster_fed_events: EventReader<MonsterFedEvent>,
-    mut data: ResMut<PortalData>,
-    mut query: Query<(&mut Handle<Image>, &mut Visibility)>,
 ) {
     let mut dirty = false;
     let mut monsters: Vec<Monster> = Vec::new();
@@ -276,9 +278,9 @@ fn listen_events(
         return;
     }
 
-    for i in 0..=3 {
-        let monster_new = monsters.get(i);
-        let monster_old = data.monsters.get(i);
+    for i in 0..config.portal_windows_nb {
+        let monster_new = monsters.get(i as usize);
+        let monster_old = data.monsters.get(i as usize);
 
         if should_redraw_monster(monster_new, monster_old) {
             let mut needs = Vec::new();
@@ -287,7 +289,7 @@ fn listen_events(
                 needs = new.needs.clone();
                 revealed = new.revealed;
             }
-            display_window(&mut data, &mut query, i as i8, revealed, needs);
+            display_window(&config, &mut data, &mut query, i as i8, revealed, needs);
 
             if i == 0 {
                 display_monster(&mut data, &mut query, revealed);

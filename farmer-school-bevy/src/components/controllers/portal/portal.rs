@@ -280,15 +280,7 @@ fn random_needs(min: i8, max: i8) -> Vec<Season> {
 
     // Add random seasons to the result
     for _ in 0..n {
-        let s = rng.gen_range(1..=4);
-        let season = match s {
-            1 => Season::Spring,
-            2 => Season::Summer,
-            3 => Season::Autumn,
-            4 => Season::Winter,
-            _ => unreachable!(),
-        };
-        res.push(season);
+        res.push(Season::rand());
     }
     res
 }
