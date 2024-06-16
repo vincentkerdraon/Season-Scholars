@@ -36,6 +36,8 @@ fn load_resources(
         .load(config.clone().base_path + "Teacher/TeacherA/TeacherATeachingWelcoming.png");
     let teacher_a_protecting =
         asset_server.load(config.clone().base_path + "Teacher/TeacherA/teacherAProtecting.png");
+    let teacher_a_cooking =
+        asset_server.load(config.clone().base_path + "Cooking/cookingWithTeacher.png");
     //FIXME
     // let teacher_a_watch =
     //     asset_server.load(config.clone().base_path + "Teacher/TeacherA/teacherAWatch.png");
@@ -96,6 +98,13 @@ fn load_resources(
         (0.38, 0.38),
     );
     data.teachers.insert(Station::Portal, e);
+    let e = place_teacher(
+        &mut commands,
+        teacher_a_cooking,
+        (770., 350., 12.),
+        (0.25, 0.25),
+    );
+    data.teachers.insert(Station::Kitchen, e);
 
     let e = place_path(&mut commands, path_left_center, 78., -300., 1.);
     insert_data_path(&mut data, Station::StudentLeft, Station::StudentCenter, e);
@@ -236,6 +245,9 @@ fn listen_player_input(
                         dirty = true;
                     }
                 });
+        }
+
+        if e.direction == Vec2::ZERO {
             continue;
         }
 

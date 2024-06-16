@@ -70,7 +70,6 @@ fn listen_reset(
         data.students_rows_nb = config.students_rows_nb;
         data.activated = true;
         data.teacher_busy = TeacherBusy::new(vec![
-            //FIXME
             Station::StudentLeft,
             Station::StudentCenter,
             Station::StudentRight,

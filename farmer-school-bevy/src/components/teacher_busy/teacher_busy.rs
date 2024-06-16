@@ -21,7 +21,7 @@ impl TeacherBusy {
         if self.here.len() == 0 {
             panic!();
         }
-        if !self.here.contains(&e.station_from) {
+        if self.here.contains(&e.station_from) {
             self.teachers.remove(&e.teacher);
         }
         if self.here.contains(&e.station_to) {

@@ -14,7 +14,7 @@ fn load_resources(
     mut data: ResMut<RoomData>,
 ) {
     let spring = asset_server.load(config.clone().base_path + "Classroom/ClassroomSpring.png");
-    let spring2 = spring.clone();
+    let spring2 = spring.clone(); //FIXME
 
     data.seasons.insert(Season::Autumn, spring);
     data.seasons.insert(

@@ -11,15 +11,7 @@ mod components {
         pub mod teacher;
         pub mod welcome;
     }
-    pub mod views {
-        pub mod menu;
-        pub mod portal;
-        pub mod recap;
-        pub mod room;
-        pub mod student;
-        pub mod teacher;
-        pub mod welcome;
-    }
+    pub mod views;
 }
 
 use bevy::{
@@ -71,13 +63,14 @@ fn main() {
     .add_plugins(components::controllers::player_input::player_input::PlayerInputControllerPlugin)
     .add_plugins(components::controllers::portal::portal::PortalControllerPlugin)
     .add_plugins(components::controllers::students::students::StudentsControllerPlugin)
-    .add_plugins(components::views::room::room::RoomViewPlugin)
-    .add_plugins(components::views::welcome::welcome::WelcomeViewPlugin)
-    .add_plugins(components::views::teacher::teacher::TeacherViewPlugin)
-    .add_plugins(components::views::menu::menu::MenuViewPlugin)
-    .add_plugins(components::views::recap::recap::RecapViewPlugin)
-    .add_plugins(components::views::portal::portal::PortalViewPlugin)
-    .add_plugins(components::views::student::student::StudentViewPlugin)
+    .add_plugins(components::views::room::RoomViewPlugin)
+    .add_plugins(components::views::welcome::WelcomeViewPlugin)
+    .add_plugins(components::views::teacher::TeacherViewPlugin)
+    .add_plugins(components::views::menu::MenuViewPlugin)
+    .add_plugins(components::views::recap::RecapViewPlugin)
+    .add_plugins(components::views::portal::PortalViewPlugin)
+    .add_plugins(components::views::student::StudentViewPlugin)
+    .add_plugins(components::views::kitchen::KitchenViewPlugin)
     .add_systems(Startup, setup);
 
     #[cfg(debug_assertions)]

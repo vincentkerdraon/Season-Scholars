@@ -63,63 +63,61 @@ fn load_resources(
         })
         .id();
 
-    let e = place_need(&mut commands, &mut data, -545., 290., 0.55);
+    let e = place_need(&mut commands, &mut data, (-545., 290.), 0.55);
     data.needs.insert((0, 0), e);
-    let e = place_need(&mut commands, &mut data, -545., 190., 0.55);
+    let e = place_need(&mut commands, &mut data, (-545., 190.), 0.55);
     data.needs.insert((0, 1), e);
-    let e = place_need(&mut commands, &mut data, -545., 90., 0.55);
+    let e = place_need(&mut commands, &mut data, (-545., 90.), 0.55);
     data.needs.insert((0, 2), e);
-    let e = place_window(&mut commands, &mut data, -545., 190., 0.55, 0.53);
+    let e = place_window(&mut commands, &mut data, (-545., 190.), (0.55, 0.53));
     data.windows.insert(0, e);
 
-    let e = place_need(&mut commands, &mut data, -620., 260., 0.53);
+    let e = place_need(&mut commands, &mut data, (-620., 260.), 0.53);
     data.needs.insert((1, 0), e);
-    let e = place_need(&mut commands, &mut data, -620., 160., 0.53);
+    let e = place_need(&mut commands, &mut data, (-620., 160.), 0.53);
     data.needs.insert((1, 1), e);
-    let e = place_need(&mut commands, &mut data, -620., 60., 0.53);
+    let e = place_need(&mut commands, &mut data, (-620., 60.), 0.53);
     data.needs.insert((1, 2), e);
-    let e = place_window(&mut commands, &mut data, -620., 158., 0.54, 0.57);
+    let e = place_window(&mut commands, &mut data, (-620., 158.), (0.54, 0.57));
     data.windows.insert(1, e);
 
-    let e = place_need(&mut commands, &mut data, -710., 230., 0.62);
+    let e = place_need(&mut commands, &mut data, (-710., 230.), 0.62);
     data.needs.insert((2, 0), e);
-    let e = place_need(&mut commands, &mut data, -710., 120., 0.62);
+    let e = place_need(&mut commands, &mut data, (-710., 120.), 0.62);
     data.needs.insert((2, 1), e);
-    let e = place_need(&mut commands, &mut data, -710., 10., 0.62);
+    let e = place_need(&mut commands, &mut data, (-710., 10.), 0.62);
     data.needs.insert((2, 2), e);
-    let e = place_window(&mut commands, &mut data, -709., 120., 0.63, 0.64);
+    let e = place_window(&mut commands, &mut data, (-709., 120.), (0.63, 0.64));
     data.windows.insert(2, e);
 
-    let e = place_need(&mut commands, &mut data, -790., 200., 0.69);
+    let e = place_need(&mut commands, &mut data, (-790., 200.), 0.69);
     data.needs.insert((3, 0), e);
-    let e = place_need(&mut commands, &mut data, -790., 70., 0.69);
+    let e = place_need(&mut commands, &mut data, (-790., 70.), 0.69);
     data.needs.insert((3, 1), e);
-    let e = place_need(&mut commands, &mut data, -790., -60., 0.69);
+    let e = place_need(&mut commands, &mut data, (-790., -60.), 0.69);
     data.needs.insert((3, 2), e);
-    let e = place_window(&mut commands, &mut data, -800., 70., 0.69, 0.69);
+    let e = place_window(&mut commands, &mut data, (-800., 70.), (0.69, 0.69));
     data.windows.insert(3, e);
 }
 
 fn place_window(
     commands: &mut Commands,
     data: &mut PortalData,
-    pos_x: f32,
-    pos_: f32,
-    scale_x: f32,
-    scale_y: f32,
+    pos: (f32, f32),
+    scale: (f32, f32),
 ) -> Entity {
     commands
         .spawn(SpriteBundle {
             texture: data.window_closed.clone(),
             transform: Transform {
                 translation: Vec3 {
-                    x: pos_x,
-                    y: pos_,
+                    x: pos.0,
+                    y: pos.1,
                     z: 49.0,
                 },
                 scale: Vec3 {
-                    x: scale_x,
-                    y: scale_y,
+                    x: scale.0,
+                    y: scale.1,
                     z: 1.,
                 },
                 ..default()
@@ -133,15 +131,18 @@ fn place_window(
 fn place_need(
     commands: &mut Commands,
     data: &mut PortalData,
-    x: f32,
-    y: f32,
+    pos: (f32, f32),
     scale: f32,
 ) -> Entity {
     commands
         .spawn(SpriteBundle {
             texture: data.seasons.get(&Season::Autumn).unwrap().clone(),
             transform: Transform {
-                translation: Vec3 { x, y, z: 50.0 },
+                translation: Vec3 {
+                    x: pos.0,
+                    y: pos.1,
+                    z: 50.0,
+                },
                 scale: Vec3 {
                     x: scale,
                     y: scale,

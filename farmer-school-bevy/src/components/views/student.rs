@@ -70,7 +70,7 @@ fn load_resources(
     );
     data.desks.insert(
         (StudentCol::Right, 2),
-        place_desk(&mut commands, t.clone(), (620., 230., z2), (-s2, s2)),
+        place_desk(&mut commands, t.clone(), (600., 230., z2), (-s2, s2)),
     );
 
     let t = data.desk_free_center.clone();
