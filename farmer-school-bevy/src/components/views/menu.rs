@@ -2,12 +2,31 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 
+use crate::components::moves::moves::possible_move;
+use crate::components::teacher_busy::teacher_busy::TeacherBusy;
+use crate::model::config::Config;
+use crate::model::definitions::*;
+use crate::model::kitchen::*;
+use crate::model::overlord::*;
+use crate::model::player_input::*;
+use crate::model::portal::*;
+use crate::model::season::*;
+use crate::model::students::*;
+use crate::model::teacher::*;
+use crate::model::welcome::*;
+use crate::model::{config::Config, definitions::*};
 use crate::{
     components::controllers::overlord::events::{
         DisplayScreenGameEvent, DisplayScreenGameOverRecapEvent, DisplayScreenMenuEvent,
     },
     model::{config::Config, definitions::Teacher},
 };
+use bevy::prelude::*;
+use bevy::prelude::*;
+use bevy::prelude::*;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::process;
 
 const EXPLAIN: &str = "You play as a wise teacher guiding farmers through the changing seasons. \n
 Each season brings new crops to learn: asparagus, cherries, chanterelles and lemons. \n

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 
-use crate::{components::controllers::teacher::events::TeacherMovedEvent, model::definitions::*};
+use crate::model::{definitions::*, teacher::TeacherMovedEvent};
 
 #[derive(Resource, Default)]
 pub struct TeacherBusy {

@@ -1,9 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{
-    components::controllers::welcome::events::{StudentWelcomedEvent, WelcomeAvailableEvent},
-    model::config::Config,
-};
+use crate::model::{config::Config, welcome::*};
 
 fn load_resources(
     mut commands: Commands,

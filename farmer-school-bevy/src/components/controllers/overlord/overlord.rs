@@ -1,11 +1,16 @@
-use super::events::*;
-use crate::components::controllers::portal::events::MonsterFedEvent;
-use crate::components::controllers::season::events::SeasonChangedEvent;
-use crate::components::controllers::students::events::{GraduatedEvent, TaughtEvent};
+use crate::components::moves::moves::possible_move;
+use crate::components::teacher_busy::teacher_busy::TeacherBusy;
 use crate::model::config::Config;
-use crate::{
-    components::controllers::player_input::events::PlayerInputEvent, model::definitions::*,
-};
+use crate::model::kitchen::*;
+use crate::model::overlord::*;
+use crate::model::player_input::*;
+use crate::model::portal::*;
+use crate::model::season::*;
+use crate::model::students::*;
+use crate::model::teacher::*;
+use crate::model::welcome::*;
+use crate::model::{config::Config, definitions::*};
+use bevy::prelude::*;
 use bevy::prelude::*;
 use std::collections::HashMap;
 use std::process;

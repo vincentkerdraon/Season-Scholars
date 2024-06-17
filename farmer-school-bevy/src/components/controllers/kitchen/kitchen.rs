@@ -1,21 +1,13 @@
-use super::events::*;
-use crate::components::controllers::welcome::events::StudentWelcomedEvent;
 use crate::components::moves::moves::possible_move;
-use crate::{
-    components::{
-        controllers::{
-            overlord::events::{
-                GameOverEvent, InvalidActionStationEvent, InvalidMoveEvent, ResetGameEvent,
-            },
-            player_input::events::PlayerInputEvent,
-            season::events::SeasonChangedEvent,
-            students::events::GraduatedEvent,
-            teacher::events::{MoveTeacherEvent, TeacherMovedEvent},
-        },
-        teacher_busy::teacher_busy::TeacherBusy,
-    },
-    model::{config::Config, definitions::Station},
-};
+use crate::components::teacher_busy::teacher_busy::TeacherBusy;
+use crate::model::kitchen::*;
+use crate::model::overlord::*;
+use crate::model::player_input::*;
+use crate::model::season::*;
+use crate::model::students::*;
+use crate::model::teacher::*;
+use crate::model::welcome::*;
+use crate::model::{config::Config, definitions::*};
 use bevy::prelude::*;
 
 const STATION: Station = Station::Kitchen;

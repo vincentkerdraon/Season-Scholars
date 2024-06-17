@@ -1,23 +1,30 @@
-use super::events::*;
+use crate::components::moves::moves::possible_move;
+use crate::components::teacher_busy::teacher_busy::TeacherBusy;
+use crate::model::config::Config;
+use crate::model::definitions::*;
+use crate::model::kitchen::*;
+use crate::model::overlord::*;
+use crate::model::player_input::*;
+use crate::model::portal::*;
+use crate::model::season::*;
+use crate::model::students::*;
+use crate::model::teacher::*;
+use crate::model::welcome::*;
+use crate::model::{config::Config, definitions::*};
 use crate::{
-    components::{
-        controllers::{
-            overlord::events::{
-                GameOverEvent, InvalidActionStationEvent, InvalidMoveEvent, ResetGameEvent,
-            },
-            player_input::events::PlayerInputEvent,
-            portal::events::MonsterFedEvent,
-            students::events::GraduatedEvent,
-            teacher::events::{MoveTeacherEvent, TeacherMovedEvent},
-        },
-        moves::moves::possible_move,
-        teacher_busy::teacher_busy::TeacherBusy,
-    },
+    components::{moves::moves::possible_move, teacher_busy::teacher_busy::TeacherBusy},
     model::{
         config::Config,
         definitions::{Station, Teacher},
     },
 };
+use bevy::prelude::*;
+use bevy::prelude::*;
+use bevy::prelude::*;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::process;
+
 use bevy::prelude::*;
 
 const STATION: Station = Station::Welcome;
