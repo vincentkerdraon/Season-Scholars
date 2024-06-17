@@ -339,7 +339,7 @@ impl StudentData {
 
         //add new elements
         for s in students {
-            if self.mapping.get(&s.id).is_none() {
+            if !self.mapping.contains_key(&s.id) {
                 self.new_student(s.id, s.col);
             }
         }
@@ -353,7 +353,7 @@ impl StudentData {
             col: StudentCol,
             mapping: &mut HashMap<i64, (StudentCol, usize)>,
             last_used_index: &mut usize,
-            students_col: &Vec<(Handle<Image>, Handle<Image>)>,
+            students_col: &[(Handle<Image>, Handle<Image>)],
         ) -> (TextureIndex, Handle<Image>) {
             *last_used_index += 1;
             if *last_used_index >= students_col.len() {

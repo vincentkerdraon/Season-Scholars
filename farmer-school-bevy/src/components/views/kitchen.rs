@@ -140,8 +140,8 @@ fn listen_events(
         food_remaining = Some(e.food_remaining);
     }
 
-    if food_remaining.is_some() {
-        data.update_food_remaining(food_remaining.unwrap());
+    if let Some(food_remaining) = food_remaining {
+        data.update_food_remaining(food_remaining);
     }
 }
 

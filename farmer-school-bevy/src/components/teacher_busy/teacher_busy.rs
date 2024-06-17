@@ -34,12 +34,11 @@ impl TeacherBusy {
         if self.here.is_empty() {
             panic!();
         }
-        if let Some(d) = self.teachers.get_mut(&t) {
-            if let Some((_, until)) = d {
-                *until = now + duration;
-                return true;
-            }
+        if let Some(Some((_, until))) = self.teachers.get_mut(&t) {
+            *until = now + duration;
+            return true;
         }
+
         false
     }
 
@@ -62,10 +61,8 @@ impl TeacherBusy {
     }
 
     pub fn station(&mut self, t: Teacher) -> Option<Station> {
-        if let Some(d) = self.teachers.get(&t) {
-            if let Some((s, _)) = d {
-                return Some(*s);
-            }
+        if let Some(Some((s, _))) = self.teachers.get(&t) {
+            return Some(*s);
         }
         None
     }

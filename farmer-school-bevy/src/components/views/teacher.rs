@@ -534,8 +534,8 @@ impl TeacherData {
         from: Option<Station>,
         to: Option<Station>,
     ) {
-        if to.is_some() {
-            self.teachers_position.insert(teacher, to.unwrap());
+        if let Some(to) = to {
+            self.teachers_position.insert(teacher, to);
         }
         //prepare for cleanup and draw
         self.teachers_moved.push((teacher, from, to));

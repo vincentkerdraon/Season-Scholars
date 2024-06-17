@@ -83,11 +83,11 @@ fn listen_events_menu(
 
     for e in player_input_events.read() {
         if e.short_action {
-            if data.teachers.get(&e.teacher).is_some() {
-                data.teachers.remove(&e.teacher);
+            if let std::collections::hash_map::Entry::Vacant(e) = data.teachers.entry(e.teacher) {
+                e.insert(false);
                 changed = true;
             } else {
-                data.teachers.insert(e.teacher, false);
+                data.teachers.remove(&e.teacher);
                 changed = true;
             }
         }
@@ -127,7 +127,7 @@ fn listen_events_game_over(
     mut display_screen_game_over_recap_events: EventWriter<DisplayScreenGameOverRecapEvent>,
 ) {
     let now = time.elapsed_seconds_f64();
-    for e in game_over_events.read() {
+    if let Some(e) = game_over_events.read().last() {
         data.screen = Screen::GameOverRecap;
         let teachers: Vec<Teacher> = data.teachers.keys().copied().collect();
         let emit = DisplayScreenGameOverRecapEvent {
@@ -139,7 +139,6 @@ fn listen_events_game_over(
         };
         debug!("{:?}", emit);
         display_screen_game_over_recap_events.send(emit);
-        return;
     }
 }
 

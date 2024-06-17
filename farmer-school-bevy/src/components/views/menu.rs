@@ -269,7 +269,7 @@ fn listen_events(
     }
 
     if let Ok((mut text, mut visibility)) = param_set.p0().get_mut(data.player_a) {
-        if data.teachers.get(&Teacher::A).is_some() {
+        if data.teachers.contains_key(&Teacher::A) {
             text.sections[0].value = "PlayerA ready!".to_string();
             text.sections[0].style.color = Color::rgb(0.0, 0.7, 0.0);
         } else {
@@ -279,7 +279,7 @@ fn listen_events(
         *visibility = Visibility::Visible;
     }
     if let Ok((mut text, mut visibility)) = param_set.p0().get_mut(data.player_b) {
-        if data.teachers.get(&Teacher::B).is_some() {
+        if data.teachers.contains_key(&Teacher::B) {
             text.sections[0].value = "PlayerB ready!".to_string();
             text.sections[0].style.color = Color::rgb(0.0, 0.7, 0.0);
         } else {
