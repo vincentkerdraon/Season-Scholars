@@ -1,17 +1,8 @@
 mod model;
 mod components {
+    pub mod controllers;
     pub mod moves;
     pub mod teacher_busy;
-    pub mod controllers {
-        pub mod kitchen;
-        pub mod overlord;
-        pub mod player_input;
-        pub mod portal;
-        pub mod season;
-        pub mod students;
-        pub mod teacher;
-        pub mod welcome;
-    }
     pub mod views;
 }
 use bevy::{
@@ -67,14 +58,14 @@ fn main() {
                 ..Default::default()
             }),
     )
-    .add_plugins(components::controllers::overlord::overlord::OverlordControllerPlugin)
-    .add_plugins(components::controllers::season::season::SeasonControllerPlugin)
-    .add_plugins(components::controllers::welcome::welcome::WelcomeControllerPlugin)
-    .add_plugins(components::controllers::teacher::teacher::TeacherControllerPlugin)
-    .add_plugins(components::controllers::player_input::player_input::PlayerInputControllerPlugin)
-    .add_plugins(components::controllers::portal::portal::PortalControllerPlugin)
-    .add_plugins(components::controllers::students::students::StudentsControllerPlugin)
-    .add_plugins(components::controllers::kitchen::kitchen::KitchenControllerPlugin)
+    .add_plugins(components::controllers::overlord::OverlordControllerPlugin)
+    .add_plugins(components::controllers::season::SeasonControllerPlugin)
+    .add_plugins(components::controllers::welcome::WelcomeControllerPlugin)
+    .add_plugins(components::controllers::teacher::TeacherControllerPlugin)
+    .add_plugins(components::controllers::player_input::PlayerInputControllerPlugin)
+    .add_plugins(components::controllers::portal::PortalControllerPlugin)
+    .add_plugins(components::controllers::students::StudentsControllerPlugin)
+    .add_plugins(components::controllers::kitchen::KitchenControllerPlugin)
     .add_plugins(components::views::room::RoomViewPlugin)
     .add_plugins(components::views::welcome::WelcomeViewPlugin)
     .add_plugins(components::views::teacher::TeacherViewPlugin)
