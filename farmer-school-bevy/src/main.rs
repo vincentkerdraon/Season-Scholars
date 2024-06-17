@@ -34,7 +34,7 @@ fn main() {
     let mut app: App = App::new();
     app.insert_resource(Config {
         base_path: path,
-        students_max: 9,
+        students_max: 9, //FIXME remove me
         students_init: 6,
         students_rows_nb: 3,
         long_action_s: 5.0,  //FIXME

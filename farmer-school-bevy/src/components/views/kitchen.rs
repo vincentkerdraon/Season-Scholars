@@ -124,9 +124,9 @@ fn draw(mut data: ResMut<KitchenData>, mut query: Query<(&mut Handle<Image>, &mu
 }
 
 fn listen_events(
-    mut cook_events: EventReader<CookEvent>,
+    mut cook_events: EventReader<CookedEvent>,
     mut students_eat_events: EventReader<StudentsEatEvent>,
-    mut teacher_eat_events: EventReader<TeacherEatEvent>,
+    mut teacher_eat_events: EventReader<TeacherAteEvent>,
     mut data: ResMut<KitchenData>,
 ) {
     let mut food_remaining: Option<i8> = None;

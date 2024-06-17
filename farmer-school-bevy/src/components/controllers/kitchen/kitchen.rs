@@ -98,8 +98,8 @@ fn listen_events_player_input(
     mut data: ResMut<KitchenData>,
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut move_teacher_events: EventWriter<MoveTeacherEvent>,
-    mut teacher_eat_events: EventWriter<TeacherEatEvent>,
-    mut cook_events: EventWriter<CookEvent>,
+    mut teacher_eat_events: EventWriter<TeacherAteEvent>,
+    mut cook_events: EventWriter<CookedEvent>,
     mut invalid_action_station_events: EventWriter<InvalidActionStationEvent>,
     mut invalid_move_events: EventWriter<InvalidMoveEvent>,
 ) {
@@ -115,7 +115,7 @@ fn listen_events_player_input(
         if e.long_action {
             if data.food_remaining < config.food_max {
                 data.food_remaining = config.food_max;
-                let emit = CookEvent {
+                let emit = CookedEvent {
                     food_remaining: data.food_remaining,
                     teacher: e.teacher,
                 };
@@ -136,7 +136,7 @@ fn listen_events_player_input(
             if data.food_remaining > 0 {
                 data.food_remaining -= 1;
 
-                let emit = TeacherEatEvent {
+                let emit = TeacherAteEvent {
                     food_remaining: data.food_remaining,
                     teacher: e.teacher,
                 };
@@ -181,9 +181,9 @@ pub struct KitchenControllerPlugin;
 impl Plugin for KitchenControllerPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(KitchenData { ..default() })
-            .add_event::<CookEvent>()
+            .add_event::<CookedEvent>()
             .add_event::<StudentsEatEvent>()
-            .add_event::<TeacherEatEvent>()
+            .add_event::<TeacherAteEvent>()
             .add_systems(PreUpdate, listen_moved)
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_season)

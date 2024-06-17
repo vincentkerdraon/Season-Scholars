@@ -2,7 +2,7 @@ use crate::model::definitions::*;
 use bevy::prelude::*;
 
 #[derive(Event, Debug)]
-pub struct CookEvent {
+pub struct CookedEvent {
     pub teacher: Teacher,
     pub food_remaining: FoodRemaining,
 }
@@ -13,7 +13,7 @@ pub struct StudentsEatEvent {
 }
 
 #[derive(Event, Debug)]
-pub struct TeacherEatEvent {
+pub struct TeacherAteEvent {
     pub teacher: Teacher,
     pub food_remaining: FoodRemaining,
 }

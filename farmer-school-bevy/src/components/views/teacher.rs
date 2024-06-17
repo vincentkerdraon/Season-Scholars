@@ -5,12 +5,13 @@ use bevy::prelude::*;
 use crate::{
     components::{
         controllers::{
+            kitchen::events::{CookedEvent, TeacherAteEvent},
             overlord::events::{GameOverEvent, InvalidActionStationEvent, ResetGameEvent},
             player_input::events::PlayerInputEvent,
-            portal::events::PortalObservedEvent,
-            students::events::TaughtEvent,
+            portal::events::{ObservePortalEvent, PortalFixedEvent},
+            students::events::{GraduatedEvent, TaughtEvent},
             teacher::events::TeacherMovedEvent,
-            welcome::events::StudentWelcomedEvent,
+            welcome::events::{RecruitStudentEvent, StudentWelcomedEvent},
         },
         moves::moves::possible_move,
     },
@@ -19,6 +20,8 @@ use crate::{
         definitions::{Reaction, Station, Teacher},
     },
 };
+
+const DISPLAY_REACTION_FAIL_DURATION_S: f64 = 0.5;
 
 fn load_resources(
     mut commands: Commands,
@@ -66,60 +69,96 @@ fn load_resources(
     let path_portal_left =
         asset_server.load(config.base_path.join("Path/ST_COL_LEFT_TO_WINDOWS.png"));
 
-    let e = place_reaction(&mut commands, reaction_fail, 0., 0., 1.);
-    data.reactions.insert((Station::Welcome, Reaction::Fail), e);
-    let e = place_reaction(&mut commands, reaction_success_long, 0., 0., 1.);
-    data.reactions.insert((Station::Welcome, Reaction::Long), e);
-    let e = place_reaction(&mut commands, reaction_success_short, 0., 0., 1.);
-    data.reactions
-        .insert((Station::Welcome, Reaction::Short), e);
+    let mut place_teacher_and_reactions =
+        |station: Station,
+         teacher_texture: Handle<Image>,
+         teacher_pos: (f32, f32, f32),
+         teacher_scale: (f32, f32),
+         reaction_pos: (f32, f32),
+         reaction_scale: f32| {
+            let e = place_reaction(
+                &mut commands,
+                reaction_fail.clone(),
+                reaction_pos,
+                reaction_scale,
+            );
+            data.reactions.insert((station, Reaction::Fail), e);
+            let e = place_reaction(
+                &mut commands,
+                reaction_success_long.clone(),
+                reaction_pos,
+                reaction_scale,
+            );
+            data.reactions.insert((station, Reaction::Long), e);
+            let e = place_reaction(
+                &mut commands,
+                reaction_success_short.clone(),
+                reaction_pos,
+                reaction_scale,
+            );
+            data.reactions.insert((station, Reaction::Short), e);
 
-    let e = place_teacher(
-        &mut commands,
+            let e = place_teacher(
+                &mut commands,
+                teacher_texture.clone(),
+                teacher_pos,
+                teacher_scale,
+            );
+            data.teachers.insert(station, e);
+        };
+
+    place_teacher_and_reactions(
+        Station::Welcome,
         teacher_a_teaching.clone(),
         (450., 380., 10.),
         (-0.15, 0.15),
+        (450., 450.),
+        1.,
     );
-    data.teachers.insert(Station::Welcome, e);
-    let e = place_teacher(
-        &mut commands,
+    place_teacher_and_reactions(
+        Station::StudentRight,
         teacher_a_teaching.clone(),
         (630., -230., 50.),
-        (0.35, 0.35),
+        (0.4, 0.4),
+        (630., -100.),
+        1.,
     );
-    data.teachers.insert(Station::StudentRight, e);
-    let e = place_teacher(
-        &mut commands,
-        teacher_a_teaching.clone(),
-        (500., -230., 50.),
-        (-0.4, 0.4),
-    );
-    data.teachers.insert(Station::StudentCenter, e);
-    let e = place_teacher(
-        &mut commands,
+    place_teacher_and_reactions(
+        Station::StudentCenter,
         teacher_a_teaching.clone(),
         (65., -230., 50.),
-        (-0.4, 0.4),
+        (0.4, 0.4),
+        (65., -100.),
+        1.,
     );
-    data.teachers.insert(Station::StudentLeft, e);
-    let e = place_teacher(
-        &mut commands,
+    place_teacher_and_reactions(
+        Station::StudentLeft,
+        teacher_a_teaching.clone(),
+        (-440., -230., 50.),
+        (0.4, 0.4),
+        (-440., -100.),
+        1.,
+    );
+    place_teacher_and_reactions(
+        Station::Portal,
         teacher_a_protecting,
         (-220., 260., 12.),
         (0.4, 0.4),
+        (-220., 260.),
+        1.,
     );
-    data.teachers.insert(Station::Portal, e);
-    let e = place_teacher(
-        &mut commands,
+    place_teacher_and_reactions(
+        Station::Kitchen,
         teacher_a_cooking,
         (770., 350., 12.),
         (0.25, 0.25),
+        (770., 350.),
+        1.,
     );
-    data.teachers.insert(Station::Kitchen, e);
 
-    let e = place_path(&mut commands, path_left_center, (255., -490., 95.), 1.);
+    let e = place_path(&mut commands, path_left_center, (-210., -490., 95.), 1.);
     insert_data_path(&mut data, Station::StudentLeft, Station::StudentCenter, e);
-    let e = place_path(&mut commands, path_center_right, (530., -490., 95.), 1.);
+    let e = place_path(&mut commands, path_center_right, (250., -490., 95.), 1.);
     insert_data_path(&mut data, Station::StudentCenter, Station::StudentRight, e);
     let e = place_path(&mut commands, path_right_kitchen, (940., 0., 95.), 1.);
     insert_data_path(&mut data, Station::StudentRight, Station::Kitchen, e);
@@ -127,7 +166,7 @@ fn load_resources(
     insert_data_path(&mut data, Station::Kitchen, Station::Welcome, e);
     let e = place_path(&mut commands, path_welcome_portal, (-7., 212., 11.), 1.);
     insert_data_path(&mut data, Station::Welcome, Station::Portal, e);
-    let e = place_path(&mut commands, path_portal_left, (-412., -73., 95.), 1.);
+    let e = place_path(&mut commands, path_portal_left, (-300., 41., 95.), 1.);
     insert_data_path(&mut data, Station::Portal, Station::StudentLeft, e);
 }
 
@@ -196,8 +235,7 @@ fn place_teacher(
 fn place_reaction(
     commands: &mut Commands,
     texture: Handle<Image>,
-    pos_x: f32,
-    pos_y: f32,
+    pos: (f32, f32),
     scale: f32,
 ) -> Entity {
     commands
@@ -205,9 +243,9 @@ fn place_reaction(
             texture: texture,
             transform: Transform {
                 translation: Vec3 {
-                    x: pos_x,
-                    y: pos_y,
-                    z: 100.0,
+                    x: pos.0,
+                    y: pos.1,
+                    z: 200.0,
                 },
                 scale: Vec3 {
                     x: scale,
@@ -284,39 +322,61 @@ fn listen_player_input(
 
 fn listen_reactions(
     time: Res<Time>,
+    config: Res<Config>,
     mut invalid_action_station_events: EventReader<InvalidActionStationEvent>,
+    mut teacher_ate_events: EventReader<TeacherAteEvent>,
+    mut cooked_events: EventReader<CookedEvent>,
+    mut observe_portal_events: EventReader<ObservePortalEvent>,
+    mut portal_fixed_events: EventReader<PortalFixedEvent>,
+    mut graduated_events: EventReader<GraduatedEvent>,
     mut taught_events: EventReader<TaughtEvent>,
     mut student_welcomed_events: EventReader<StudentWelcomedEvent>,
-    mut portal_observed_events: EventReader<PortalObservedEvent>,
+    mut recruit_student_events: EventReader<RecruitStudentEvent>,
     mut data: ResMut<TeacherData>,
 ) {
     let now = time.elapsed_seconds_f64();
+    let mut insert_reaction = |teacher: Teacher, reaction: Reaction| {
+        data.dirty = true;
+
+        let dur = match reaction {
+            Reaction::Fail => DISPLAY_REACTION_FAIL_DURATION_S,
+            Reaction::Long => config.long_action_s,
+            Reaction::Short => config.short_action_s,
+        };
+        let station = *data.teachers_position.get(&teacher).unwrap();
+        data.display_reaction_until.insert(
+            (teacher, station, reaction),
+            (now + dur, Entity::PLACEHOLDER),
+        );
+    };
 
     for e in invalid_action_station_events.read() {
-        insert_reaction(&mut data, now, e.teacher, Reaction::Fail);
+        insert_reaction(e.teacher, Reaction::Fail);
+    }
+    for e in teacher_ate_events.read() {
+        insert_reaction(e.teacher, Reaction::Short);
+    }
+    for e in cooked_events.read() {
+        insert_reaction(e.teacher, Reaction::Long);
+    }
+    for e in observe_portal_events.read() {
+        insert_reaction(e.teacher, Reaction::Short);
+    }
+    for e in portal_fixed_events.read() {
+        insert_reaction(e.teacher, Reaction::Long);
+    }
+    for e in graduated_events.read() {
+        insert_reaction(e.teacher, Reaction::Long);
     }
     for e in taught_events.read() {
-        insert_reaction(&mut data, now, e.teacher, Reaction::Short);
+        insert_reaction(e.teacher, Reaction::Short);
     }
     for e in student_welcomed_events.read() {
-        insert_reaction(&mut data, now, e.teacher, Reaction::Short);
+        insert_reaction(e.teacher, Reaction::Short);
     }
-    for e in portal_observed_events.read() {
-        insert_reaction(&mut data, now, e.teacher, Reaction::Short);
+    for e in recruit_student_events.read() {
+        insert_reaction(e.teacher, Reaction::Long);
     }
-}
-
-fn insert_reaction(data: &mut TeacherData, now: f64, teacher: Teacher, reaction: Reaction) {
-    data.dirty = true;
-
-    let dur = match reaction {
-        Reaction::Fail => data.display_reaction_fail_duration_s,
-        Reaction::Long => data.display_reaction_long_duration_s,
-        Reaction::Short => data.display_reaction_short_duration_s,
-    };
-    let from = *data.teachers_position.get(&teacher).unwrap();
-    data.display_reaction_until
-        .insert((teacher, from, reaction), (now + dur, Entity::PLACEHOLDER));
 }
 
 fn listen_game_over(
@@ -383,24 +443,30 @@ fn draw(
     });
     data.teachers_moved.clear();
 
-    for ((t, s, r), (until, e)) in data.display_reaction_until.clone() {
-        if until > now {
-            if let Ok(mut visibility) = query.get_mut(e) {
+    let mut keys_to_remove: Vec<(Teacher, Station, Reaction)> = Vec::new();
+    let data_reactions = data.reactions.clone();
+    for ((t, s, r), (until, e)) in data.display_reaction_until.iter_mut() {
+        if *until < now {
+            if let Ok(mut visibility) = query.get_mut(*e) {
                 *visibility = Visibility::Hidden;
             }
-            data.display_reaction_until.remove(&(t, s, r));
+            keys_to_remove.push((*t, *s, *r));
+
             continue;
         }
-        if e == Entity::PLACEHOLDER {
-            let e = *data.reactions.get(&(s, r)).unwrap();
-            if let Ok(mut visibility) = query.get_mut(e) {
+        if *e == Entity::PLACEHOLDER {
+            *e = *data_reactions.get(&(*s, *r)).unwrap();
+            if let Ok(mut visibility) = query.get_mut(*e) {
                 *visibility = Visibility::Visible;
             }
             continue;
         }
     }
+    for key in keys_to_remove {
+        data.display_reaction_until.remove(&key);
+    }
 
-    let mut keys_to_remove = vec![];
+    let mut keys_to_remove = Vec::new();
     let paths = data.paths.clone();
     for ((t, from, to), (until, e)) in data.display_path_until.iter_mut() {
         if *until < now {
@@ -451,9 +517,6 @@ struct TeacherData {
     frame: Wrapping<i8>,
     display_reaction_until: HashMap<(Teacher, Station, Reaction), (f64, Entity)>,
     display_path_until: HashMap<(Teacher, Station, Station), (f64, Entity)>,
-    display_reaction_short_duration_s: f64,
-    display_reaction_long_duration_s: f64,
-    display_reaction_fail_duration_s: f64,
 }
 
 impl TeacherData {
@@ -470,9 +533,6 @@ impl TeacherData {
             frame: Wrapping(0),
             display_reaction_until: HashMap::new(),
             display_path_until: HashMap::new(),
-            display_reaction_fail_duration_s: 1.0,
-            display_reaction_short_duration_s: 2.0,
-            display_reaction_long_duration_s: 5.0,
         }
     }
 
