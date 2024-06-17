@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use crate::model::config::Config;
-use crate::model::definitions::*;
+
 use crate::model::season::*;
 
 fn load_resources(

@@ -1,8 +1,6 @@
 mod model;
 mod components {
     pub mod controllers;
-    pub mod moves;
-    pub mod teacher_busy;
     pub mod views;
 }
 use bevy::{

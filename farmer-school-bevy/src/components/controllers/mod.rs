@@ -1,8 +1,10 @@
 pub mod kitchen;
+pub mod moves;
 pub mod overlord;
 pub mod player_input;
 pub mod portal;
 pub mod season;
 pub mod students;
 pub mod teacher;
+pub mod teacher_busy;
 pub mod welcome;

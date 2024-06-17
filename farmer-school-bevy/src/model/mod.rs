@@ -1,5 +1,4 @@
 pub mod config;
-pub mod definitions;
 pub mod kitchen;
 pub mod overlord;
 pub mod player_input;

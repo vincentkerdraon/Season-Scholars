@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use crate::model::config::Config;
-use crate::model::definitions::*;
+
 use crate::model::overlord::*;
 
 const EXPLAIN: &str = "You play as a wise teacher guiding farmers through the changing seasons. \n

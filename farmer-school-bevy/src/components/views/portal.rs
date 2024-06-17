@@ -3,8 +3,9 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use crate::model::config::Config;
-use crate::model::definitions::*;
+
 use crate::model::portal::*;
+use crate::model::season::Season;
 
 const PORTAL_OPENED_NB: i8 = 5;
 const PORTAL_CLOSED_NB: i8 = 10;

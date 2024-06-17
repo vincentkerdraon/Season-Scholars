@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::model::definitions::*;
+use crate::model::overlord::Station;
 
 pub fn possible_move(from: Station, direction: Vec2) -> Option<Station> {
     match from {

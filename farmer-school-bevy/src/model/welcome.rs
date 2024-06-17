@@ -1,5 +1,6 @@
-use crate::model::definitions::*;
 use bevy::prelude::*;
+
+use super::overlord::Teacher;
 
 /// A new student is waiting
 #[derive(Event, Debug)]

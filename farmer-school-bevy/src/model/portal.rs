@@ -1,5 +1,6 @@
-use crate::model::definitions::*;
 use bevy::prelude::*;
+
+use super::{overlord::Teacher, season::Season};
 
 /// A teacher is gathering information on the next monster needs
 #[derive(Event, Debug)]

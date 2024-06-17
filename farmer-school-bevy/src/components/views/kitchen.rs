@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use crate::model::config::Config;
-use crate::model::definitions::*;
+
 use crate::model::kitchen::*;
 
 const SCALE: f32 = 0.25;

@@ -2,9 +2,9 @@ use std::{collections::HashMap, num::Wrapping};
 
 use bevy::prelude::*;
 
-use crate::components::moves::moves::possible_move;
+use crate::components::controllers::moves::possible_move;
 use crate::model::config::Config;
-use crate::model::definitions::*;
+
 use crate::model::kitchen::*;
 use crate::model::overlord::*;
 use crate::model::player_input::*;

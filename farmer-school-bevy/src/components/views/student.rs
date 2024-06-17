@@ -4,7 +4,8 @@ use bevy::prelude::*;
 use strum::IntoEnumIterator;
 
 use crate::model::config::Config;
-use crate::model::definitions::*;
+
+use crate::model::season::Season;
 use crate::model::students::*;
 
 const STUDENTS_IMG_CENTER_NB: i8 = 5;

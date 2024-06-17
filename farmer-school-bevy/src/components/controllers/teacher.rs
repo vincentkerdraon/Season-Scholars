@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 
-use crate::model::definitions::*;
 use crate::model::overlord::*;
 use crate::model::teacher::*;
 

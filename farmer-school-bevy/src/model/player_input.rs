@@ -1,5 +1,6 @@
-use crate::model::definitions::*;
 use bevy::prelude::*;
+
+use super::overlord::Teacher;
 
 /// A player action, like pointing to the left and pressing the Long action button
 #[derive(Event, Debug, Default)]

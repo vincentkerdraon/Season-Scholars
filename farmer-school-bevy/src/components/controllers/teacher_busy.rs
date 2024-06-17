@@ -2,8 +2,10 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 
-use crate::model::definitions::*;
-use crate::model::teacher::*;
+use crate::model::{
+    overlord::{Station, Teacher},
+    teacher::*,
+};
 
 #[derive(Resource, Default)]
 pub struct TeacherBusy {

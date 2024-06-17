@@ -1,5 +1,6 @@
-use crate::model::definitions::*;
 use bevy::prelude::*;
+
+use super::overlord::{Station, Teacher};
 
 #[derive(Event, Debug)]
 pub struct MoveTeacherEvent {

@@ -1,7 +1,7 @@
-use crate::components::moves::moves::possible_move;
-use crate::components::teacher_busy::teacher_busy::TeacherBusy;
+use super::moves::possible_move;
+use super::teacher_busy::TeacherBusy;
 use crate::model::config::Config;
-use crate::model::definitions::*;
+
 use crate::model::overlord::*;
 use crate::model::player_input::*;
 use crate::model::season::*;
