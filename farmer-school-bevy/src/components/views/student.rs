@@ -11,6 +11,9 @@ use crate::{
     },
 };
 
+const STUDENTS_IMG_CENTER_NB: i8 = 5;
+const STUDENTS_IMG_SIDE_NB: i8 = 6;
+
 fn load_resources(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -18,27 +21,23 @@ fn load_resources(
     mut data: ResMut<StudentData>,
 ) {
     //images name start at 1
-    for i in 1..=config.clone().students_img_center_nb {
-        let path_with_desk_full = format!("{}Students/c{}.png", config.clone().base_path, i);
-        let path_with_desk_empty = format!("{}Students/c{}_empty.png", config.clone().base_path, i);
+    for i in 1..=STUDENTS_IMG_CENTER_NB {
         data.students_center.push((
-            asset_server.load(path_with_desk_full),
-            asset_server.load(path_with_desk_empty),
+            asset_server.load(config.base_path.join(format!("Students/c{}.png", i))),
+            asset_server.load(config.base_path.join(format!("Students/c{}_empty.png", i))),
         ));
     }
 
     //images name start at 1
-    for i in 1..=config.clone().students_img_center_nb {
-        let path_with_desk_full = format!("{}Students/s{}.png", config.clone().base_path, i);
-        let path_with_desk_empty = format!("{}Students/s{}_empty.png", config.clone().base_path, i);
+    for i in 1..=STUDENTS_IMG_SIDE_NB {
         data.students_side.push((
-            asset_server.load(path_with_desk_full),
-            asset_server.load(path_with_desk_empty),
+            asset_server.load(config.base_path.join(format!("Students/s{}.png", i))),
+            asset_server.load(config.base_path.join(format!("Students/s{}_empty.png", i))),
         ));
     }
 
-    data.desk_free_center = asset_server.load(config.clone().base_path + "Students/c0.png");
-    data.desk_free_side = asset_server.load(config.clone().base_path + "Students/s0.png");
+    data.desk_free_center = asset_server.load(config.base_path.join("Students/c0.png"));
+    data.desk_free_side = asset_server.load(config.base_path.join("Students/s0.png"));
 
     let s0 = 1.4;
     let s1 = 1.0;
@@ -89,19 +88,19 @@ fn load_resources(
 
     data.seasons.insert(
         Season::Spring,
-        asset_server.load(config.clone().base_path + "Harvest/HarvestA0.png"),
+        asset_server.load(config.base_path.join("Harvest/HarvestA0.png")),
     );
     data.seasons.insert(
         Season::Summer,
-        asset_server.load(config.clone().base_path + "Harvest/HarvestC0.png"),
+        asset_server.load(config.base_path.join("Harvest/HarvestC0.png")),
     );
     data.seasons.insert(
         Season::Autumn,
-        asset_server.load(config.clone().base_path + "Harvest/HarvestM0.png"),
+        asset_server.load(config.base_path.join("Harvest/HarvestM0.png")),
     );
     data.seasons.insert(
         Season::Winter,
-        asset_server.load(config.clone().base_path + "Harvest/HarvestL0.png"),
+        asset_server.load(config.base_path.join("Harvest/HarvestL0.png")),
     );
 
     let t = data.seasons.get(&Season::Autumn).unwrap().clone();
@@ -365,6 +364,7 @@ impl StudentData {
                 *last_used_index = 0;
             }
             mapping.insert(id, (col, *last_used_index));
+
             return (
                 *last_used_index,
                 students_col.get(*last_used_index).unwrap().0.clone(),

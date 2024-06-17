@@ -7,40 +7,47 @@ use crate::{
     model::{config::Config, definitions::Season},
 };
 
+const PORTAL_OPENED_NB: i8 = 5;
+const PORTAL_CLOSED_NB: i8 = 10;
+
 fn load_resources(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     config: Res<Config>,
     mut data: ResMut<PortalData>,
 ) {
-    data.window_closed = asset_server.load(config.clone().base_path + "Windows/Window1Closed.png");
-    data.window_available =
-        asset_server.load(config.clone().base_path + "Windows/Window1Opened.png");
+    data.window_closed = asset_server.load(config.base_path.join("Windows/Window1Closed.png"));
+    data.window_available = asset_server.load(config.base_path.join("Windows/Window1Opened.png"));
     data.seasons.insert(
         Season::Spring,
-        asset_server.load(config.clone().base_path + "Windows/Window1HarvestA.png"),
+        asset_server.load(config.base_path.join("Windows/Window1HarvestA.png")),
     );
     data.seasons.insert(
         Season::Summer,
-        asset_server.load(config.clone().base_path + "Windows/Window1HarvestC.png"),
+        asset_server.load(config.base_path.join("Windows/Window1HarvestC.png")),
     );
     data.seasons.insert(
         Season::Autumn,
-        asset_server.load(config.clone().base_path + "Windows/Window1HarvestM.png"),
+        asset_server.load(config.base_path.join("Windows/Window1HarvestM.png")),
     );
     data.seasons.insert(
         Season::Winter,
-        asset_server.load(config.clone().base_path + "Windows/Window1HarvestL.png"),
+        asset_server.load(config.base_path.join("Windows/Window1HarvestL.png")),
     );
     //images name start at 1
-    for i in 1..=config.clone().portal_opened_nb {
-        let path = format!("{}Door/DoorMonster{}.png", config.clone().base_path, i);
-        data.portal_opened.push(asset_server.load(path));
+    for i in 1..=PORTAL_OPENED_NB {
+        data.portal_opened
+            .push(asset_server.load(config.base_path.join(format!("Door/DoorMonster{}.png", i))));
     }
     //images name start at 1
-    for i in 1..=config.clone().portal_closed_nb {
-        let path = format!("{}Door/DoorProtected{}.png", config.clone().base_path, i);
-        data.portal_closed.push(asset_server.load(path));
+    for i in 1..=PORTAL_CLOSED_NB {
+        data.portal_closed.push(
+            asset_server.load(
+                config
+                    .base_path
+                    .join(format!("Door/DoorProtected{}.png", i)),
+            ),
+        );
     }
     data.portal = commands
         .spawn(SpriteBundle {

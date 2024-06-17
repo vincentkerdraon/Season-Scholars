@@ -141,7 +141,6 @@ fn listen_events_player_input(
                 };
                 debug!("{:?}", emit);
                 graduated_events.send(emit);
-                continue;
             } else {
                 let emit = InvalidActionStationEvent {
                     station,
@@ -150,6 +149,7 @@ fn listen_events_player_input(
                 debug!("{:?}", emit);
                 invalid_action_station_events.send(emit);
             }
+            continue;
         }
 
         if e.short_action {
@@ -170,7 +170,6 @@ fn listen_events_player_input(
                 };
                 debug!("{:?}", emit);
                 taught_events.send(emit);
-                continue;
             } else {
                 let emit = InvalidActionStationEvent {
                     station,
@@ -179,6 +178,7 @@ fn listen_events_player_input(
                 debug!("{:?}", emit);
                 invalid_action_station_events.send(emit);
             }
+            continue;
         }
 
         if e.confirm_move {
@@ -198,6 +198,7 @@ fn listen_events_player_input(
                 debug!("{:?}", emit);
                 invalid_move_events.send(emit);
             }
+            continue;
         }
     }
 }

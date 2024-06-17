@@ -26,34 +26,45 @@ fn load_resources(
     config: Res<Config>,
     mut data: ResMut<TeacherData>,
 ) {
-    let reaction_fail = asset_server.load(config.clone().base_path + "Reactions/fail.png");
+    let reaction_fail = asset_server.load(config.base_path.join("Reactions/fail.png"));
     let reaction_success_long =
-        asset_server.load(config.clone().base_path + "Reactions/successLong.png");
+        asset_server.load(config.base_path.join("Reactions/successLong.png"));
     let reaction_success_short =
-        asset_server.load(config.clone().base_path + "Reactions/successShort.png");
+        asset_server.load(config.base_path.join("Reactions/successShort.png"));
 
-    let teacher_a_teaching = asset_server
-        .load(config.clone().base_path + "Teacher/TeacherA/TeacherATeachingWelcoming.png");
-    let teacher_a_protecting =
-        asset_server.load(config.clone().base_path + "Teacher/TeacherA/teacherAProtecting.png");
+    let teacher_a_teaching = asset_server.load(
+        config
+            .base_path
+            .join("Teacher/TeacherA/TeacherATeachingWelcoming.png"),
+    );
+    let teacher_a_protecting = asset_server.load(
+        config
+            .base_path
+            .join("Teacher/TeacherA/teacherAProtecting.png"),
+    );
     let teacher_a_cooking =
-        asset_server.load(config.clone().base_path + "Cooking/cookingWithTeacher.png");
-    //FIXME
+        asset_server.load(config.base_path.join("Cooking/cookingWithTeacher.png"));
+    //FIXME add teacher_watch
     // let teacher_a_watch =
-    //     asset_server.load(config.clone().base_path + "Teacher/TeacherA/teacherAWatch.png");
+    //     asset_server.load(config.base_path.join("Teacher/TeacherA/teacherAWatch.png"));
 
-    let path_left_center =
-        asset_server.load(config.clone().base_path + "Path/ST_COL_LEFT_TO_ST_COL_CENTER.png");
-    let path_center_right =
-        asset_server.load(config.clone().base_path + "Path/ST_COL_RIGHT_TO_ST_COL_CENTER.png");
+    let path_left_center = asset_server.load(
+        config
+            .base_path
+            .join("Path/ST_COL_LEFT_TO_ST_COL_CENTER.png"),
+    );
+    let path_center_right = asset_server.load(
+        config
+            .base_path
+            .join("Path/ST_COL_RIGHT_TO_ST_COL_CENTER.png"),
+    );
     let path_right_kitchen =
-        asset_server.load(config.clone().base_path + "Path/ST_COL_RIGHT_TO_COOKING.png");
+        asset_server.load(config.base_path.join("Path/ST_COL_RIGHT_TO_COOKING.png"));
     let path_kitchen_welcome =
-        asset_server.load(config.clone().base_path + "Path/WELCOME_TO_COOKING.png");
-    let path_welcome_portal =
-        asset_server.load(config.clone().base_path + "Path/WELCOME_TO_DOOR.png");
+        asset_server.load(config.base_path.join("Path/WELCOME_TO_COOKING.png"));
+    let path_welcome_portal = asset_server.load(config.base_path.join("Path/WELCOME_TO_DOOR.png"));
     let path_portal_left =
-        asset_server.load(config.clone().base_path + "Path/ST_COL_LEFT_TO_WINDOWS.png");
+        asset_server.load(config.base_path.join("Path/ST_COL_LEFT_TO_WINDOWS.png"));
 
     let e = place_reaction(&mut commands, reaction_fail, 0., 0., 1.);
     data.reactions.insert((Station::Welcome, Reaction::Fail), e);
@@ -95,7 +106,7 @@ fn load_resources(
         &mut commands,
         teacher_a_protecting,
         (-220., 260., 12.),
-        (0.38, 0.38),
+        (0.4, 0.4),
     );
     data.teachers.insert(Station::Portal, e);
     let e = place_teacher(
@@ -106,17 +117,17 @@ fn load_resources(
     );
     data.teachers.insert(Station::Kitchen, e);
 
-    let e = place_path(&mut commands, path_left_center, 78., -300., 1.);
+    let e = place_path(&mut commands, path_left_center, (255., -490., 95.), 1.);
     insert_data_path(&mut data, Station::StudentLeft, Station::StudentCenter, e);
-    let e = place_path(&mut commands, path_center_right, 450., -300., 1.);
+    let e = place_path(&mut commands, path_center_right, (530., -490., 95.), 1.);
     insert_data_path(&mut data, Station::StudentCenter, Station::StudentRight, e);
-    let e = place_path(&mut commands, path_right_kitchen, 850., 0., 1.);
+    let e = place_path(&mut commands, path_right_kitchen, (940., 0., 95.), 1.);
     insert_data_path(&mut data, Station::StudentRight, Station::Kitchen, e);
-    let e = place_path(&mut commands, path_kitchen_welcome, 513., 251., 1.);
+    let e = place_path(&mut commands, path_kitchen_welcome, (513., 251., 95.), 1.);
     insert_data_path(&mut data, Station::Kitchen, Station::Welcome, e);
-    let e = place_path(&mut commands, path_welcome_portal, -7., 212., 1.);
+    let e = place_path(&mut commands, path_welcome_portal, (-7., 212., 11.), 1.);
     insert_data_path(&mut data, Station::Welcome, Station::Portal, e);
-    let e = place_path(&mut commands, path_portal_left, -312., -73., 1.);
+    let e = place_path(&mut commands, path_portal_left, (-412., -73., 95.), 1.);
     insert_data_path(&mut data, Station::Portal, Station::StudentLeft, e);
 }
 
@@ -129,8 +140,7 @@ fn insert_data_path(data: &mut TeacherData, station1: Station, station2: Station
 fn place_path(
     commands: &mut Commands,
     texture: Handle<Image>,
-    pos_x: f32,
-    pos_y: f32,
+    pos: (f32, f32, f32),
     scale: f32,
 ) -> Entity {
     commands
@@ -138,9 +148,9 @@ fn place_path(
             texture: texture,
             transform: Transform {
                 translation: Vec3 {
-                    x: pos_x,
-                    y: pos_y,
-                    z: 95.0,
+                    x: pos.0,
+                    y: pos.1,
+                    z: pos.2,
                 },
                 scale: Vec3 {
                     x: scale,
@@ -335,10 +345,20 @@ fn listen_reset(mut data: ResMut<TeacherData>, mut reset_game_events: EventReade
     }
 }
 
-fn draw(time: Res<Time>, mut data: ResMut<TeacherData>, mut query: Query<&mut Visibility>) {
+fn draw(
+    time: Res<Time>,
+    config: Res<Config>,
+    mut data: ResMut<TeacherData>,
+    mut query: Query<&mut Visibility>,
+) {
+    if !data.activated {
+        return;
+    }
+
+    //to display some parts, we need to iterate a lot.
+    //but it is ok to do it only every few frames
     data.frame += Wrapping(1);
-    //FIXME config
-    if !data.dirty && data.frame.0 % 5 != 0 {
+    if !data.dirty && data.frame.0 % config.draw_frame_modulo != 0 {
         return;
     }
     let now = time.elapsed_seconds_f64();

@@ -15,6 +15,14 @@ pub struct PortalObservedEvent {
     pub health: i8,
 }
 
+/// Fix the portal
+#[derive(Event, Debug)]
+pub struct PortalFixedEvent {
+    pub teacher: Teacher,
+    pub monsters: Vec<Monster>,
+    pub health: i8,
+}
+
 /// Show information on the monsters needs (current or in line)
 #[derive(Event, Debug)]
 pub struct MonsterPoppedEvent {

@@ -13,25 +13,24 @@ fn load_resources(
     config: Res<Config>,
     mut data: ResMut<RoomData>,
 ) {
-    let spring = asset_server.load(config.clone().base_path + "Classroom/ClassroomSpring.png");
-    let spring2 = spring.clone(); //FIXME
+    let spring = asset_server.load(config.base_path.join("Classroom/ClassroomSpring.png"));
 
-    data.seasons.insert(Season::Autumn, spring);
+    data.seasons.insert(Season::Autumn, spring.clone());
     data.seasons.insert(
         Season::Summer,
-        asset_server.load(config.clone().base_path + "Classroom/ClassroomSummer.png"),
+        asset_server.load(config.base_path.join("Classroom/ClassroomSummer.png")),
     );
     data.seasons.insert(
         Season::Autumn,
-        asset_server.load(config.clone().base_path + "Classroom/ClassroomAutumn.png"),
+        asset_server.load(config.base_path.join("Classroom/ClassroomAutumn.png")),
     );
     data.seasons.insert(
         Season::Winter,
-        asset_server.load(config.clone().base_path + "Classroom/ClassroomWinter.png"),
+        asset_server.load(config.base_path.join("Classroom/ClassroomWinter.png")),
     );
 
     let sprite = SpriteBundle {
-        texture: spring2,
+        texture: spring.clone(),
         transform: Transform {
             translation: Vec3 {
                 x: 0.,

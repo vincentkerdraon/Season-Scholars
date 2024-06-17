@@ -90,3 +90,5 @@ pub fn station_to_student_col(station: Station) -> StudentCol {
         _ => panic!(),
     }
 }
+
+pub type FoodRemaining = i8;

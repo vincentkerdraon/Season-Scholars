@@ -54,7 +54,7 @@ impl SeasonTimer {
 
 pub fn season_startup_system(mut commands: Commands, config: Res<Config>) {
     debug!("season_startup_system starting");
-    commands.spawn(SeasonTimer::new(config.clone().seasons_duration_s));
+    commands.spawn(SeasonTimer::new(config.seasons_duration_s));
 }
 
 fn listen_reset(

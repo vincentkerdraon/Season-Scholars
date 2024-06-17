@@ -3,6 +3,7 @@ mod components {
     pub mod moves;
     pub mod teacher_busy;
     pub mod controllers {
+        pub mod kitchen;
         pub mod overlord;
         pub mod player_input;
         pub mod portal;
@@ -13,31 +14,37 @@ mod components {
     }
     pub mod views;
 }
-
 use bevy::{
     input::{mouse::MouseButtonInput, ButtonState},
     log::LogPlugin,
     prelude::*,
     window::{Cursor, WindowResolution},
 };
+use std::env;
 
 fn main() {
+    let mut path = env::current_exe()
+        .unwrap_or_else(|e| panic!("Failed to get current executable path: {}", e));
+    path.pop();
+    path.pop();
+    path.pop();
+    path.pop();
+    path.push("images/ready");
+
     let mut app: App = App::new();
     app.insert_resource(Config {
-        base_path: "/home/korrident/Documents/farmer-school/images/ready/".to_string(),
+        base_path: path,
         students_max: 9,
         students_init: 6,
         students_rows_nb: 3,
-        students_img_center_nb: 5,
-        students_img_side_nb: 6,
         long_action_s: 5.0,  //FIXME
         short_action_s: 2.0, //FIXME
         seasons_duration_s: 20.,
         portal_health_max: 10,
-        portal_opened_nb: 5,
-        portal_closed_nb: 10,
         portal_windows_nb: 4,
         portal_windows_seasons_nb: 3,
+        food_max: 5,
+        draw_frame_modulo: 5,
     })
     .add_plugins(
         DefaultPlugins
@@ -48,7 +55,7 @@ fn main() {
                     resolution: WindowResolution::new(1920., 1080.),
                     resizable: true,
                     cursor: Cursor {
-                        // visible: false, //FIXME
+                        // visible: false, //FIXME debug only
                         ..default()
                     },
                     ..Default::default()
@@ -63,6 +70,7 @@ fn main() {
     .add_plugins(components::controllers::player_input::player_input::PlayerInputControllerPlugin)
     .add_plugins(components::controllers::portal::portal::PortalControllerPlugin)
     .add_plugins(components::controllers::students::students::StudentsControllerPlugin)
+    .add_plugins(components::controllers::kitchen::kitchen::KitchenControllerPlugin)
     .add_plugins(components::views::room::RoomViewPlugin)
     .add_plugins(components::views::welcome::WelcomeViewPlugin)
     .add_plugins(components::views::teacher::TeacherViewPlugin)

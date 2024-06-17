@@ -21,6 +21,8 @@ use crate::{
 use bevy::prelude::*;
 use rand::Rng;
 
+const STATION: Station = Station::Portal;
+
 fn listen_game_over(
     mut data: ResMut<PortalData>,
     mut game_over_events: EventReader<GameOverEvent>,
@@ -135,7 +137,7 @@ fn listen_reset(
     mut reset_game_events: EventReader<ResetGameEvent>,
     monster_popped_events: EventWriter<MonsterPoppedEvent>,
 ) {
-    if reset_game_events.read().next().is_some() {
+    if reset_game_events.read().last().is_some() {
         data.activated = true;
         reset(time, config, data, monster_popped_events);
         reset_game_events.clear();
@@ -148,13 +150,13 @@ fn reset(
     mut data: ResMut<PortalData>,
     mut monster_popped_events: EventWriter<MonsterPoppedEvent>,
 ) {
-    data.health_max = config.clone().portal_health_max;
+    data.health_max = config.portal_health_max;
     data.health = data.health_max;
     data.difficulty = 0;
     // data.teachers_present = HashMap::new();
     let now = time.elapsed_seconds_f64();
     data.monsters = Vec::new();
-    data.teacher_busy = TeacherBusy::new(vec![Station::Portal]);
+    data.teacher_busy = TeacherBusy::new(vec![STATION]);
     pop_monster(now, &mut data, &mut monster_popped_events);
 }
 
@@ -291,6 +293,7 @@ fn listen_events_player_input(
     mut data: ResMut<PortalData>,
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut portal_observed_events: EventWriter<PortalObservedEvent>,
+    mut portal_fixed_events: EventWriter<PortalFixedEvent>,
     mut move_teacher_events: EventWriter<MoveTeacherEvent>,
     mut invalid_action_station_events: EventWriter<InvalidActionStationEvent>,
     mut invalid_move_events: EventWriter<InvalidMoveEvent>,
@@ -304,7 +307,7 @@ fn listen_events_player_input(
         if e.long_action {
             if data.health >= data.health_max {
                 let emit = InvalidActionStationEvent {
-                    station: crate::model::definitions::Station::Portal,
+                    station: STATION,
                     teacher: e.teacher,
                 };
                 debug!("{:?}", emit);
@@ -312,10 +315,16 @@ fn listen_events_player_input(
             } else {
                 data.teacher_busy
                     .action(e.teacher, now, config.long_action_s);
-                //repair //FIXME event
                 data.health = data.health + 1;
-                continue;
+                let emit = PortalFixedEvent {
+                    teacher: Teacher::A,
+                    health: data.health,
+                    monsters: data.monsters.clone(),
+                };
+                debug!("{:?}", emit);
+                portal_fixed_events.send(emit);
             }
+            continue;
         }
 
         if e.short_action {
@@ -340,19 +349,19 @@ fn listen_events_player_input(
             }
             if !revealed {
                 let emit = InvalidActionStationEvent {
-                    station: crate::model::definitions::Station::Portal,
+                    station: STATION,
                     teacher: e.teacher,
                 };
                 debug!("{:?}", emit);
                 invalid_action_station_events.send(emit);
             }
+            continue;
         }
 
         if e.confirm_move {
-            let from = Station::Portal;
-            if let Some(to) = possible_move(from, e.direction) {
+            if let Some(to) = possible_move(STATION, e.direction) {
                 let emit = MoveTeacherEvent {
-                    station_from: from,
+                    station_from: STATION,
                     station_to: to,
                     teacher: e.teacher,
                 };
@@ -360,12 +369,13 @@ fn listen_events_player_input(
                 move_teacher_events.send(emit);
             } else {
                 let emit = InvalidMoveEvent {
-                    station: from,
+                    station: STATION,
                     teacher: e.teacher,
                 };
                 debug!("{:?}", emit);
                 invalid_move_events.send(emit);
             }
+            continue;
         }
     }
 }
@@ -376,6 +386,7 @@ impl Plugin for PortalControllerPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<ObservePortalEvent>()
             .add_event::<PortalObservedEvent>()
+            .add_event::<PortalFixedEvent>()
             .add_event::<PortalAttackedEvent>()
             .add_event::<MonsterFedEvent>()
             .add_event::<MonsterPoppedEvent>()

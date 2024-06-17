@@ -49,7 +49,7 @@ fn load_resources(
 
     data.input_arcade = commands
         .spawn(SpriteBundle {
-            texture: asset_server.load(config.clone().base_path + "StartScreen/InputArcade.png"),
+            texture: asset_server.load(config.base_path.join("StartScreen/InputArcade.png")),
             transform: Transform {
                 translation: Vec3 {
                     x: 0.,
@@ -70,7 +70,7 @@ fn load_resources(
 
     data.input_keyboard = commands
         .spawn(SpriteBundle {
-            texture: asset_server.load(config.clone().base_path + "StartScreen/InputKeyboard1.png"),
+            texture: asset_server.load(config.base_path.join("StartScreen/InputKeyboard1.png")),
             transform: Transform {
                 translation: Vec3 {
                     x: 0.,

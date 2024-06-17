@@ -9,7 +9,7 @@ use bevy::prelude::*;
 use std::collections::HashMap;
 use std::process;
 
-fn debug_start_game(
+fn _debug_start_game(
     mut data: ResMut<Overlord>,
     mut reset_game_events: EventWriter<ResetGameEvent>,
     mut display_screen_game_events: EventWriter<DisplayScreenGameEvent>,
@@ -216,12 +216,9 @@ impl Plugin for OverlordControllerPlugin {
             .add_systems(PreUpdate, listen_events_score)
             .add_systems(PreUpdate, listen_events_menu);
 
-        // app.add_systems(Startup, start); //FIXME
-        #[cfg(debug_assertions)]
-        {
-            //override normal start()
-            app.add_systems(Startup, debug_start_game);
-        }
+        // app.add_systems(Startup, start); //FIXME debug only
+        //override normal start() for easy testing
+        app.add_systems(Startup, _debug_start_game);
     }
 }
 

@@ -11,13 +11,13 @@ fn load_resources(
     config: Res<Config>,
     mut data: ResMut<WelcomeData>,
 ) {
-    data.closed = asset_server.load(config.clone().base_path + "Welcome/DoorClosed.png");
+    data.closed = asset_server.load(config.base_path.join("Welcome/DoorClosed.png"));
     data.opened
-        .push(asset_server.load(config.clone().base_path + "Welcome/Traveler1.png"));
+        .push(asset_server.load(config.base_path.join("Welcome/Traveler1.png")));
     data.opened
-        .push(asset_server.load(config.clone().base_path + "Welcome/Traveler2.png"));
+        .push(asset_server.load(config.base_path.join("Welcome/Traveler2.png")));
     data.opened
-        .push(asset_server.load(config.clone().base_path + "Welcome/Traveler3.png"));
+        .push(asset_server.load(config.base_path.join("Welcome/Traveler3.png")));
 
     data.door = commands
         .spawn(SpriteBundle {

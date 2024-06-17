@@ -18,6 +18,8 @@ use crate::{
 };
 use bevy::prelude::*;
 
+const STATION: Station = Station::Welcome;
+
 fn listen_moved(
     mut data: ResMut<WelcomeData>,
     mut teacher_moved_events: EventReader<TeacherMovedEvent>,
@@ -29,7 +31,7 @@ fn listen_moved(
 
 fn listen_reset(mut data: ResMut<WelcomeData>, mut reset_game_events: EventReader<ResetGameEvent>) {
     if reset_game_events.read().last().is_some() {
-        data.teacher_busy = TeacherBusy::new(vec![Station::Welcome]);
+        data.teacher_busy = TeacherBusy::new(vec![STATION]);
     }
 }
 
@@ -43,6 +45,7 @@ fn listen_events(
     mut monster_fed_events: EventReader<MonsterFedEvent>,
     mut welcome_available_events: EventWriter<WelcomeAvailableEvent>,
     mut welcome_student_events: EventWriter<WelcomeStudentEvent>,
+    mut recruit_student_events: EventWriter<RecruitStudentEvent>,
     mut move_teacher_events: EventWriter<MoveTeacherEvent>,
     mut invalid_action_station_events: EventWriter<InvalidActionStationEvent>,
     mut invalid_move_events: EventWriter<InvalidMoveEvent>,
@@ -52,7 +55,7 @@ fn listen_events(
     }
 
     for _ in student_welcomed_events.read() {
-        data.available = false;
+        data.student_available = false;
         data.students_classroom_nb += 1;
     }
 
@@ -72,9 +75,9 @@ fn listen_events(
         }
 
         if e.long_action {
-            if data.available {
+            if data.student_available {
                 let emit = InvalidActionStationEvent {
-                    station: crate::model::definitions::Station::Welcome,
+                    station: STATION,
                     teacher: e.teacher,
                 };
                 debug!("{:?}", emit);
@@ -82,13 +85,16 @@ fn listen_events(
             } else {
                 data.teacher_busy
                     .action(e.teacher, now, config.long_action_s);
-                //recruit //FIXME event
+                let emit = RecruitStudentEvent { teacher: e.teacher };
+                debug!("{:?}", emit);
+                recruit_student_events.send(emit);
+
                 should_accept = true
             }
         }
 
         if e.short_action {
-            if data.available {
+            if data.student_available {
                 data.teacher_busy
                     .action(e.teacher, now, config.short_action_s);
                 let emit = WelcomeStudentEvent {
@@ -98,7 +104,7 @@ fn listen_events(
                 welcome_student_events.send(emit);
             } else {
                 let emit = InvalidActionStationEvent {
-                    station: crate::model::definitions::Station::Welcome,
+                    station: STATION,
                     teacher: e.teacher,
                 };
                 debug!("{:?}", emit);
@@ -107,10 +113,9 @@ fn listen_events(
         }
 
         if e.confirm_move {
-            let from = Station::Welcome;
-            if let Some(to) = possible_move(from, e.direction) {
+            if let Some(to) = possible_move(STATION, e.direction) {
                 let emit = MoveTeacherEvent {
-                    station_from: from,
+                    station_from: STATION,
                     station_to: to,
                     teacher: e.teacher,
                 };
@@ -118,7 +123,7 @@ fn listen_events(
                 move_teacher_events.send(emit);
             } else {
                 let emit = InvalidMoveEvent {
-                    station: from,
+                    station: STATION,
                     teacher: e.teacher,
                 };
                 debug!("{:?}", emit);
@@ -135,9 +140,9 @@ fn listen_events(
         should_accept = true;
     }
 
-    if should_accept && !data.available {
-        data.available = true;
-        let emit = WelcomeAvailableEvent { available: true };
+    if should_accept && !data.student_available {
+        data.student_available = true;
+        let emit = WelcomeAvailableEvent {};
         debug!("{:?}", emit);
         welcome_available_events.send(emit);
         return;
@@ -151,6 +156,7 @@ impl Plugin for WelcomeControllerPlugin {
         app.add_event::<WelcomeAvailableEvent>()
             .add_event::<WelcomeStudentEvent>()
             .add_event::<StudentWelcomedEvent>()
+            .add_event::<RecruitStudentEvent>()
             .insert_resource(WelcomeData { ..default() })
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_moved)
@@ -161,6 +167,6 @@ impl Plugin for WelcomeControllerPlugin {
 #[derive(Resource, Default)]
 struct WelcomeData {
     students_classroom_nb: usize,
-    available: bool,
+    student_available: bool,
     teacher_busy: TeacherBusy,
 }
