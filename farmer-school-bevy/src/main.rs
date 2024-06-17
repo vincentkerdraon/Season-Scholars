@@ -29,14 +29,14 @@ fn main() {
         students_rows_nb: 3,
         long_action_s: 6.0,
         short_action_s: 2.0,
-        seasons_duration_s: 20.,
+        seasons_duration_s: 10.,
         portal_health_max: 10,
         portal_windows_nb: 4,
         portal_windows_seasons_nb: 3,
         food_max: 5,
         draw_frame_modulo: 5,
         debug_disable_student_eating: true,
-        debug_start_game_immediately: true,
+        debug_start_game_immediately: false,
         debug_disable_monster_attack: true,
     })
     .add_plugins(

@@ -103,45 +103,50 @@ fn load_resources(
     let t = data.seasons.get(&Season::Autumn).unwrap().clone();
     data.knowledge.insert(
         (StudentCol::Left, 0),
-        place_knowledge(&mut commands, t.clone(), (-330., -230.)),
+        place_knowledge(&mut commands, t.clone(), (-230., -230.), (-0.5, 0.5)),
     );
     data.knowledge.insert(
         (StudentCol::Left, 1),
-        place_knowledge(&mut commands, t.clone(), (-230., -190.)),
+        place_knowledge(&mut commands, t.clone(), (-110., -225.), (0.5, -0.5)),
     );
     data.knowledge.insert(
         (StudentCol::Left, 2),
-        place_knowledge(&mut commands, t.clone(), (-110., -225.)),
+        place_knowledge(&mut commands, t.clone(), (-200., -180.), (0.5, 0.5)),
     );
 
     data.knowledge.insert(
         (StudentCol::Center, 0),
-        place_knowledge(&mut commands, t.clone(), (130., -230.)),
+        place_knowledge(&mut commands, t.clone(), (230., -230.), (0.5, -0.5)),
     );
     data.knowledge.insert(
         (StudentCol::Center, 1),
-        place_knowledge(&mut commands, t.clone(), (250., -190.)),
+        place_knowledge(&mut commands, t.clone(), (375., -225.), (0.5, -0.5)),
     );
     data.knowledge.insert(
         (StudentCol::Center, 2),
-        place_knowledge(&mut commands, t.clone(), (350., -225.)),
+        place_knowledge(&mut commands, t.clone(), (270., -190.), (-0.5, 0.5)),
     );
 
     data.knowledge.insert(
         (StudentCol::Right, 0),
-        place_knowledge(&mut commands, t.clone(), (700., -230.)),
+        place_knowledge(&mut commands, t.clone(), (760., -230.), (0.5, -0.5)),
     );
     data.knowledge.insert(
         (StudentCol::Right, 1),
-        place_knowledge(&mut commands, t.clone(), (820., -190.)),
+        place_knowledge(&mut commands, t.clone(), (900., -215.), (0.5, -0.5)),
     );
     data.knowledge.insert(
         (StudentCol::Right, 2),
-        place_knowledge(&mut commands, t.clone(), (920., -225.)),
+        place_knowledge(&mut commands, t.clone(), (800., -190.), (-0.5, -0.5)),
     );
 }
 
-fn place_knowledge(commands: &mut Commands, image: Handle<Image>, pos: (f32, f32)) -> Entity {
+fn place_knowledge(
+    commands: &mut Commands,
+    image: Handle<Image>,
+    pos: (f32, f32),
+    scale: (f32, f32),
+) -> Entity {
     commands
         .spawn(SpriteBundle {
             texture: image,
@@ -152,8 +157,8 @@ fn place_knowledge(commands: &mut Commands, image: Handle<Image>, pos: (f32, f32
                     z: 26.,
                 },
                 scale: Vec3 {
-                    x: 0.5,
-                    y: 0.5,
+                    x: scale.0,
+                    y: scale.1,
                     z: 1.,
                 },
                 ..default()

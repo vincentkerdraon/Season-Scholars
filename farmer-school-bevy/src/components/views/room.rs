@@ -14,7 +14,7 @@ fn load_resources(
 ) {
     let spring = asset_server.load(config.base_path.join("Classroom/ClassroomSpring.png"));
 
-    data.seasons.insert(Season::Autumn, spring.clone());
+    data.seasons.insert(Season::Spring, spring.clone());
     data.seasons.insert(
         Season::Summer,
         asset_server.load(config.base_path.join("Classroom/ClassroomSummer.png")),
