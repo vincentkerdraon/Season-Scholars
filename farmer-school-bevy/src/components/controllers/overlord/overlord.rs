@@ -2,6 +2,7 @@ use super::events::*;
 use crate::components::controllers::portal::events::MonsterFedEvent;
 use crate::components::controllers::season::events::SeasonChangedEvent;
 use crate::components::controllers::students::events::{GraduatedEvent, TaughtEvent};
+use crate::model::config::Config;
 use crate::{
     components::controllers::player_input::events::PlayerInputEvent, model::definitions::*,
 };
@@ -216,9 +217,17 @@ impl Plugin for OverlordControllerPlugin {
             .add_systems(PreUpdate, listen_events_score)
             .add_systems(PreUpdate, listen_events_menu);
 
-        // app.add_systems(Startup, start); //FIXME debug only
-        //override normal start() for easy testing
-        app.add_systems(Startup, _debug_start_game);
+        let mut debug = false;
+        if let Some(config) = app.world.get_resource::<Config>() {
+            if config.debug_start_game_immediately {
+                //override normal start() for easy testing
+                app.add_systems(Startup, _debug_start_game);
+                debug = true;
+            }
+        }
+        if !debug {
+            app.add_systems(Startup, start);
+        }
     }
 }
 

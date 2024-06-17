@@ -240,6 +240,9 @@ fn should_redraw_monster(monster_new: Option<&Monster>, monster_old: Option<&Mon
     if new.id != old.id {
         return true;
     }
+    if new.revealed != old.revealed {
+        return true;
+    }
     if new.needs != old.needs {
         return true;
     }

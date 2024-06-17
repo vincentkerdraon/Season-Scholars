@@ -2,7 +2,9 @@ use super::events::*;
 use crate::{
     components::{
         controllers::{
-            overlord::events::{InvalidActionStationEvent, InvalidMoveEvent, ResetGameEvent},
+            overlord::events::{
+                GameOverEvent, InvalidActionStationEvent, InvalidMoveEvent, ResetGameEvent,
+            },
             player_input::events::PlayerInputEvent,
             portal::events::MonsterFedEvent,
             students::events::GraduatedEvent,
@@ -29,9 +31,60 @@ fn listen_moved(
     }
 }
 
-fn listen_reset(mut data: ResMut<WelcomeData>, mut reset_game_events: EventReader<ResetGameEvent>) {
+fn listen_reset(data: ResMut<WelcomeData>, mut reset_game_events: EventReader<ResetGameEvent>) {
     if reset_game_events.read().last().is_some() {
-        data.teacher_busy = TeacherBusy::new(vec![STATION]);
+        reset(data);
+    }
+}
+
+fn reset(mut data: ResMut<WelcomeData>) {
+    data.teacher_busy = TeacherBusy::new(vec![STATION]);
+    data.activated = true;
+}
+
+fn listen_game_over(
+    mut data: ResMut<WelcomeData>,
+    mut game_over_events: EventReader<GameOverEvent>,
+) {
+    if game_over_events.read().last().is_none() {
+        return;
+    }
+    data.activated = false;
+}
+
+fn listen_graduated(
+    mut data: ResMut<WelcomeData>,
+    mut graduated_events: EventReader<GraduatedEvent>,
+    mut welcome_available_events: EventWriter<WelcomeAvailableEvent>,
+) {
+    for e in graduated_events.read() {
+        data.students_classroom_nb = e.students.len() as i8;
+
+        if data.students_classroom_nb <= 0 && !data.student_available {
+            data.student_available = true;
+            let emit = WelcomeAvailableEvent {};
+            debug!("{:?}", emit);
+            welcome_available_events.send(emit);
+        }
+    }
+}
+
+fn listen_monster_fed(
+    config: Res<Config>,
+    mut data: ResMut<WelcomeData>,
+    mut monster_fed_events: EventReader<MonsterFedEvent>,
+    mut welcome_available_events: EventWriter<WelcomeAvailableEvent>,
+) {
+    let students_max = config.students_rows_nb * 3;
+    for e in monster_fed_events.read() {
+        if e.needs == None {
+            if data.students_classroom_nb < students_max && !data.student_available {
+                data.student_available = true;
+                let emit = WelcomeAvailableEvent {};
+                debug!("{:?}", emit);
+                welcome_available_events.send(emit);
+            }
+        }
     }
 }
 
@@ -40,33 +93,19 @@ fn listen_events(
     config: Res<Config>,
     mut data: ResMut<WelcomeData>,
     mut player_input_events: EventReader<PlayerInputEvent>,
-    mut student_welcomed_events: EventReader<StudentWelcomedEvent>,
-    mut graduated_events: EventReader<GraduatedEvent>,
-    mut monster_fed_events: EventReader<MonsterFedEvent>,
     mut welcome_available_events: EventWriter<WelcomeAvailableEvent>,
     mut welcome_student_events: EventWriter<WelcomeStudentEvent>,
+    mut student_welcomed_events: EventWriter<StudentWelcomedEvent>,
     mut recruit_student_events: EventWriter<RecruitStudentEvent>,
     mut move_teacher_events: EventWriter<MoveTeacherEvent>,
     mut invalid_action_station_events: EventWriter<InvalidActionStationEvent>,
     mut invalid_move_events: EventWriter<InvalidMoveEvent>,
 ) {
-    for e in graduated_events.read() {
-        data.students_classroom_nb = e.students.len();
+    if !data.activated {
+        return;
     }
 
-    for _ in student_welcomed_events.read() {
-        data.student_available = false;
-        data.students_classroom_nb += 1;
-    }
-
-    let mut should_accept = false;
-
-    for e in monster_fed_events.read() {
-        if e.needs == None {
-            should_accept = true;
-        }
-    }
-
+    let students_max = config.students_rows_nb * 3;
     let now = time.elapsed_seconds_f64();
     for e in player_input_events.read() {
         //ignore event if teacher is not at this station or if busy
@@ -75,26 +114,33 @@ fn listen_events(
         }
 
         if e.long_action {
-            if data.student_available {
-                let emit = InvalidActionStationEvent {
-                    station: STATION,
-                    teacher: e.teacher,
-                };
-                debug!("{:?}", emit);
-                invalid_action_station_events.send(emit);
-            } else {
+            if !data.student_available {
                 data.teacher_busy
                     .action(e.teacher, now, config.long_action_s);
                 let emit = RecruitStudentEvent { teacher: e.teacher };
                 debug!("{:?}", emit);
                 recruit_student_events.send(emit);
 
-                should_accept = true
+                data.student_available = true;
+                let emit = WelcomeAvailableEvent {};
+                debug!("{:?}", emit);
+                welcome_available_events.send(emit);
+            } else {
+                let emit = InvalidActionStationEvent {
+                    station: STATION,
+                    teacher: e.teacher,
+                };
+                debug!("{:?}", emit);
+                invalid_action_station_events.send(emit);
             }
+            continue;
         }
 
         if e.short_action {
-            if data.student_available {
+            if data.student_available && data.students_classroom_nb < students_max {
+                data.student_available = false;
+                data.students_classroom_nb += 1;
+
                 data.teacher_busy
                     .action(e.teacher, now, config.short_action_s);
                 let emit = WelcomeStudentEvent {
@@ -102,6 +148,9 @@ fn listen_events(
                 };
                 debug!("{:?}", emit);
                 welcome_student_events.send(emit);
+                let emit = StudentWelcomedEvent { teacher: e.teacher };
+                debug!("{:?}", emit);
+                student_welcomed_events.send(emit);
             } else {
                 let emit = InvalidActionStationEvent {
                     station: STATION,
@@ -110,6 +159,7 @@ fn listen_events(
                 debug!("{:?}", emit);
                 invalid_action_station_events.send(emit);
             }
+            continue;
         }
 
         if e.confirm_move {
@@ -129,23 +179,8 @@ fn listen_events(
                 debug!("{:?}", emit);
                 invalid_move_events.send(emit);
             }
+            continue;
         }
-    }
-
-    if data.students_classroom_nb == config.students_max {
-        return;
-    }
-
-    if data.students_classroom_nb == 0 {
-        should_accept = true;
-    }
-
-    if should_accept && !data.student_available {
-        data.student_available = true;
-        let emit = WelcomeAvailableEvent {};
-        debug!("{:?}", emit);
-        welcome_available_events.send(emit);
-        return;
     }
 }
 
@@ -158,15 +193,20 @@ impl Plugin for WelcomeControllerPlugin {
             .add_event::<StudentWelcomedEvent>()
             .add_event::<RecruitStudentEvent>()
             .insert_resource(WelcomeData { ..default() })
+            .add_systems(Startup, reset)
             .add_systems(PreUpdate, listen_reset)
+            .add_systems(PreUpdate, listen_monster_fed)
+            .add_systems(PreUpdate, listen_graduated)
             .add_systems(PreUpdate, listen_moved)
+            .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, listen_events);
     }
 }
 
 #[derive(Resource, Default)]
 struct WelcomeData {
-    students_classroom_nb: usize,
+    students_classroom_nb: i8,
     student_available: bool,
     teacher_busy: TeacherBusy,
+    activated: bool,
 }

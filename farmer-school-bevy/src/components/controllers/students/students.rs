@@ -111,12 +111,12 @@ fn listen_events_player_input(
     mut invalid_action_station_events: EventWriter<InvalidActionStationEvent>,
     mut invalid_move_events: EventWriter<InvalidMoveEvent>,
 ) {
+    if !data.activated {
+        return;
+    }
+
     let now = time.elapsed_seconds_f64();
     for e in player_input_events.read() {
-        if !data.activated {
-            continue;
-        }
-
         if data.teacher_busy.ready(e.teacher, now) != (true, true) {
             continue;
         }

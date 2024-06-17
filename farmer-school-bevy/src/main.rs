@@ -31,20 +31,24 @@ fn main() {
     path.pop();
     path.push("images/ready");
 
+    let debug_pointer_click = true;
+
     let mut app: App = App::new();
     app.insert_resource(Config {
         base_path: path,
-        students_max: 9, //FIXME remove me
         students_init: 6,
         students_rows_nb: 3,
-        long_action_s: 5.0,  //FIXME
-        short_action_s: 2.0, //FIXME
+        long_action_s: 6.0,
+        short_action_s: 2.0,
         seasons_duration_s: 20.,
         portal_health_max: 10,
         portal_windows_nb: 4,
         portal_windows_seasons_nb: 3,
         food_max: 5,
         draw_frame_modulo: 5,
+        debug_disable_student_eating: true,
+        debug_start_game_immediately: true,
+        debug_disable_monster_attack: true,
     })
     .add_plugins(
         DefaultPlugins
@@ -55,7 +59,7 @@ fn main() {
                     resolution: WindowResolution::new(1920., 1080.),
                     resizable: true,
                     cursor: Cursor {
-                        // visible: false, //FIXME debug only
+                        visible: debug_pointer_click,
                         ..default()
                     },
                     ..Default::default()
@@ -81,16 +85,8 @@ fn main() {
     .add_plugins(components::views::kitchen::KitchenViewPlugin)
     .add_systems(Startup, setup);
 
-    #[cfg(debug_assertions)]
-    {
+    if debug_pointer_click {
         app.add_systems(Update, _log_mouse_click);
-        // app.add_systems(Update, log_fps);
-
-        // use bevy::diagnostic::LogDiagnosticsPlugin;
-        // app.add_plugins(LogDiagnosticsPlugin {
-        //     debug: true,
-        //     ..default()
-        // });
     }
 
     app.run();

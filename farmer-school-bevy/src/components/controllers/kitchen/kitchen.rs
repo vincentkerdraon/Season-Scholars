@@ -32,14 +32,18 @@ fn listen_game_over(
 
 fn listen_reset(
     config: Res<Config>,
-    mut data: ResMut<KitchenData>,
+    data: ResMut<KitchenData>,
     mut reset_game_events: EventReader<ResetGameEvent>,
 ) {
     if reset_game_events.read().last().is_some() {
-        data.activated = true;
-        data.food_remaining = config.food_max;
-        data.teacher_busy = TeacherBusy::new(vec![STATION]);
+        reset(config, data);
     }
+}
+
+fn reset(config: Res<Config>, mut data: ResMut<KitchenData>) {
+    data.activated = true;
+    data.food_remaining = config.food_max;
+    data.teacher_busy = TeacherBusy::new(vec![STATION]);
 }
 
 fn listen_moved(
@@ -52,11 +56,15 @@ fn listen_moved(
 }
 
 fn listen_season(
+    config: Res<Config>,
     mut data: ResMut<KitchenData>,
     mut season_changed_events: EventReader<SeasonChangedEvent>,
     mut game_over_events: EventWriter<GameOverEvent>,
     mut students_eat_events: EventWriter<StudentsEatEvent>,
 ) {
+    if config.debug_disable_student_eating {
+        return;
+    }
     for _ in season_changed_events.read() {
         // data.food_remaining -= data.students_classroom_nb / 3;
         data.food_remaining -= 1;
@@ -103,6 +111,10 @@ fn listen_events_player_input(
     mut invalid_action_station_events: EventWriter<InvalidActionStationEvent>,
     mut invalid_move_events: EventWriter<InvalidMoveEvent>,
 ) {
+    if !data.activated {
+        return;
+    }
+
     let now = time.elapsed_seconds_f64();
     for e in player_input_events.read() {
         if !data.activated {
@@ -114,6 +126,8 @@ fn listen_events_player_input(
 
         if e.long_action {
             if data.food_remaining < config.food_max {
+                data.teacher_busy
+                    .action(e.teacher, now, config.long_action_s);
                 data.food_remaining = config.food_max;
                 let emit = CookedEvent {
                     food_remaining: data.food_remaining,
@@ -135,6 +149,8 @@ fn listen_events_player_input(
         if e.short_action {
             if data.food_remaining > 0 {
                 data.food_remaining -= 1;
+                data.teacher_busy
+                    .action(e.teacher, now, config.short_action_s);
 
                 let emit = TeacherAteEvent {
                     food_remaining: data.food_remaining,
@@ -154,10 +170,9 @@ fn listen_events_player_input(
         }
 
         if e.confirm_move {
-            let from = STATION;
-            if let Some(to) = possible_move(from, e.direction) {
+            if let Some(to) = possible_move(STATION, e.direction) {
                 let emit = MoveTeacherEvent {
-                    station_from: from,
+                    station_from: STATION,
                     station_to: to,
                     teacher: e.teacher,
                 };
@@ -165,7 +180,7 @@ fn listen_events_player_input(
                 move_teacher_events.send(emit);
             } else {
                 let emit = InvalidMoveEvent {
-                    station: from,
+                    station: STATION,
                     teacher: e.teacher,
                 };
                 debug!("{:?}", emit);
@@ -184,6 +199,7 @@ impl Plugin for KitchenControllerPlugin {
             .add_event::<CookedEvent>()
             .add_event::<StudentsEatEvent>()
             .add_event::<TeacherAteEvent>()
+            .add_systems(Startup, reset)
             .add_systems(PreUpdate, listen_moved)
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_season)

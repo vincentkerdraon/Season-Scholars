@@ -87,6 +87,10 @@ fn listen_events(
     mut monster_fed_events: EventWriter<MonsterFedEvent>,
     mut monster_popped_events: EventWriter<MonsterPoppedEvent>,
 ) {
+    if !data.activated {
+        return;
+    }
+
     let now = time.elapsed_seconds_f64();
 
     for e in graduated_events.read() {
@@ -162,10 +166,14 @@ fn reset(
 
 fn listen_events_create_monster(
     time: Res<Time>,
+    config: Res<Config>,
     mut data: ResMut<PortalData>,
     mut season_changed_events: EventReader<SeasonChangedEvent>,
     mut monster_popped_events: EventWriter<MonsterPoppedEvent>,
 ) {
+    if config.debug_disable_monster_attack {
+        return;
+    }
     let now = time.elapsed_seconds_f64();
     for _ in season_changed_events.read() {
         pop_monster(now, &mut data, &mut monster_popped_events);
@@ -293,11 +301,16 @@ fn listen_events_player_input(
     mut data: ResMut<PortalData>,
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut portal_observed_events: EventWriter<PortalObservedEvent>,
+    mut observe_portal_events: EventWriter<ObservePortalEvent>,
     mut portal_fixed_events: EventWriter<PortalFixedEvent>,
     mut move_teacher_events: EventWriter<MoveTeacherEvent>,
     mut invalid_action_station_events: EventWriter<InvalidActionStationEvent>,
     mut invalid_move_events: EventWriter<InvalidMoveEvent>,
 ) {
+    if !data.activated {
+        return;
+    }
+
     let now = time.elapsed_seconds_f64();
     for e in player_input_events.read() {
         if data.teacher_busy.ready(e.teacher, now) != (true, true) {
@@ -337,6 +350,11 @@ fn listen_events_player_input(
                     data.teacher_busy
                         .action(e.teacher, now, config.short_action_s);
 
+                    let emit = ObservePortalEvent {
+                        teacher: Teacher::A,
+                    };
+                    debug!("{:?}", emit);
+                    observe_portal_events.send(emit);
                     let emit = PortalObservedEvent {
                         teacher: Teacher::A,
                         health: data.health,
