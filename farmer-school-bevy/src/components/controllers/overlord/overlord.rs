@@ -1,16 +1,10 @@
-use crate::components::moves::moves::possible_move;
-use crate::components::teacher_busy::teacher_busy::TeacherBusy;
 use crate::model::config::Config;
-use crate::model::kitchen::*;
+use crate::model::definitions::*;
 use crate::model::overlord::*;
 use crate::model::player_input::*;
 use crate::model::portal::*;
 use crate::model::season::*;
 use crate::model::students::*;
-use crate::model::teacher::*;
-use crate::model::welcome::*;
-use crate::model::{config::Config, definitions::*};
-use bevy::prelude::*;
 use bevy::prelude::*;
 use std::collections::HashMap;
 use std::process;
@@ -57,14 +51,14 @@ fn listen_events_score(
     mut season_changed_events: EventReader<SeasonChangedEvent>,
 ) {
     for _ in taught_events.read() {
-        data.score = data.score + 1;
+        data.score += 1;
     }
     for _ in graduated_events.read() {
-        data.score = data.score + 10;
+        data.score += 10;
     }
     for e in monster_fed_events.read() {
         if e.needs.is_none() {
-            data.score = data.score + 30;
+            data.score += 30;
         }
     }
     for e in season_changed_events.read() {
@@ -98,7 +92,7 @@ fn listen_events_menu(
             }
         }
 
-        if e.long_action && data.teachers.len() > 0 {
+        if e.long_action && !data.teachers.is_empty() {
             let teachers: Vec<Teacher> = data.teachers.keys().copied().collect();
             let emit = DisplayScreenGameEvent {
                 teachers: teachers.clone(),
@@ -120,7 +114,7 @@ fn listen_events_menu(
 
     if changed {
         let teachers: Vec<Teacher> = data.teachers.keys().copied().collect();
-        let emit = DisplayScreenMenuEvent { teachers: teachers };
+        let emit = DisplayScreenMenuEvent { teachers };
         debug!("{:?}", emit);
         display_screen_menu_events.send(emit);
     }
@@ -137,7 +131,7 @@ fn listen_events_game_over(
         data.screen = Screen::GameOverRecap;
         let teachers: Vec<Teacher> = data.teachers.keys().copied().collect();
         let emit = DisplayScreenGameOverRecapEvent {
-            teachers: teachers,
+            teachers,
             reason: e.reason.to_string(),
             score: data.score,
             seasons_elapsed: data.seasons_elapsed,
@@ -172,7 +166,7 @@ fn listen_events_reset(
                 data.screen = Screen::GameOverRecap;
                 let teachers: Vec<Teacher> = data.teachers.keys().copied().collect();
                 let emit = DisplayScreenGameOverRecapEvent {
-                    teachers: teachers,
+                    teachers,
                     reason: "Reset button".to_string(),
                     score: data.score,
                     seasons_elapsed: data.seasons_elapsed,

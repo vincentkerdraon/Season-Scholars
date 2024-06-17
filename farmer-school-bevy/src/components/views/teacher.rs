@@ -3,31 +3,15 @@ use std::{collections::HashMap, num::Wrapping};
 use bevy::prelude::*;
 
 use crate::components::moves::moves::possible_move;
-use crate::components::teacher_busy::teacher_busy::TeacherBusy;
 use crate::model::config::Config;
 use crate::model::definitions::*;
 use crate::model::kitchen::*;
 use crate::model::overlord::*;
 use crate::model::player_input::*;
 use crate::model::portal::*;
-use crate::model::season::*;
 use crate::model::students::*;
 use crate::model::teacher::*;
 use crate::model::welcome::*;
-use crate::model::{config::Config, definitions::*};
-use crate::{
-    components::moves::moves::possible_move,
-    model::{
-        config::Config,
-        definitions::{Reaction, Station, Teacher},
-    },
-};
-use bevy::prelude::*;
-use bevy::prelude::*;
-use bevy::prelude::*;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::process;
 
 const DISPLAY_REACTION_FAIL_DURATION_S: f64 = 0.5;
 
@@ -192,7 +176,7 @@ fn place_path(
 ) -> Entity {
     commands
         .spawn(SpriteBundle {
-            texture: texture,
+            texture,
             transform: Transform {
                 translation: Vec3 {
                     x: pos.0,
@@ -220,7 +204,7 @@ fn place_teacher(
 ) -> Entity {
     commands
         .spawn(SpriteBundle {
-            texture: texture,
+            texture,
             transform: Transform {
                 translation: Vec3 {
                     x: pos.0,
@@ -248,7 +232,7 @@ fn place_reaction(
 ) -> Entity {
     commands
         .spawn(SpriteBundle {
-            texture: texture,
+            texture,
             transform: Transform {
                 translation: Vec3 {
                     x: pos.0,

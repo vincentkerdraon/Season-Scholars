@@ -2,29 +2,12 @@ use crate::components::moves::moves::possible_move;
 use crate::components::teacher_busy::teacher_busy::TeacherBusy;
 use crate::model::config::Config;
 use crate::model::definitions::*;
-use crate::model::kitchen::*;
 use crate::model::overlord::*;
 use crate::model::player_input::*;
 use crate::model::portal::*;
-use crate::model::season::*;
 use crate::model::students::*;
 use crate::model::teacher::*;
 use crate::model::welcome::*;
-use crate::model::{config::Config, definitions::*};
-use crate::{
-    components::{moves::moves::possible_move, teacher_busy::teacher_busy::TeacherBusy},
-    model::{
-        config::Config,
-        definitions::{Station, Teacher},
-    },
-};
-use bevy::prelude::*;
-use bevy::prelude::*;
-use bevy::prelude::*;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::process;
-
 use bevy::prelude::*;
 
 const STATION: Station = Station::Welcome;
@@ -84,13 +67,12 @@ fn listen_monster_fed(
 ) {
     let students_max = config.students_rows_nb * 3;
     for e in monster_fed_events.read() {
-        if e.needs == None {
-            if data.students_classroom_nb < students_max && !data.student_available {
-                data.student_available = true;
-                let emit = WelcomeAvailableEvent {};
-                debug!("{:?}", emit);
-                welcome_available_events.send(emit);
-            }
+        if e.needs.is_none() && data.students_classroom_nb < students_max && !data.student_available
+        {
+            data.student_available = true;
+            let emit = WelcomeAvailableEvent {};
+            debug!("{:?}", emit);
+            welcome_available_events.send(emit);
         }
     }
 }

@@ -3,29 +3,9 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 use strum::IntoEnumIterator;
 
-use crate::components::moves::moves::possible_move;
-use crate::components::teacher_busy::teacher_busy::TeacherBusy;
 use crate::model::config::Config;
 use crate::model::definitions::*;
-use crate::model::kitchen::*;
-use crate::model::overlord::*;
-use crate::model::player_input::*;
-use crate::model::portal::*;
-use crate::model::season::*;
 use crate::model::students::*;
-use crate::model::teacher::*;
-use crate::model::welcome::*;
-use crate::model::{config::Config, definitions::*};
-use crate::model::{
-    config::Config,
-    definitions::{Season, Student, StudentCol, StudentId, StudentRow},
-};
-use bevy::prelude::*;
-use bevy::prelude::*;
-use bevy::prelude::*;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::process;
 
 const STUDENTS_IMG_CENTER_NB: i8 = 5;
 const STUDENTS_IMG_SIDE_NB: i8 = 6;
@@ -266,7 +246,7 @@ fn draw(
                         }
                         //only the first row displays their knowledge
                         //the others have the basic art
-                        if row > 0 || student.knowledge.len() == 0 {
+                        if row > 0 || student.knowledge.is_empty() {
                             *texture_handle =
                                 students_images.get(*texture_index).unwrap().0.clone();
                             done = true;
@@ -363,7 +343,7 @@ impl StudentData {
                 self.new_student(s.id, s.col);
             }
         }
-        self.students = students.clone();
+        self.students.clone_from(students);
         self.dirty = true;
     }
 
@@ -396,13 +376,13 @@ impl StudentData {
                 &self.students_center,
             );
         }
-        return insert(
+        insert(
             id,
             col,
             &mut self.mapping,
             &mut self.students_side_last_used_index,
             &self.students_side,
-        );
+        )
     }
 
     // fn graduate(&mut self, id: StudentId) {

@@ -2,26 +2,9 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 
-use crate::components::moves::moves::possible_move;
-use crate::components::teacher_busy::teacher_busy::TeacherBusy;
 use crate::model::config::Config;
 use crate::model::definitions::*;
 use crate::model::kitchen::*;
-use crate::model::overlord::*;
-use crate::model::player_input::*;
-use crate::model::portal::*;
-use crate::model::season::*;
-use crate::model::students::*;
-use crate::model::teacher::*;
-use crate::model::welcome::*;
-use crate::model::{config::Config, definitions::FoodRemaining};
-use crate::model::{config::Config, definitions::*};
-use bevy::prelude::*;
-use bevy::prelude::*;
-use bevy::prelude::*;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::process;
 
 const SCALE: f32 = 0.25;
 
@@ -71,13 +54,13 @@ fn load_resources(
     let textures_4 = load("FoodE".to_string(), 4);
 
     let mut register_food = |id: FoodId, textures: Vec<Handle<Image>>, pos: (f32, f32, f32)| {
-        let texture = textures.get(0).unwrap().clone();
+        let texture = textures.first().unwrap().clone();
         let e = place_food(&mut commands, texture, pos);
         let food_data = FoodData {
-            e: e,
+            e,
             displayed: true,
             texture_index: 0,
-            textures: textures,
+            textures,
             updated: true,
         };
         data.food.insert(id, food_data);
@@ -94,7 +77,7 @@ fn load_resources(
 fn place_food(commands: &mut Commands, texture: Handle<Image>, pos: (f32, f32, f32)) -> Entity {
     commands
         .spawn(SpriteBundle {
-            texture: texture,
+            texture,
             transform: Transform {
                 translation: Vec3 {
                     x: pos.0,

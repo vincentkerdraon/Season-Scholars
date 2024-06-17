@@ -91,7 +91,7 @@ impl WelcomeData {
         &self.closed
     }
     pub fn get_opened_auto(&mut self) -> Option<&Handle<Image>> {
-        self.opened_last_used_index = self.opened_last_used_index + 1;
+        self.opened_last_used_index += 1;
         if self.opened_last_used_index == self.opened.len() {
             self.opened_last_used_index = 0;
         }

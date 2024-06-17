@@ -1,22 +1,8 @@
-use crate::components::moves::moves::possible_move;
-use crate::components::teacher_busy::teacher_busy::TeacherBusy;
-use crate::model::config::Config;
 use crate::model::definitions::*;
-use crate::model::kitchen::*;
 use crate::model::overlord::*;
 use crate::model::player_input::*;
-use crate::model::portal::*;
-use crate::model::season::*;
-use crate::model::students::*;
-use crate::model::teacher::*;
-use crate::model::welcome::*;
-use crate::model::{config::Config, definitions::*};
 use bevy::prelude::*;
-use bevy::prelude::*;
-use bevy::prelude::*;
-use std::collections::HashMap;
 use std::collections::HashSet;
-use std::process;
 
 pub struct PlayerInputControllerPlugin;
 
@@ -132,7 +118,7 @@ fn detect_input_changed(
             updated = true;
         }
     }
-    return updated;
+    updated
 }
 
 fn input_player_a(keys_pressed: &HashSet<KeyCode>) -> PlayerInputEvent {
@@ -170,7 +156,7 @@ fn input_player_a(keys_pressed: &HashSet<KeyCode>) -> PlayerInputEvent {
         out.direction += Vec2::new(1.0, 0.0)
     }
 
-    return out;
+    out
 }
 
 fn input_player_b(keys_pressed: &HashSet<KeyCode>) -> PlayerInputEvent {
@@ -213,7 +199,7 @@ fn input_player_b(keys_pressed: &HashSet<KeyCode>) -> PlayerInputEvent {
         out.direction += Vec2::new(1.0, 0.0)
     }
 
-    return out;
+    out
 }
 
 #[cfg(test)]
@@ -247,7 +233,7 @@ mod tests {
 
         for event in event_reader.read(&input_events) {
             assert_eq!(event.teacher, Teacher::A);
-            assert_eq!(event.short_action, true);
+            assert!(event.short_action);
             assert_eq!(event.direction, Vec2::new(0.0, 1.0));
         }
     }

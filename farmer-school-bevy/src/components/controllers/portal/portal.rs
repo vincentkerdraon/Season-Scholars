@@ -1,29 +1,15 @@
 use crate::components::moves::moves::possible_move;
-use crate::components::moves::moves::possible_move;
 use crate::components::teacher_busy::teacher_busy::TeacherBusy;
 use crate::model::config::Config;
-use crate::model::kitchen::*;
+use crate::model::definitions::*;
 use crate::model::overlord::*;
 use crate::model::player_input::*;
 use crate::model::portal::*;
 use crate::model::season::*;
 use crate::model::students::*;
 use crate::model::teacher::*;
-use crate::model::welcome::*;
-use crate::model::{config::Config, definitions::*};
-use crate::{
-    components::teacher_busy::teacher_busy::TeacherBusy,
-    model::{
-        config::Config,
-        definitions::{Season, Station, Teacher},
-    },
-};
-use bevy::prelude::*;
-use bevy::prelude::*;
 use bevy::prelude::*;
 use rand::Rng;
-use std::collections::HashMap;
-use std::process;
 
 const STATION: Station = Station::Portal;
 
@@ -58,7 +44,7 @@ fn monster_attack(
 
         if monster.revealed && monster.next_attack_s < now {
             monster.next_attack_s = now + monster.attack_interval_s;
-            data.health = data.health - 1;
+            data.health -= 1;
             changed = true;
         }
 
@@ -106,7 +92,7 @@ fn listen_events(
                 monster.needs.remove(pos);
             }
         }
-        if monster.needs.len() == 0 {
+        if monster.needs.is_empty() {
             data.monsters.remove(0);
         }
 
@@ -123,7 +109,7 @@ fn listen_events(
         monster_fed_events.send(emit);
 
         //there must be always at least one monster
-        if data.monsters.len() == 0 {
+        if data.monsters.is_empty() {
             pop_monster(now, &mut data, &mut monster_popped_events)
         }
     }
@@ -196,7 +182,7 @@ fn pop_monster(
     }
 
     //first should be difficulty=id=1
-    data.difficulty = data.difficulty + 1;
+    data.difficulty += 1;
     let m = generate_monster(now, data.difficulty);
     data.monsters.push(m);
 
@@ -332,7 +318,7 @@ fn listen_events_player_input(
             } else {
                 data.teacher_busy
                     .action(e.teacher, now, config.long_action_s);
-                data.health = data.health + 1;
+                data.health += 1;
                 let emit = PortalFixedEvent {
                     teacher: Teacher::A,
                     health: data.health,

@@ -2,7 +2,8 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 
-use crate::model::{definitions::*, teacher::TeacherMovedEvent};
+use crate::model::definitions::*;
+use crate::model::teacher::*;
 
 #[derive(Resource, Default)]
 pub struct TeacherBusy {
@@ -13,12 +14,12 @@ pub struct TeacherBusy {
 impl TeacherBusy {
     pub fn new(here: Vec<Station>) -> Self {
         Self {
-            here: here,
+            here,
             teachers: HashMap::new(),
         }
     }
     pub fn moved(&mut self, e: &TeacherMovedEvent) {
-        if self.here.len() == 0 {
+        if self.here.is_empty() {
             panic!();
         }
         if self.here.contains(&e.station_from) {
@@ -30,7 +31,7 @@ impl TeacherBusy {
     }
 
     pub fn action(&mut self, t: Teacher, now: f64, duration: f64) -> bool {
-        if self.here.len() == 0 {
+        if self.here.is_empty() {
             panic!();
         }
         if let Some(d) = self.teachers.get_mut(&t) {
@@ -44,7 +45,7 @@ impl TeacherBusy {
 
     /// returns (present_at_station, not_busy)
     pub fn ready(&mut self, t: Teacher, now: f64) -> (bool, bool) {
-        if self.here.len() == 0 {
+        if self.here.is_empty() {
             panic!();
         }
         if let Some(d) = self.teachers.get(&t) {
@@ -57,7 +58,7 @@ impl TeacherBusy {
                 panic!()
             }
         }
-        return (false, false);
+        (false, false)
     }
 
     pub fn station(&mut self, t: Teacher) -> Option<Station> {
@@ -66,6 +67,6 @@ impl TeacherBusy {
                 return Some(*s);
             }
         }
-        return None;
+        None
     }
 }

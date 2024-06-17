@@ -2,26 +2,9 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 
-use crate::components::moves::moves::possible_move;
-use crate::components::teacher_busy::teacher_busy::TeacherBusy;
 use crate::model::config::Config;
 use crate::model::definitions::*;
-use crate::model::kitchen::*;
-use crate::model::overlord::*;
-use crate::model::player_input::*;
 use crate::model::portal::*;
-use crate::model::season::*;
-use crate::model::students::*;
-use crate::model::teacher::*;
-use crate::model::welcome::*;
-use crate::model::{config::Config, definitions::Season};
-use crate::model::{config::Config, definitions::*};
-use bevy::prelude::*;
-use bevy::prelude::*;
-use bevy::prelude::*;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::process;
 
 const PORTAL_OPENED_NB: i8 = 5;
 const PORTAL_CLOSED_NB: i8 = 10;
@@ -192,10 +175,10 @@ fn display_window(
 
     if let Ok((mut texture_handle, mut visibility)) = query.get_mut(*data.windows.get(&i).unwrap())
     {
-        if !revealed && needs.len() == 0 {
+        if !revealed && needs.is_empty() {
             *visibility = Visibility::Visible;
             *texture_handle = data.window_closed.clone();
-        } else if !revealed && needs.len() > 0 {
+        } else if !revealed && !needs.is_empty() {
             *visibility = Visibility::Visible;
             *texture_handle = data.window_available.clone();
         } else {
@@ -280,24 +263,24 @@ fn listen_events(
     let mut health: i8 = 0;
 
     if let Some(e) = monster_popped_events.read().last() {
-        monsters = e.monsters.clone();
+        monsters.clone_from(&e.monsters);
         dirty = true;
     }
 
     if let Some(e) = portal_attacked_events.read().last() {
         health = e.health;
-        monsters = e.monsters.clone();
+        monsters.clone_from(&e.monsters);
         dirty = true;
     }
 
     if let Some(e) = monster_fed_events.read().last() {
-        monsters = e.monsters.clone();
+        monsters.clone_from(&e.monsters);
         dirty = true;
     }
 
     if let Some(e) = portal_observed_events.read().last() {
         health = e.health;
-        monsters = e.monsters.clone();
+        monsters.clone_from(&e.monsters);
         dirty = true;
     }
 
@@ -313,10 +296,10 @@ fn listen_events(
             let mut needs = Vec::new();
             let mut revealed = false;
             if let Some(new) = monster_new {
-                needs = new.needs.clone();
+                needs.clone_from(&new.needs);
                 revealed = new.revealed;
             }
-            display_window(&config, &mut data, &mut query, i as i8, revealed, needs);
+            display_window(&config, &mut data, &mut query, i, revealed, needs);
 
             if i == 0 {
                 display_monster(&mut data, &mut query, revealed);
@@ -377,7 +360,7 @@ impl PortalData {
     }
 
     pub fn get_opened_auto(&mut self) -> Option<&Handle<Image>> {
-        self.portal_opened_last_used_index = self.portal_opened_last_used_index + 1;
+        self.portal_opened_last_used_index += 1;
         if self.portal_opened_last_used_index == self.portal_opened.len() {
             self.portal_opened_last_used_index = 0;
         }
@@ -385,7 +368,7 @@ impl PortalData {
     }
 
     pub fn get_closed_auto(&mut self) -> Option<&Handle<Image>> {
-        self.portal_closed_last_used_index = self.portal_closed_last_used_index + 1;
+        self.portal_closed_last_used_index += 1;
         if self.portal_closed_last_used_index == self.portal_closed.len() {
             self.portal_closed_last_used_index = 0;
         }

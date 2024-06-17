@@ -1,29 +1,15 @@
 use std::time::Duration;
 
-use crate::components::moves::moves::possible_move;
-use crate::components::teacher_busy::teacher_busy::TeacherBusy;
 use crate::model::config::Config;
 use crate::model::definitions::*;
-use crate::model::kitchen::*;
 use crate::model::overlord::*;
-use crate::model::player_input::*;
-use crate::model::portal::*;
 use crate::model::season::*;
-use crate::model::students::*;
-use crate::model::teacher::*;
-use crate::model::welcome::*;
-use crate::model::{config::Config, definitions::*};
 use bevy::prelude::*;
-use bevy::prelude::*;
-use bevy::prelude::*;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::process;
 
 impl SeasonTimer {
     pub fn new(seasons_duration: f64) -> Self {
         let mut s = Self {
-            seasons_duration: seasons_duration,
+            seasons_duration,
             current_season: Season::Spring,
             seasons_elapsed: 0,
             timer: Timer::new(
@@ -56,7 +42,7 @@ impl SeasonTimer {
 
     fn tick(&mut self, s: Duration) -> bool {
         self.timer.tick(s);
-        return self.timer.finished();
+        self.timer.finished()
     }
 
     fn stop(&mut self) {

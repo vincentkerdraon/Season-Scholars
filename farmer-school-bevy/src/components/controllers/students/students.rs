@@ -2,27 +2,14 @@ use crate::components::moves::moves::possible_move;
 use crate::components::teacher_busy::teacher_busy::TeacherBusy;
 use crate::model::config::Config;
 use crate::model::definitions::*;
-use crate::model::kitchen::*;
 use crate::model::overlord::*;
 use crate::model::player_input::*;
-use crate::model::portal::*;
 use crate::model::season::*;
 use crate::model::students::*;
 use crate::model::teacher::*;
 use crate::model::welcome::*;
-use crate::model::{config::Config, definitions::*};
-use crate::{
-    components::{moves::moves::possible_move, teacher_busy::teacher_busy::TeacherBusy},
-    model::{config::Config, definitions::*},
-};
-use bevy::prelude::*;
-use bevy::prelude::*;
-use bevy::prelude::*;
 use bevy::prelude::*;
 use std::collections::HashMap;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::process;
 use strum::IntoEnumIterator;
 
 fn listen_move(
@@ -198,7 +185,7 @@ fn listen_events_player_input(
                 move_teacher_events.send(emit);
             } else {
                 let emit = InvalidMoveEvent {
-                    station: station,
+                    station,
                     teacher: e.teacher,
                 };
                 debug!("{:?}", emit);
@@ -259,7 +246,7 @@ impl StudentsData {
             student.knowledge.push(self.season);
             res = Some(self.season);
         });
-        return res;
+        res
     }
 
     fn graduate(&mut self, col: StudentCol) -> Option<Student> {
@@ -278,11 +265,10 @@ impl StudentsData {
                         return;
                     }
                     student.row -= 1;
-                    return;
                 }
             });
         }
-        return res;
+        res
     }
 
     fn create_student(&mut self) -> Option<Student> {
@@ -290,21 +276,21 @@ impl StudentsData {
         if let Some((col, row)) = self.find_available_desk() {
             let s = Student {
                 id: self.last_id,
-                col: col,
-                row: row,
+                col,
+                row,
                 knowledge: Vec::new(),
             };
             self.students.insert(s.id, s.clone());
             return Some(s);
         }
-        return None;
+        None
     }
 
     fn find_available_desk(&self) -> Option<(StudentCol, StudentRow)> {
         if self.students.len() == 9 {
             return None;
         }
-        if self.students.len() == 0 {
+        if self.students.is_empty() {
             return Some((StudentCol::Right, 0));
         }
 
