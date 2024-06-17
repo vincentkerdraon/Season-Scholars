@@ -254,20 +254,24 @@ impl StudentsData {
         //move all others students in the col toward the front
 
         let mut res: Option<Student> = None;
+        let mut keys_to_remove: Vec<StudentId> = Vec::new();
         for i in 0..=self.students_rows_nb {
-            self.students.iter_mut().for_each(|(_, student)| {
-                if student.col != col {
-                    return;
-                }
-                if student.row == i {
+            self.students
+                .iter_mut()
+                .filter(|(_, s)| s.col == col && s.row == i)
+                .for_each(|(_, student)| {
                     if i == 0 {
+                        keys_to_remove.push(student.id);
                         res = Some(student.clone());
                         return;
                     }
                     student.row -= 1;
-                }
-            });
+                });
         }
+        for key in keys_to_remove {
+            self.students.remove(&key);
+        }
+
         res
     }
 

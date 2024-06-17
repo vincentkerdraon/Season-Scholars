@@ -289,6 +289,8 @@ fn listen_events(
         return;
     }
 
+    println!("draw portal"); //FIXME how often do we draw?
+
     for i in 0..config.portal_windows_nb {
         let monster_new = monsters.get(i as usize);
         let monster_old = data.monsters.get(i as usize);

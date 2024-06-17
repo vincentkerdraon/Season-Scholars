@@ -239,6 +239,9 @@ fn listen_events(
     if !dirty {
         return;
     }
+
+    println!("draw menu"); //FIXME how often do we draw?
+
     if !data.display {
         if let Ok((_, mut visibility)) = param_set.p0().get_mut(data.player_a) {
             *visibility = Visibility::Hidden;

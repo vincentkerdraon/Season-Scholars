@@ -4,12 +4,12 @@ use bevy::prelude::*;
 use strum::IntoEnumIterator;
 
 use crate::model::config::Config;
-
 use crate::model::season::Season;
 use crate::model::students::*;
 
 const STUDENTS_IMG_CENTER_NB: i8 = 5;
 const STUDENTS_IMG_SIDE_NB: i8 = 6;
+const STUDENTS_KNOWLEDGE_MAX: i8 = 3;
 
 fn load_resources(
     mut commands: Commands,
@@ -230,6 +230,8 @@ fn draw(
     }
     data.dirty = false;
 
+    println!("draw students"); //FIXME how often do we draw?
+
     for col in StudentCol::iter() {
         let mut texture_empty = data.desk_free_side.clone();
         if col == StudentCol::Center {
@@ -273,19 +275,25 @@ fn draw(
     }
 
     for col in StudentCol::iter() {
-        for student in &data.students {
-            if student.col != col || student.row != 0 {
-                continue;
-            }
-            for i in 0..config.students_rows_nb {
-                let e = *data.knowledge.get(&(col, i)).unwrap();
-                let (mut texture_handle, mut visibility) = query.get_mut(e).unwrap();
-                if let Some(s) = student.knowledge.get(i as usize) {
+        let student = data
+            .students
+            .iter()
+            .find(|student| student.col == col && student.row == 0);
+
+        for knowledge_index in 0..STUDENTS_KNOWLEDGE_MAX {
+            let mut found = false;
+            let e: Entity = *data.knowledge.get(&(col, knowledge_index)).unwrap();
+            let (mut texture_handle, mut visibility) = query.get_mut(e).unwrap();
+
+            if let Some(student) = student {
+                if let Some(s) = student.knowledge.get(knowledge_index as usize) {
+                    found = true;
                     *visibility = Visibility::Visible;
                     *texture_handle = data.seasons.get(s).unwrap().clone();
-                } else {
-                    *visibility = Visibility::Hidden;
                 }
+            }
+            if !found {
+                *visibility = Visibility::Hidden;
             }
         }
     }
@@ -330,6 +338,7 @@ impl StudentData {
 
     fn refresh(&mut self, students: &Vec<Student>) {
         //cleanup self.mapping, that should be done on graduate but this is a safety.
+        let mut keys_to_remove: Vec<i64> = Vec::new();
         for (s_id, _) in self.mapping.clone() {
             let mut found = false;
             for s in students {
@@ -339,8 +348,11 @@ impl StudentData {
                 }
             }
             if !found {
-                self.mapping.remove(&s_id);
+                keys_to_remove.push(s_id);
             }
+        }
+        for key in keys_to_remove {
+            self.mapping.remove(&key);
         }
 
         //add new elements
@@ -365,8 +377,8 @@ impl StudentData {
             if *last_used_index >= students_col.len() {
                 *last_used_index = 0;
             }
-            mapping.insert(id, (col, *last_used_index));
 
+            mapping.insert(id, (col, *last_used_index));
             return (
                 *last_used_index,
                 students_col.get(*last_used_index).unwrap().0.clone(),

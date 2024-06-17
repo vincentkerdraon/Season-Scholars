@@ -2,7 +2,6 @@ use bevy::prelude::*;
 
 use crate::model::overlord::*;
 
-
 const INSTRUCTION: &str = "press \"reset\" to reach menu";
 const TITLE: &str = "Season Scholars";
 
@@ -121,6 +120,7 @@ fn listen_events(
     if !dirty {
         return;
     }
+    println!("draw recap"); //FIXME how often do we draw?
 
     if !data.display {
         if let Ok((_, mut visibility)) = param_set.p0().get_mut(data.title) {

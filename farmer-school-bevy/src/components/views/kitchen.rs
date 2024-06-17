@@ -101,6 +101,7 @@ fn draw(mut data: ResMut<KitchenData>, mut query: Query<(&mut Handle<Image>, &mu
         return;
     }
     data.dirty = false;
+    println!("draw kitchen"); //FIXME how often do we draw?
 
     for (_, food_data) in data.food.iter_mut() {
         if !food_data.updated {

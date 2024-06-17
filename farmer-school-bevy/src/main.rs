@@ -35,9 +35,9 @@ fn main() {
         portal_windows_seasons_nb: 3,
         food_max: 5,
         draw_frame_modulo: 5,
-        debug_disable_student_eating: true,
-        debug_start_game_immediately: false,
-        debug_disable_monster_attack: true,
+        debug_disable_student_eating: true, //FIXME debug only
+        debug_start_game_immediately: true, //FIXME debug only
+        debug_disable_monster_attack: true, //FIXME debug only
     })
     .add_plugins(
         DefaultPlugins

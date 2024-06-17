@@ -413,6 +413,8 @@ fn draw(
     if !data.dirty && data.frame.0 % config.draw_frame_modulo != 0 {
         return;
     }
+    // println!("draw teacher"); //FIXME how often do we draw?   => A LOT!!!!
+
     let now = time.elapsed_seconds_f64();
 
     //don't display the teacher where they were
