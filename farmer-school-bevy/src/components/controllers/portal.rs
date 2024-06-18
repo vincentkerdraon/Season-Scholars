@@ -91,19 +91,19 @@ fn listen_events(
                 monster.needs.remove(pos);
             }
         }
-        if monster.needs.is_empty() {
-            data.monsters.remove(0);
-        }
 
         let mut emit = MonsterFedEvent {
             needs: None,
             teacher: e.teacher,
-            monsters: data.monsters.clone(),
+            monsters: Vec::new(),
         };
-        let first = data.monsters.first();
-        if let Some(monster) = first {
+        if monster.needs.is_empty() {
+            data.monsters.remove(0);
+        } else {
             emit.needs = Some(monster.needs.clone());
         }
+        emit.monsters = data.monsters.clone();
+
         debug!("{:?}", emit);
         monster_fed_events.send(emit);
 

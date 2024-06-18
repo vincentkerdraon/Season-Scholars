@@ -26,16 +26,26 @@ fn listen_reset(
     config: Res<Config>,
     data: ResMut<KitchenData>,
     mut reset_game_events: EventReader<ResetGameEvent>,
+    students_eat_events: EventWriter<StudentsEatEvent>,
 ) {
     if reset_game_events.read().last().is_some() {
-        reset(config, data);
+        reset(config, data, students_eat_events);
     }
 }
 
-fn reset(config: Res<Config>, mut data: ResMut<KitchenData>) {
+fn reset(
+    config: Res<Config>,
+    mut data: ResMut<KitchenData>,
+    mut students_eat_events: EventWriter<StudentsEatEvent>,
+) {
     data.activated = true;
     data.food_remaining = config.food_max;
     data.teacher_busy = TeacherBusy::new(vec![STATION]);
+    let emit = StudentsEatEvent {
+        food_remaining: data.food_remaining,
+    };
+    debug!("{:?}", emit);
+    students_eat_events.send(emit);
 }
 
 fn listen_moved(
@@ -67,7 +77,7 @@ fn listen_season(
         debug!("{:?}", emit);
         students_eat_events.send(emit);
 
-        if data.food_remaining <= 0 {
+        if data.food_remaining < 0 {
             let emit = GameOverEvent {
                 reason: "Students starving".to_string(),
             };
