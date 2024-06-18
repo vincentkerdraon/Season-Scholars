@@ -20,7 +20,6 @@ fn listen_game_over(
     if game_over_events.read().last().is_none() {
         return;
     }
-
     data.activated = false;
 }
 
@@ -37,12 +36,12 @@ fn monster_attack(
     if let Some(monster) = data.monsters.first_mut() {
         let mut changed = false;
         let now = time.elapsed_seconds_f64();
-        if monster.next_wait_s < now && !monster.revealed {
-            monster.revealed = true;
+        if monster.next_wait_s < now && !monster.monster_visible {
+            monster.monster_visible = true;
             changed = true;
         }
 
-        if monster.revealed && monster.next_attack_s < now {
+        if monster.monster_visible && monster.next_attack_s < now {
             monster.next_attack_s = now + monster.attack_interval_s;
             data.health -= 1;
             changed = true;
@@ -189,7 +188,7 @@ fn pop_monster(
     let emit = MonsterPoppedEvent {
         monsters: data.monsters.clone(),
     };
-    debug!("difficulty {}, {:?}", data.difficulty, emit);
+    debug!("{:?}", emit);
     monster_popped_events.send(emit);
 }
 
@@ -333,9 +332,9 @@ fn listen_events_player_input(
         if e.short_action {
             let mut revealed = false;
             for monster in data.monsters.iter_mut() {
-                if !monster.revealed {
+                if !monster.window_revealed {
                     revealed = true;
-                    monster.revealed = true;
+                    monster.window_revealed = true;
 
                     data.teacher_busy
                         .action(e.teacher, now, config.short_action_s);

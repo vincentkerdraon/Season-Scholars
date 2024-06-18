@@ -170,11 +170,11 @@ fn place_need(
 }
 fn display_window(
     config: &Config,
-    data: &mut PortalData,
+    data: &PortalData,
     query: &mut Query<(&mut Handle<Image>, &mut Visibility)>,
     i: i8,
     revealed: bool,
-    needs: Vec<Season>,
+    needs: &Vec<Season>,
 ) {
     //!revealed && need.len == 0 => closed
     //!revealed && need.len > 0 => opened
@@ -211,11 +211,11 @@ fn display_window(
 fn display_monster(
     data: &mut PortalData,
     query: &mut Query<(&mut Handle<Image>, &mut Visibility)>,
-    revealed: bool,
+    monster_visible: bool,
 ) {
     if let Ok((mut texture_handle, mut visibility)) = query.get_mut(data.portal) {
         *visibility = Visibility::Visible;
-        if !revealed {
+        if !monster_visible {
             *texture_handle = data.get_closed_auto().unwrap().clone();
         } else {
             *texture_handle = data.get_opened_auto().unwrap().clone();
@@ -223,7 +223,37 @@ fn display_monster(
     }
 }
 
-fn should_redraw_monster(monster_new: Option<&Monster>, monster_old: Option<&Monster>) -> bool {
+fn should_redraw_window(monster_new: Option<&Monster>, monster_old: Option<&Monster>) -> bool {
+    // with new, without old => redraw all
+    // without new, with old => redraw all
+    // with new, with old, different id => redraw all
+    // with new, with old, same id, different needs => redraw all
+    // with new, with old, same id, same needs => no change
+    // without new, without old => no change
+
+    if monster_new.is_none() && monster_old.is_none() {
+        return false;
+    }
+    if monster_new.is_none() && monster_old.is_some() {
+        return true;
+    }
+    if monster_new.is_some() && monster_old.is_none() {
+        return true;
+    }
+    let new = monster_new.unwrap();
+    let old = monster_old.unwrap();
+
+    if new.window_revealed != old.window_revealed {
+        return true;
+    }
+    if new.needs != old.needs {
+        return true;
+    }
+
+    false
+}
+
+fn should_redraw_monster(monster_new: &Option<&Monster>, monster_old: &Option<&Monster>) -> bool {
     // with new, without old => redraw all
     // without new, with old => redraw all
     // with new, with old, different id => redraw all
@@ -246,10 +276,7 @@ fn should_redraw_monster(monster_new: Option<&Monster>, monster_old: Option<&Mon
     if new.id != old.id {
         return true;
     }
-    if new.revealed != old.revealed {
-        return true;
-    }
-    if new.needs != old.needs {
+    if new.monster_visible != old.monster_visible {
         return true;
     }
 
@@ -295,23 +322,35 @@ fn listen_events(
         return;
     }
 
-    println!("draw portal"); //FIXME how often do we draw?
+    println!("draw portal => monster"); //FIXME how often do we draw?
+    let monster_new = &monsters.get(0);
+    let monster_old = &data.monsters.get(0).clone();
+    if should_redraw_monster(monster_new, monster_old) {
+        println!("draw portal"); //FIXME how often do we draw?
+        if let Some(new) = monster_new {
+            display_monster(&mut data, &mut query, new.monster_visible);
+        } else {
+            display_monster(&mut data, &mut query, false);
+        }
+    }
 
     for i in 0..config.portal_windows_nb {
         let monster_new = monsters.get(i as usize);
         let monster_old = data.monsters.get(i as usize);
 
-        if should_redraw_monster(monster_new, monster_old) {
-            let mut needs = Vec::new();
-            let mut revealed = false;
+        if should_redraw_window(monster_new, monster_old) {
+            println!("draw portal => window"); //FIXME how often do we draw?
             if let Some(new) = monster_new {
-                needs.clone_from(&new.needs);
-                revealed = new.revealed;
-            }
-            display_window(&config, &mut data, &mut query, i, revealed, needs);
-
-            if i == 0 {
-                display_monster(&mut data, &mut query, revealed);
+                display_window(
+                    &config,
+                    &data,
+                    &mut query,
+                    i,
+                    new.window_revealed,
+                    &new.needs,
+                );
+            } else {
+                display_window(&config, &data, &mut query, i, false, &Vec::new());
             }
         }
     }

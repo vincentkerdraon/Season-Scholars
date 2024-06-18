@@ -40,7 +40,8 @@ pub struct Monster {
     ///time in seconds when attacking
     pub next_attack_s: f64,
     pub needs: Vec<Season>,
-    pub revealed: bool,
+    pub monster_visible: bool,
+    pub window_revealed: bool,
 }
 
 /// The monster in the portal attacked the portal
