@@ -12,20 +12,20 @@ fn load_resources(
     config: Res<Config>,
     mut data: ResMut<RoomData>,
 ) {
-    let spring = asset_server.load(config.base_path.join("Classroom/ClassroomSpring.png"));
+    let spring = asset_server.load(config.base_path_img.join("Classroom/ClassroomSpring.png"));
 
     data.seasons.insert(Season::Spring, spring.clone());
     data.seasons.insert(
         Season::Summer,
-        asset_server.load(config.base_path.join("Classroom/ClassroomSummer.png")),
+        asset_server.load(config.base_path_img.join("Classroom/ClassroomSummer.png")),
     );
     data.seasons.insert(
         Season::Autumn,
-        asset_server.load(config.base_path.join("Classroom/ClassroomAutumn.png")),
+        asset_server.load(config.base_path_img.join("Classroom/ClassroomAutumn.png")),
     );
     data.seasons.insert(
         Season::Winter,
-        asset_server.load(config.base_path.join("Classroom/ClassroomWinter.png")),
+        asset_server.load(config.base_path_img.join("Classroom/ClassroomWinter.png")),
     );
 
     let sprite = SpriteBundle {

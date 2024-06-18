@@ -4,7 +4,9 @@ use bevy::prelude::*;
 
 #[derive(Debug, Clone, Resource)]
 pub struct Config {
-    pub base_path: PathBuf,
+    pub base_path_img: PathBuf,
+    pub base_path_sound: PathBuf,
+    ///starting number of students
     pub students_init: usize,
     pub students_rows_nb: i8,
     pub long_action_s: f64,
@@ -15,6 +17,8 @@ pub struct Config {
     pub portal_windows_seasons_nb: i8,
     pub food_max: i8,
     pub draw_frame_modulo: i8,
+    ///silence between audio tracks
+    pub track_break_s: f64,
     pub debug_start_game_immediately: bool,
     pub debug_disable_student_eating: bool,
     pub debug_disable_monster_attack: bool,

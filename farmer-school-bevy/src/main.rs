@@ -12,19 +12,22 @@ use bevy::{
 use std::env;
 
 fn main() {
-    let mut path = env::current_exe()
+    let mut path_image = env::current_exe()
         .unwrap_or_else(|e| panic!("Failed to get current executable path: {}", e));
-    path.pop();
-    path.pop();
-    path.pop();
-    path.pop();
-    path.push("images/ready");
+    path_image.pop();
+    path_image.pop();
+    path_image.pop();
+    path_image.pop();
+    let mut path_sound = path_image.clone();
+    path_image.push("images/ready");
+    path_sound.push("sounds/ready");
 
     let debug_pointer_click = true;
 
     let mut app: App = App::new();
     app.insert_resource(Config {
-        base_path: path,
+        base_path_img: path_image,
+        base_path_sound: path_sound, //FIXME simplify
         students_init: 6,
         students_rows_nb: 3,
         long_action_s: 6.0,
@@ -35,6 +38,7 @@ fn main() {
         portal_windows_seasons_nb: 3,
         food_max: 5,
         draw_frame_modulo: 5,
+        track_break_s: 5.0,
         debug_disable_student_eating: true, //FIXME debug only
         debug_start_game_immediately: true, //FIXME debug only
         debug_disable_monster_attack: true, //FIXME debug only
@@ -72,6 +76,7 @@ fn main() {
     .add_plugins(components::views::portal::PortalViewPlugin)
     .add_plugins(components::views::student::StudentViewPlugin)
     .add_plugins(components::views::kitchen::KitchenViewPlugin)
+    .add_plugins(components::views::sound::SoundViewPlugin)
     .add_systems(Startup, setup);
 
     if debug_pointer_click {

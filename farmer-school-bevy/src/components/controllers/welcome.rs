@@ -165,7 +165,7 @@ fn listen_events(
                     station: STATION,
                     teacher: e.teacher,
                 };
-                debug!("{:?}", emit);
+                trace!("{:?}", emit);
                 invalid_move_events.send(emit);
             }
             continue;

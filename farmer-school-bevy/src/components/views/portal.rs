@@ -16,35 +16,41 @@ fn load_resources(
     config: Res<Config>,
     mut data: ResMut<PortalData>,
 ) {
-    data.window_closed = asset_server.load(config.base_path.join("Windows/Window1Closed.png"));
-    data.window_available = asset_server.load(config.base_path.join("Windows/Window1Opened.png"));
+    data.window_closed = asset_server.load(config.base_path_img.join("Windows/Window1Closed.png"));
+    data.window_available =
+        asset_server.load(config.base_path_img.join("Windows/Window1Opened.png"));
     data.seasons.insert(
         Season::Spring,
-        asset_server.load(config.base_path.join("Windows/Window1HarvestA.png")),
+        asset_server.load(config.base_path_img.join("Windows/Window1HarvestA.png")),
     );
     data.seasons.insert(
         Season::Summer,
-        asset_server.load(config.base_path.join("Windows/Window1HarvestC.png")),
+        asset_server.load(config.base_path_img.join("Windows/Window1HarvestC.png")),
     );
     data.seasons.insert(
         Season::Autumn,
-        asset_server.load(config.base_path.join("Windows/Window1HarvestM.png")),
+        asset_server.load(config.base_path_img.join("Windows/Window1HarvestM.png")),
     );
     data.seasons.insert(
         Season::Winter,
-        asset_server.load(config.base_path.join("Windows/Window1HarvestL.png")),
+        asset_server.load(config.base_path_img.join("Windows/Window1HarvestL.png")),
     );
     //images name start at 1
     for i in 1..=PORTAL_OPENED_NB {
-        data.portal_opened
-            .push(asset_server.load(config.base_path.join(format!("Door/DoorMonster{}.png", i))));
+        data.portal_opened.push(
+            asset_server.load(
+                config
+                    .base_path_img
+                    .join(format!("Door/DoorMonster{}.png", i)),
+            ),
+        );
     }
     //images name start at 1
     for i in 1..=PORTAL_CLOSED_NB {
         data.portal_closed.push(
             asset_server.load(
                 config
-                    .base_path
+                    .base_path_img
                     .join(format!("Door/DoorProtected{}.png", i)),
             ),
         );
