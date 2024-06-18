@@ -32,16 +32,16 @@ fn main() {
         students_rows_nb: 3,
         long_action_s: 6.0,
         short_action_s: 2.0,
-        seasons_duration_s: 10.,
+        seasons_duration_s: 3.,
         portal_health_max: 10,
         portal_windows_nb: 4,
         portal_windows_seasons_nb: 3,
         food_max: 5,
-        draw_frame_modulo: 5,
+        draw_frame_modulo: 20,
         track_break_s: 5.0,
-        debug_disable_student_eating: true, //FIXME debug only
-        debug_start_game_immediately: true, //FIXME debug only
-        debug_disable_monster_attack: true, //FIXME debug only
+        debug_disable_student_eating: false, //FIXME debug only
+        debug_start_game_immediately: false, //FIXME debug only
+        debug_disable_monster_attack: false, //FIXME debug only
     })
     .add_plugins(
         DefaultPlugins

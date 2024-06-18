@@ -129,19 +129,16 @@ fn input_player_a(keys_pressed: &HashSet<KeyCode>) -> PlayerInputEvent {
     if keys_pressed.get(&KeyCode::ShiftLeft).is_some()
         || keys_pressed.get(&KeyCode::ShiftRight).is_some()
     {
+        // out.long_action = true;
         out.short_action = true;
     }
     if keys_pressed.get(&KeyCode::ControlLeft).is_some()
         || keys_pressed.get(&KeyCode::ControlRight).is_some()
     {
-        out.long_action = true;
+        // out.short_action = true;
+        out.long_action = true; //FIXME
     }
-    if keys_pressed.get(&KeyCode::AltLeft).is_some()
-        || keys_pressed.get(&KeyCode::AltRight).is_some()
-        || keys_pressed.get(&KeyCode::Enter).is_some()
-    {
-        out.confirm_move = true;
-    }
+
     if keys_pressed.get(&KeyCode::ArrowDown).is_some() {
         out.direction += Vec2::new(0.0, -1.0)
     }
@@ -169,20 +166,16 @@ fn input_player_b(keys_pressed: &HashSet<KeyCode>) -> PlayerInputEvent {
         || keys_pressed.get(&KeyCode::NumpadSubtract).is_some()
         || keys_pressed.get(&KeyCode::PageUp).is_some()
     {
-        out.short_action = true;
+        // out.long_action = true;
+        out.short_action = true; //FIXME
     }
     if keys_pressed.get(&KeyCode::KeyA).is_some()
         || keys_pressed.get(&KeyCode::KeyW).is_some()
         || keys_pressed.get(&KeyCode::NumpadAdd).is_some()
         || keys_pressed.get(&KeyCode::PageDown).is_some()
     {
-        out.long_action = true;
-    }
-
-    if keys_pressed.get(&KeyCode::KeyS).is_some()
-        || keys_pressed.get(&KeyCode::NumpadEnter).is_some()
-    {
-        out.confirm_move = true;
+        out.long_action = true; //FIXME
+                                // out.short_action = true;
     }
 
     if keys_pressed.get(&KeyCode::KeyF).is_some() || keys_pressed.get(&KeyCode::Numpad2).is_some() {

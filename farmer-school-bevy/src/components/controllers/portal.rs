@@ -365,7 +365,7 @@ fn listen_events_player_input(
             continue;
         }
 
-        if e.confirm_move {
+        if e.direction != Vec2::ZERO {
             if let Some(to) = possible_move(STATION, e.direction) {
                 let emit = MoveTeacherEvent {
                     station_from: STATION,

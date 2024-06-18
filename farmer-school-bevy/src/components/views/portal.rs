@@ -173,7 +173,7 @@ fn display_window(
     data: &PortalData,
     query: &mut Query<(&mut Handle<Image>, &mut Visibility)>,
     i: i8,
-    revealed: bool,
+    window_revealed: bool,
     needs: &Vec<Season>,
 ) {
     //!revealed && need.len == 0 => closed
@@ -182,10 +182,10 @@ fn display_window(
 
     if let Ok((mut texture_handle, mut visibility)) = query.get_mut(*data.windows.get(&i).unwrap())
     {
-        if !revealed && needs.is_empty() {
+        if !window_revealed && needs.is_empty() {
             *visibility = Visibility::Visible;
             *texture_handle = data.window_closed.clone();
-        } else if !revealed && !needs.is_empty() {
+        } else if !window_revealed && !needs.is_empty() {
             *visibility = Visibility::Visible;
             *texture_handle = data.window_available.clone();
         } else {
@@ -198,7 +198,7 @@ fn display_window(
             query.get_mut(*data.needs.get(&(i, j)).unwrap())
         {
             *visibility = Visibility::Hidden;
-            if revealed {
+            if window_revealed {
                 if let Some(n) = needs.get(j as usize) {
                     *visibility = Visibility::Visible;
                     *texture_handle = data.seasons.get(n).unwrap().clone();
@@ -223,7 +223,7 @@ fn display_monster(
     }
 }
 
-fn should_redraw_window(monster_new: Option<&Monster>, monster_old: Option<&Monster>) -> bool {
+fn should_redraw_window(monster_new: &Option<&Monster>, monster_old: &Option<&Monster>) -> bool {
     // with new, without old => redraw all
     // without new, with old => redraw all
     // with new, with old, different id => redraw all
@@ -296,11 +296,6 @@ fn listen_events(
     let mut monsters: Vec<Monster> = Vec::new();
     let mut health: i8 = 0;
 
-    if let Some(e) = monster_popped_events.read().last() {
-        monsters.clone_from(&e.monsters);
-        dirty = true;
-    }
-
     if let Some(e) = portal_attacked_events.read().last() {
         health = e.health;
         monsters.clone_from(&e.monsters);
@@ -309,6 +304,14 @@ fn listen_events(
 
     if let Some(e) = monster_fed_events.read().last() {
         monsters.clone_from(&e.monsters);
+        dirty = true;
+    }
+
+    //monster_popped_events must be after monster_fed_events
+    if let Some(e) = monster_popped_events.read().last() {
+        println!("monster_popped_events {:?}", e);
+        monsters.clone_from(&e.monsters);
+        println!("monsters {:?}", monsters);
         dirty = true;
     }
 
@@ -322,11 +325,9 @@ fn listen_events(
         return;
     }
 
-    println!("draw portal => monster"); //FIXME how often do we draw?
     let monster_new = &monsters.get(0);
     let monster_old = &data.monsters.get(0).clone();
     if should_redraw_monster(monster_new, monster_old) {
-        println!("draw portal"); //FIXME how often do we draw?
         if let Some(new) = monster_new {
             display_monster(&mut data, &mut query, new.monster_visible);
         } else {
@@ -335,11 +336,10 @@ fn listen_events(
     }
 
     for i in 0..config.portal_windows_nb {
-        let monster_new = monsters.get(i as usize);
-        let monster_old = data.monsters.get(i as usize);
+        let monster_new = &monsters.get(i as usize);
+        let monster_old = &data.monsters.get(i as usize);
 
         if should_redraw_window(monster_new, monster_old) {
-            println!("draw portal => window"); //FIXME how often do we draw?
             if let Some(new) = monster_new {
                 display_window(
                     &config,

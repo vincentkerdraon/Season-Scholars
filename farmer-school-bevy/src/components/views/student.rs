@@ -238,8 +238,6 @@ fn draw(
     }
     data.dirty = false;
 
-    println!("draw students"); //FIXME how often do we draw?
-
     for col in StudentCol::iter() {
         let mut texture_empty = data.desk_free_side.clone();
         if col == StudentCol::Center {

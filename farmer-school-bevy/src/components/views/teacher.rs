@@ -272,10 +272,6 @@ fn listen_player_input(
     let mut dirty = false;
 
     for e in player_input_events.read() {
-        if e.confirm_move {
-            continue;
-        }
-
         let direction_last = data.direction_last;
         data.direction_last = e.direction;
         if e.direction == Vec2::ZERO || e.direction != direction_last {
@@ -295,6 +291,7 @@ fn listen_player_input(
             continue;
         }
 
+        //FIXME panic here at startup. data.teachers_position is 0
         let from = *data.teachers_position.get(&e.teacher).unwrap();
         if let Some(to) = possible_move(from, e.direction) {
             //don't override the reference if it already exists
@@ -417,8 +414,6 @@ fn draw(
     if !data.dirty && data.frame.0 % config.draw_frame_modulo != 0 {
         return;
     }
-    // println!("draw teacher"); //FIXME how often do we draw?   => A LOT!!!!
-
     let now = time.elapsed_seconds_f64();
 
     //don't display the teacher where they were
