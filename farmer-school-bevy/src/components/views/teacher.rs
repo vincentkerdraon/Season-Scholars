@@ -354,12 +354,12 @@ fn listen_reactions(
             Reaction::Long => config.long_action_s,
             Reaction::Short => config.short_action_s,
         };
-        //FIXME panic on unwrap
-        let station = *data.teachers_position.get(&teacher).unwrap();
-        data.display_reaction_until.insert(
-            (teacher, station, reaction),
-            (now + dur, Entity::PLACEHOLDER),
-        );
+        if let Some(station) = data.teachers_position.get(&teacher).cloned() {
+            data.display_reaction_until.insert(
+                (teacher, station, reaction),
+                (now + dur, Entity::PLACEHOLDER),
+            );
+        }
     };
 
     for e in invalid_action_station_events.read() {
@@ -402,18 +402,19 @@ fn listen_game_over(
 }
 
 fn listen_reset(mut data: ResMut<TeacherData>, mut reset_game_events: EventReader<ResetGameEvent>) {
-    if reset_game_events.read().last().is_some() {
+    if let Some(e) = reset_game_events.read().last() {
         data.activated = true;
         data.dirty = true;
 
-        data.teachers_position = HashMap::new();
         data.teachers_moved = Vec::new();
-
         //cleanup all teachers images
         for (s, _) in data.teachers.clone() {
             data.teachers_moved.push((Teacher::A, Some(s), None));
             data.teachers_moved.push((Teacher::B, Some(s), None));
         }
+
+        //We will receive the position soon, but there is no teacher in the first frame
+        data.teachers_position = HashMap::new();
     }
 }
 
