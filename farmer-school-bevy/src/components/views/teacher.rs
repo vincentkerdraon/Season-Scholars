@@ -354,6 +354,7 @@ fn listen_reactions(
             Reaction::Long => config.long_action_s,
             Reaction::Short => config.short_action_s,
         };
+        //FIXME panic on unwrap
         let station = *data.teachers_position.get(&teacher).unwrap();
         data.display_reaction_until.insert(
             (teacher, station, reaction),
@@ -504,14 +505,14 @@ pub struct TeacherViewPlugin;
 
 impl Plugin for TeacherViewPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, listen_player_input)
-            .insert_resource(TeacherData::new())
-            .add_systems(PreUpdate, listen_game_over)
+        app.insert_resource(TeacherData::new())
+            .add_systems(Startup, load_resources)
             .add_systems(PreUpdate, listen_reset)
+            .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, listen_teacher_moved)
+            .add_systems(PreUpdate, listen_player_input)
             .add_systems(PreUpdate, listen_reactions)
-            .add_systems(Update, draw)
-            .add_systems(Startup, load_resources);
+            .add_systems(Update, draw);
     }
 }
 

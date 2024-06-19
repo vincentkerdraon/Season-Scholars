@@ -8,32 +8,13 @@ fn load_resources(
     config: Res<Config>,
     mut data: ResMut<WelcomeData>,
 ) {
-    data.closed = asset_server.load(
-        config
-            .base_path
-            .join("images/ready/Welcome/DoorClosed.png"),
-    );
-    data.opened.push(
-        asset_server.load(
-            config
-                .base_path
-                .join("images/ready/Welcome/Traveler1.png"),
-        ),
-    );
-    data.opened.push(
-        asset_server.load(
-            config
-                .base_path
-                .join("images/ready/Welcome/Traveler2.png"),
-        ),
-    );
-    data.opened.push(
-        asset_server.load(
-            config
-                .base_path
-                .join("images/ready/Welcome/Traveler3.png"),
-        ),
-    );
+    data.closed = asset_server.load(config.base_path.join("images/ready/Welcome/DoorClosed.png"));
+    data.opened
+        .push(asset_server.load(config.base_path.join("images/ready/Welcome/Traveler1.png")));
+    data.opened
+        .push(asset_server.load(config.base_path.join("images/ready/Welcome/Traveler2.png")));
+    data.opened
+        .push(asset_server.load(config.base_path.join("images/ready/Welcome/Traveler3.png")));
 
     data.door = commands
         .spawn(SpriteBundle {
@@ -82,9 +63,9 @@ pub struct WelcomeViewPlugin;
 
 impl Plugin for WelcomeViewPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, listen_events)
-            .insert_resource(WelcomeData::new())
-            .add_systems(Startup, load_resources);
+        app.insert_resource(WelcomeData::new())
+            .add_systems(Startup, load_resources)
+            .add_systems(Update, listen_events);
     }
 }
 

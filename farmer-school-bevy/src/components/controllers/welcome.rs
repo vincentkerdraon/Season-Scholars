@@ -184,10 +184,10 @@ impl Plugin for WelcomeControllerPlugin {
             .insert_resource(WelcomeData { ..default() })
             .add_systems(Startup, reset)
             .add_systems(PreUpdate, listen_reset)
+            .add_systems(PreUpdate, listen_game_over)
+            .add_systems(PreUpdate, listen_moved)
             .add_systems(PreUpdate, listen_monster_fed)
             .add_systems(PreUpdate, listen_graduated)
-            .add_systems(PreUpdate, listen_moved)
-            .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, listen_events);
     }
 }

@@ -399,12 +399,12 @@ impl Plugin for PortalControllerPlugin {
             .add_event::<MonsterPoppedEvent>()
             .insert_resource(PortalData { ..default() })
             .add_systems(Startup, reset)
+            .add_systems(PreUpdate, listen_reset)
+            .add_systems(PreUpdate, listen_game_over)
+            .add_systems(PreUpdate, listen_moved)
             .add_systems(PreUpdate, listen_events)
             .add_systems(PreUpdate, listen_events_create_monster)
             .add_systems(PreUpdate, monster_attack)
-            .add_systems(PreUpdate, listen_moved)
-            .add_systems(PreUpdate, listen_reset)
-            .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, listen_events_player_input);
     }
 }

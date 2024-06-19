@@ -9,8 +9,8 @@ impl Plugin for TeacherControllerPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<MoveTeacherEvent>()
             .add_event::<TeacherMovedEvent>()
-            .add_systems(PreUpdate, listen_move)
-            .add_systems(PreUpdate, listen_reset);
+            .add_systems(PreUpdate, listen_reset)
+            .add_systems(PreUpdate, listen_move);
     }
 }
 

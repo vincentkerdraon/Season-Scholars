@@ -103,9 +103,9 @@ pub struct SeasonControllerPlugin;
 impl Plugin for SeasonControllerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, season_startup_system)
+            .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, season_timer_system)
             .add_systems(PreUpdate, listen_reset)
-            .add_systems(PreUpdate, listen_game_over)
             .add_event::<SeasonChangedEvent>();
     }
 }

@@ -206,7 +206,7 @@ impl Plugin for StudentsControllerPlugin {
             .add_event::<TaughtEvent>()
             .add_event::<StudentsSeatedEvent>()
             .insert_resource(StudentsData { ..default() })
-            .add_systems(PreUpdate, listen_reset) //FIXME check order everywhere + PreUpdate
+            .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, listen_move)
             .add_systems(PreUpdate, listen_welcomed)

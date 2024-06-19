@@ -72,10 +72,10 @@ fn main() {
         .add_plugins(components::controllers::season::SeasonControllerPlugin)
         .add_plugins(components::controllers::welcome::WelcomeControllerPlugin)
         .add_plugins(components::controllers::teacher::TeacherControllerPlugin)
-        .add_plugins(components::controllers::player_input::PlayerInputControllerPlugin)
         .add_plugins(components::controllers::portal::PortalControllerPlugin)
         .add_plugins(components::controllers::students::StudentsControllerPlugin)
         .add_plugins(components::controllers::kitchen::KitchenControllerPlugin)
+        .add_plugins(components::controllers::player_input::PlayerInputControllerPlugin)
         .add_plugins(components::views::room::RoomViewPlugin)
         .add_plugins(components::views::welcome::WelcomeViewPlugin)
         .add_plugins(components::views::teacher::TeacherViewPlugin)
@@ -90,7 +90,6 @@ fn main() {
     if debug_pointer_click {
         app.add_systems(Update, _log_mouse_click);
     }
-
     app.run();
 }
 

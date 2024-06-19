@@ -202,11 +202,11 @@ impl Plugin for KitchenControllerPlugin {
             .add_event::<StudentsEatEvent>()
             .add_event::<TeacherAteEvent>()
             .add_systems(Startup, reset)
-            .add_systems(PreUpdate, listen_moved)
             .add_systems(PreUpdate, listen_reset)
-            .add_systems(PreUpdate, listen_season)
-            .add_systems(PreUpdate, listen_students)
             .add_systems(PreUpdate, listen_game_over)
+            .add_systems(PreUpdate, listen_season)
+            .add_systems(PreUpdate, listen_moved)
+            .add_systems(PreUpdate, listen_students)
             .add_systems(PreUpdate, listen_events_player_input);
     }
 }

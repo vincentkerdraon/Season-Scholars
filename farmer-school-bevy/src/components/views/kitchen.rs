@@ -154,9 +154,9 @@ pub struct KitchenViewPlugin;
 impl Plugin for KitchenViewPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(KitchenData::default())
+            .add_systems(Startup, load_resources)
             .add_systems(PreUpdate, listen_events)
-            .add_systems(Update, draw)
-            .add_systems(Startup, load_resources);
+            .add_systems(Update, draw);
     }
 }
 

@@ -210,8 +210,8 @@ impl Plugin for OverlordControllerPlugin {
             .add_event::<DisplayScreenMenuEvent>()
             .add_event::<InvalidActionStationEvent>()
             .add_event::<InvalidMoveEvent>()
-            .add_systems(PreUpdate, listen_events_game_over)
             .add_systems(PreUpdate, listen_events_reset)
+            .add_systems(PreUpdate, listen_events_game_over)
             .add_systems(PreUpdate, listen_events_score)
             .add_systems(PreUpdate, listen_events_menu);
 

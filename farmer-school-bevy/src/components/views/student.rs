@@ -51,8 +51,7 @@ fn load_resources(
 
     data.desk_free_center =
         asset_server.load(config.base_path.join("images/ready/Students/c0.png"));
-    data.desk_free_side =
-        asset_server.load(config.base_path.join("images/ready/Students/s0.png"));
+    data.desk_free_side = asset_server.load(config.base_path.join("images/ready/Students/s0.png"));
 
     let s0 = 1.4;
     let s1 = 1.0;
@@ -103,35 +102,19 @@ fn load_resources(
 
     data.seasons.insert(
         Season::Spring,
-        asset_server.load(
-            config
-                .base_path
-                .join("images/ready/Harvest/HarvestA0.png"),
-        ),
+        asset_server.load(config.base_path.join("images/ready/Harvest/HarvestA0.png")),
     );
     data.seasons.insert(
         Season::Summer,
-        asset_server.load(
-            config
-                .base_path
-                .join("images/ready/Harvest/HarvestC0.png"),
-        ),
+        asset_server.load(config.base_path.join("images/ready/Harvest/HarvestC0.png")),
     );
     data.seasons.insert(
         Season::Autumn,
-        asset_server.load(
-            config
-                .base_path
-                .join("images/ready/Harvest/HarvestM0.png"),
-        ),
+        asset_server.load(config.base_path.join("images/ready/Harvest/HarvestM0.png")),
     );
     data.seasons.insert(
         Season::Winter,
-        asset_server.load(
-            config
-                .base_path
-                .join("images/ready/Harvest/HarvestL0.png"),
-        ),
+        asset_server.load(config.base_path.join("images/ready/Harvest/HarvestL0.png")),
     );
 
     let t = data.seasons.get(&Season::Autumn).unwrap().clone();
@@ -335,8 +318,7 @@ pub struct StudentViewPlugin;
 
 impl Plugin for StudentViewPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, listen_events)
-            .insert_resource(StudentData::new())
+        app.insert_resource(StudentData::new())
             .add_systems(Startup, load_resources)
             .add_systems(PreUpdate, listen_events)
             .add_systems(Update, draw);

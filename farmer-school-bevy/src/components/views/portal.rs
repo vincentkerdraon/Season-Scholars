@@ -386,9 +386,9 @@ pub struct PortalViewPlugin;
 
 impl Plugin for PortalViewPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, listen_events)
-            .insert_resource(PortalData::new())
-            .add_systems(Startup, load_resources);
+        app.insert_resource(PortalData::new())
+            .add_systems(Startup, load_resources)
+            .add_systems(Update, listen_events);
     }
 }
 

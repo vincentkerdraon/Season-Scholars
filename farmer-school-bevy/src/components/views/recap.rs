@@ -102,13 +102,17 @@ fn listen_events(
 ) {
     let mut dirty = false;
     for _ in display_screen_game_events.read() {
-        data.display = false;
-        dirty = true;
+        if data.display {
+            data.display = false;
+            dirty = true;
+        }
     }
 
     for _ in display_screen_menu_events.read() {
-        data.display = false;
-        dirty = true;
+        if data.display {
+            data.display = false;
+            dirty = true;
+        }
     }
 
     for e in display_screen_game_over_recap_events.read() {
@@ -166,8 +170,8 @@ pub struct RecapViewPlugin;
 impl Plugin for RecapViewPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(RecapData::new())
-            .add_systems(PreUpdate, listen_events)
-            .add_systems(Startup, load_resources);
+            .add_systems(Startup, load_resources)
+            .add_systems(PreUpdate, listen_events);
     }
 }
 

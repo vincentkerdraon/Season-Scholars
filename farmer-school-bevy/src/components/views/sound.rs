@@ -158,10 +158,10 @@ pub struct SoundViewPlugin;
 impl Plugin for SoundViewPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(SoundData::default())
+            .add_systems(Startup, load_resources)
             .add_systems(Update, play_track)
             .add_systems(PreUpdate, listen_reactions)
-            .add_systems(PreUpdate, listen_monster_attack)
-            .add_systems(Startup, load_resources);
+            .add_systems(PreUpdate, listen_monster_attack);
     }
 }
 

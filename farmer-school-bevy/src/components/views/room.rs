@@ -83,9 +83,9 @@ pub struct RoomViewPlugin;
 
 impl Plugin for RoomViewPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, listen_events)
-            .insert_resource(RoomData::new())
-            .add_systems(Startup, load_resources);
+        app.insert_resource(RoomData::new())
+            .add_systems(Startup, load_resources)
+            .add_systems(Update, listen_events);
     }
 }
 
