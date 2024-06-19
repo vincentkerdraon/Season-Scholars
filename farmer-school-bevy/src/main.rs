@@ -39,7 +39,7 @@ fn main() {
         food_max: 5,
         draw_frame_modulo: 20,
         track_break_s: 5.0,
-        debug_start_game_immediately: true,  //FIXME debug only
+        debug_start_game_immediately: false, //FIXME debug only
         debug_disable_student_eating: false, //FIXME debug only
         debug_disable_monster_attack: false, //FIXME debug only
     })

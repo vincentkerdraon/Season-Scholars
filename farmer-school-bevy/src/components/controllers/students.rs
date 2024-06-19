@@ -206,12 +206,12 @@ impl Plugin for StudentsControllerPlugin {
             .add_event::<TaughtEvent>()
             .add_event::<StudentsSeatedEvent>()
             .insert_resource(StudentsData { ..default() })
-            .add_systems(Update, listen_move)
-            .add_systems(Update, listen_game_over)
-            .add_systems(Update, listen_welcomed)
-            .add_systems(Update, listen_events_player_input)
-            .add_systems(Update, listen_season)
-            .add_systems(Update, listen_reset);
+            .add_systems(PreUpdate, listen_reset) //FIXME check order everywhere + PreUpdate
+            .add_systems(PreUpdate, listen_game_over)
+            .add_systems(PreUpdate, listen_move)
+            .add_systems(PreUpdate, listen_welcomed)
+            .add_systems(PreUpdate, listen_season)
+            .add_systems(PreUpdate, listen_events_player_input);
     }
 }
 
