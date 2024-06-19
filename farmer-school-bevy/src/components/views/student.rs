@@ -20,11 +20,15 @@ fn load_resources(
     //images name start at 1
     for i in 1..=STUDENTS_IMG_CENTER_NB {
         data.students_center.push((
-            asset_server.load(config.base_path_img.join(format!("Students/c{}.png", i))),
             asset_server.load(
                 config
-                    .base_path_img
-                    .join(format!("Students/c{}_empty.png", i)),
+                    .base_path
+                    .join(format!("images/ready/Students/c{}.png", i)),
+            ),
+            asset_server.load(
+                config
+                    .base_path
+                    .join(format!("images/ready/Students/c{}_empty.png", i)),
             ),
         ));
     }
@@ -32,17 +36,23 @@ fn load_resources(
     //images name start at 1
     for i in 1..=STUDENTS_IMG_SIDE_NB {
         data.students_side.push((
-            asset_server.load(config.base_path_img.join(format!("Students/s{}.png", i))),
             asset_server.load(
                 config
-                    .base_path_img
-                    .join(format!("Students/s{}_empty.png", i)),
+                    .base_path
+                    .join(format!("images/ready/Students/s{}.png", i)),
+            ),
+            asset_server.load(
+                config
+                    .base_path
+                    .join(format!("images/ready/Students/s{}_empty.png", i)),
             ),
         ));
     }
 
-    data.desk_free_center = asset_server.load(config.base_path_img.join("Students/c0.png"));
-    data.desk_free_side = asset_server.load(config.base_path_img.join("Students/s0.png"));
+    data.desk_free_center =
+        asset_server.load(config.base_path.join("images/ready/Students/c0.png"));
+    data.desk_free_side =
+        asset_server.load(config.base_path.join("images/ready/Students/s0.png"));
 
     let s0 = 1.4;
     let s1 = 1.0;
@@ -93,19 +103,35 @@ fn load_resources(
 
     data.seasons.insert(
         Season::Spring,
-        asset_server.load(config.base_path_img.join("Harvest/HarvestA0.png")),
+        asset_server.load(
+            config
+                .base_path
+                .join("images/ready/Harvest/HarvestA0.png"),
+        ),
     );
     data.seasons.insert(
         Season::Summer,
-        asset_server.load(config.base_path_img.join("Harvest/HarvestC0.png")),
+        asset_server.load(
+            config
+                .base_path
+                .join("images/ready/Harvest/HarvestC0.png"),
+        ),
     );
     data.seasons.insert(
         Season::Autumn,
-        asset_server.load(config.base_path_img.join("Harvest/HarvestM0.png")),
+        asset_server.load(
+            config
+                .base_path
+                .join("images/ready/Harvest/HarvestM0.png"),
+        ),
     );
     data.seasons.insert(
         Season::Winter,
-        asset_server.load(config.base_path_img.join("Harvest/HarvestL0.png")),
+        asset_server.load(
+            config
+                .base_path
+                .join("images/ready/Harvest/HarvestL0.png"),
+        ),
     );
 
     let t = data.seasons.get(&Season::Autumn).unwrap().clone();

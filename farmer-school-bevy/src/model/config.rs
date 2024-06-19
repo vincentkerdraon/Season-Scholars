@@ -4,8 +4,7 @@ use bevy::prelude::*;
 
 #[derive(Debug, Clone, Resource)]
 pub struct Config {
-    pub base_path_img: PathBuf,
-    pub base_path_sound: PathBuf,
+    pub base_path: PathBuf,
     ///starting number of students
     pub students_init: usize,
     pub students_rows_nb: i8,

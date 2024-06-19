@@ -21,49 +21,67 @@ fn load_resources(
     config: Res<Config>,
     mut data: ResMut<TeacherData>,
 ) {
-    let reaction_fail = asset_server.load(config.base_path_img.join("Reactions/fail.png"));
-    let reaction_success_long =
-        asset_server.load(config.base_path_img.join("Reactions/successLong.png"));
-    let reaction_success_short =
-        asset_server.load(config.base_path_img.join("Reactions/successShort.png"));
+    let reaction_fail = asset_server.load(config.base_path.join("images/ready/Reactions/fail.png"));
+    let reaction_success_long = asset_server.load(
+        config
+            .base_path
+            .join("images/ready/Reactions/successLong.png"),
+    );
+    let reaction_success_short = asset_server.load(
+        config
+            .base_path
+            .join("images/ready/Reactions/successShort.png"),
+    );
 
     let teacher_a_teaching = asset_server.load(
         config
-            .base_path_img
-            .join("Teacher/TeacherA/TeacherATeachingWelcoming.png"),
+            .base_path
+            .join("images/ready/Teacher/TeacherA/TeacherATeachingWelcoming.png"),
     );
     let teacher_a_protecting = asset_server.load(
         config
-            .base_path_img
-            .join("Teacher/TeacherA/teacherAProtecting.png"),
+            .base_path
+            .join("images/ready/Teacher/TeacherA/teacherAProtecting.png"),
     );
-    let teacher_a_cooking =
-        asset_server.load(config.base_path_img.join("Cooking/cookingWithTeacher.png"));
+    let teacher_a_cooking = asset_server.load(
+        config
+            .base_path
+            .join("images/ready/Cooking/cookingWithTeacher.png"),
+    );
     //FIXME add teacher_watch
     // let teacher_a_watch =
-    //     asset_server.load(config.base_path.join("Teacher/TeacherA/teacherAWatch.png"));
+    //     asset_server.load(config.base_path.join("images/ready/Teacher/TeacherA/teacherAWatch.png"));
 
     let path_left_center = asset_server.load(
         config
-            .base_path_img
-            .join("Path/ST_COL_LEFT_TO_ST_COL_CENTER.png"),
+            .base_path
+            .join("images/ready/Path/ST_COL_LEFT_TO_ST_COL_CENTER.png"),
     );
     let path_center_right = asset_server.load(
         config
-            .base_path_img
-            .join("Path/ST_COL_RIGHT_TO_ST_COL_CENTER.png"),
+            .base_path
+            .join("images/ready/Path/ST_COL_RIGHT_TO_ST_COL_CENTER.png"),
     );
     let path_right_kitchen = asset_server.load(
         config
-            .base_path_img
-            .join("Path/ST_COL_RIGHT_TO_COOKING.png"),
+            .base_path
+            .join("images/ready/Path/ST_COL_RIGHT_TO_COOKING.png"),
     );
-    let path_kitchen_welcome =
-        asset_server.load(config.base_path_img.join("Path/WELCOME_TO_COOKING.png"));
-    let path_welcome_portal =
-        asset_server.load(config.base_path_img.join("Path/WELCOME_TO_DOOR.png"));
-    let path_portal_left =
-        asset_server.load(config.base_path_img.join("Path/ST_COL_LEFT_TO_WINDOWS.png"));
+    let path_kitchen_welcome = asset_server.load(
+        config
+            .base_path
+            .join("images/ready/Path/WELCOME_TO_COOKING.png"),
+    );
+    let path_welcome_portal = asset_server.load(
+        config
+            .base_path
+            .join("images/ready/Path/WELCOME_TO_DOOR.png"),
+    );
+    let path_portal_left = asset_server.load(
+        config
+            .base_path
+            .join("images/ready/Path/ST_COL_LEFT_TO_WINDOWS.png"),
+    );
 
     let mut place_teacher_and_reactions =
         |station: Station,

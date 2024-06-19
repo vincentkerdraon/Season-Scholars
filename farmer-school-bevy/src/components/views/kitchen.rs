@@ -15,7 +15,11 @@ fn load_resources(
     mut data: ResMut<KitchenData>,
 ) {
     commands.spawn(SpriteBundle {
-        texture: asset_server.load(config.base_path_img.join("Cooking/cookingNoTeacher.png")),
+        texture: asset_server.load(
+            config
+                .base_path
+                .join("images/ready/Cooking/cookingNoTeacher.png"),
+        ),
         transform: Transform {
             //exactly the same coordinates in teacher display (overlaps)
             translation: Vec3 {
@@ -40,8 +44,8 @@ fn load_resources(
             imgs.push(
                 asset_server.load(
                     config
-                        .base_path_img
-                        .join(format!("Cooking/{}{}.png", prefix, i)),
+                        .base_path
+                        .join(format!("images/ready/Cooking/{}{}.png", prefix, i)),
                 ),
             );
         }

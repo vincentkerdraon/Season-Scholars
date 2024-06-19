@@ -17,29 +17,29 @@ fn load_resources(
     config: Res<Config>,
     mut data: ResMut<SoundData>,
 ) {
-    let track = asset_server.load(config.base_path_sound.join("track_1.ogg"));
+    let track = asset_server.load(config.base_path.join("sounds/ready/track_1.ogg"));
     data.tracks.push((track.clone(), 20., 0.));
-    let track = asset_server.load(config.base_path_sound.join("track_2.ogg"));
+    let track = asset_server.load(config.base_path.join("sounds/ready/track_2.ogg"));
     data.tracks.push((track.clone(), 22., 0.));
 
     data.monsters
-        .push(asset_server.load(config.base_path_sound.join("monster_1.ogg")));
+        .push(asset_server.load(config.base_path.join("sounds/ready/monster_1.ogg")));
     data.reactions.insert(
         Reaction::Fail,
-        vec![asset_server.load(config.base_path_sound.join("fail_short_1.ogg"))],
+        vec![asset_server.load(config.base_path.join("sounds/ready/fail_short_1.ogg"))],
     );
     data.reactions.insert(
         Reaction::Long,
         vec![
-            asset_server.load(config.base_path_sound.join("success_long_1.ogg")),
-            asset_server.load(config.base_path_sound.join("success_long_2.ogg")),
+            asset_server.load(config.base_path.join("sounds/ready/success_long_1.ogg")),
+            asset_server.load(config.base_path.join("sounds/ready/success_long_2.ogg")),
         ],
     );
     data.reactions.insert(
         Reaction::Short,
         vec![
-            asset_server.load(config.base_path_sound.join("success_short_1.ogg")),
-            asset_server.load(config.base_path_sound.join("success_short_2.ogg")),
+            asset_server.load(config.base_path.join("sounds/ready/success_short_1.ogg")),
+            asset_server.load(config.base_path.join("sounds/ready/success_short_2.ogg")),
         ],
     );
 }
