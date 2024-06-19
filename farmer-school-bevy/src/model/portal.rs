@@ -8,12 +8,14 @@ pub struct ObservePortalEvent {
     pub teacher: Teacher,
 }
 
+pub type PortalHealth = i8;
+
 /// Show information on the monsters needs (current or in line)
 #[derive(Event, Debug)]
 pub struct PortalObservedEvent {
     pub teacher: Teacher,
     pub monsters: Vec<Monster>,
-    pub health: i8,
+    pub health: PortalHealth,
 }
 
 /// Fix the portal
@@ -21,7 +23,7 @@ pub struct PortalObservedEvent {
 pub struct PortalFixedEvent {
     pub teacher: Teacher,
     pub monsters: Vec<Monster>,
-    pub health: i8,
+    pub health: PortalHealth,
 }
 
 /// Show information on the monsters needs (current or in line)
@@ -47,7 +49,7 @@ pub struct Monster {
 /// The monster in the portal attacked the portal
 #[derive(Event, Debug)]
 pub struct PortalAttackedEvent {
-    pub health: i8,
+    pub health: PortalHealth,
     pub monsters: Vec<Monster>,
 }
 

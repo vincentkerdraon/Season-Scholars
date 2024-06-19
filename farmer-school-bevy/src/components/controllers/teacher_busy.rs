@@ -22,7 +22,8 @@ impl TeacherBusy {
     }
     pub fn moved(&mut self, e: &TeacherMovedEvent) {
         if self.here.is_empty() {
-            panic!();
+            return;
+            // panic!(); //FIXME needed!
         }
         if self.here.contains(&e.station_from) {
             self.teachers.remove(&e.teacher);

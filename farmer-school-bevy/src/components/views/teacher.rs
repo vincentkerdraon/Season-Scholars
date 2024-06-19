@@ -309,20 +309,20 @@ fn listen_player_input(
             continue;
         }
 
-        //FIXME panic here at startup. data.teachers_position is 0
-        let from = *data.teachers_position.get(&e.teacher).unwrap();
-        if let Some(to) = possible_move(from, e.direction) {
-            //don't override the reference if it already exists
-            if let Some((until, _)) = data.display_path_until.get_mut(&(e.teacher, from, to)) {
-                *until = f64::MAX;
-                continue;
+        if let Some(from) = data.teachers_position.get(&e.teacher).cloned() {
+            if let Some(to) = possible_move(from, e.direction) {
+                //don't override the reference if it already exists
+                if let Some((until, _)) = data.display_path_until.get_mut(&(e.teacher, from, to)) {
+                    *until = f64::MAX;
+                    continue;
+                }
+                dirty = true;
+                data.display_path_until
+                    .insert((e.teacher, from, to), (f64::MAX, Entity::PLACEHOLDER));
+            } else {
+                //for now, nothing when pointing toward the wrong direction.
+                //We could display something here, or see also InvalidMoveEvent
             }
-            dirty = true;
-            data.display_path_until
-                .insert((e.teacher, from, to), (f64::MAX, Entity::PLACEHOLDER));
-        } else {
-            //for now, nothing when pointing toward the wrong direction.
-            //We could display something here, or see also InvalidMoveEvent
         }
     }
 
@@ -402,7 +402,7 @@ fn listen_game_over(
 }
 
 fn listen_reset(mut data: ResMut<TeacherData>, mut reset_game_events: EventReader<ResetGameEvent>) {
-    if let Some(e) = reset_game_events.read().last() {
+    if reset_game_events.read().last().is_some() {
         data.activated = true;
         data.dirty = true;
 

@@ -10,7 +10,55 @@ use crate::model::season::Season;
 const PORTAL_OPENED_NB: i8 = 5;
 const PORTAL_CLOSED_NB: i8 = 10;
 
-fn load_resources(
+fn load_attack_progress(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    config: Res<Config>,
+    mut data: ResMut<PortalData>,
+) {
+    let texture0 = asset_server.load(config.base_path.join("images/ready/Door/ProgressBar0.png"));
+    let texture1 = asset_server.load(config.base_path.join("images/ready/Door/ProgressBar1.png"));
+    let texture2 = asset_server.load(config.base_path.join("images/ready/Door/ProgressBar2.png"));
+    let texture3 = asset_server.load(config.base_path.join("images/ready/Door/ProgressBar3.png"));
+
+    data.attack_progress = vec![];
+
+    let mut register_attack = |texture: Handle<Image>, pos: (f32, f32), scale: (f32, f32)| {
+        let e = commands
+            .spawn(SpriteBundle {
+                texture: texture,
+                transform: Transform {
+                    translation: Vec3 {
+                        x: pos.0,
+                        y: pos.1,
+                        z: 49.0,
+                    },
+                    scale: Vec3 {
+                        x: scale.0,
+                        y: scale.1,
+                        z: 1.,
+                    },
+                    ..default()
+                },
+                visibility: Visibility::Visible, //FIXME
+                ..default()
+            })
+            .id();
+        data.attack_progress.push(e);
+    };
+
+    register_attack(texture0.clone(), (-470., 480.), (0.3, 0.3));
+    register_attack(texture1.clone(), (-570., 450.), (0.3, 0.3));
+    register_attack(texture2.clone(), (-470., 410.), (0.3, 0.3));
+    register_attack(texture3.clone(), (-574., 390.), (0.3, 0.3));
+    register_attack(texture3.clone(), (-474., 375.), (0.3, 0.3));
+    register_attack(texture3.clone(), (-570., 340.), (0.3, -0.3));
+    register_attack(texture2.clone(), (-440., 310.), (0.3, -0.3));
+    register_attack(texture1.clone(), (-530., 290.), (0.3, -0.3));
+    register_attack(texture0.clone(), (-422., 250.), (0.3, -0.3));
+}
+
+fn load_windows(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     config: Res<Config>,
@@ -58,6 +106,50 @@ fn load_resources(
                 .join("images/ready/Windows/Window1HarvestL.png"),
         ),
     );
+
+    let e = place_need(&mut commands, &mut data, (-545., 290.), 0.55);
+    data.needs.insert((0, 0), e);
+    let e = place_need(&mut commands, &mut data, (-545., 190.), 0.55);
+    data.needs.insert((0, 1), e);
+    let e = place_need(&mut commands, &mut data, (-545., 90.), 0.55);
+    data.needs.insert((0, 2), e);
+    let e = place_window(&mut commands, &mut data, (-545., 190.), (0.55, 0.53));
+    data.windows.insert(0, e);
+
+    let e = place_need(&mut commands, &mut data, (-620., 260.), 0.53);
+    data.needs.insert((1, 0), e);
+    let e = place_need(&mut commands, &mut data, (-620., 160.), 0.53);
+    data.needs.insert((1, 1), e);
+    let e = place_need(&mut commands, &mut data, (-620., 60.), 0.53);
+    data.needs.insert((1, 2), e);
+    let e = place_window(&mut commands, &mut data, (-620., 158.), (0.54, 0.57));
+    data.windows.insert(1, e);
+
+    let e = place_need(&mut commands, &mut data, (-710., 230.), 0.62);
+    data.needs.insert((2, 0), e);
+    let e = place_need(&mut commands, &mut data, (-710., 120.), 0.62);
+    data.needs.insert((2, 1), e);
+    let e = place_need(&mut commands, &mut data, (-710., 10.), 0.62);
+    data.needs.insert((2, 2), e);
+    let e = place_window(&mut commands, &mut data, (-709., 120.), (0.63, 0.64));
+    data.windows.insert(2, e);
+
+    let e = place_need(&mut commands, &mut data, (-790., 200.), 0.69);
+    data.needs.insert((3, 0), e);
+    let e = place_need(&mut commands, &mut data, (-790., 70.), 0.69);
+    data.needs.insert((3, 1), e);
+    let e = place_need(&mut commands, &mut data, (-790., -60.), 0.69);
+    data.needs.insert((3, 2), e);
+    let e = place_window(&mut commands, &mut data, (-800., 70.), (0.69, 0.69));
+    data.windows.insert(3, e);
+}
+
+fn load_portal(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    config: Res<Config>,
+    mut data: ResMut<PortalData>,
+) {
     //images name start at 1
     for i in 1..=PORTAL_OPENED_NB {
         data.portal_opened.push(
@@ -98,42 +190,6 @@ fn load_resources(
             ..default()
         })
         .id();
-
-    let e = place_need(&mut commands, &mut data, (-545., 290.), 0.55);
-    data.needs.insert((0, 0), e);
-    let e = place_need(&mut commands, &mut data, (-545., 190.), 0.55);
-    data.needs.insert((0, 1), e);
-    let e = place_need(&mut commands, &mut data, (-545., 90.), 0.55);
-    data.needs.insert((0, 2), e);
-    let e = place_window(&mut commands, &mut data, (-545., 190.), (0.55, 0.53));
-    data.windows.insert(0, e);
-
-    let e = place_need(&mut commands, &mut data, (-620., 260.), 0.53);
-    data.needs.insert((1, 0), e);
-    let e = place_need(&mut commands, &mut data, (-620., 160.), 0.53);
-    data.needs.insert((1, 1), e);
-    let e = place_need(&mut commands, &mut data, (-620., 60.), 0.53);
-    data.needs.insert((1, 2), e);
-    let e = place_window(&mut commands, &mut data, (-620., 158.), (0.54, 0.57));
-    data.windows.insert(1, e);
-
-    let e = place_need(&mut commands, &mut data, (-710., 230.), 0.62);
-    data.needs.insert((2, 0), e);
-    let e = place_need(&mut commands, &mut data, (-710., 120.), 0.62);
-    data.needs.insert((2, 1), e);
-    let e = place_need(&mut commands, &mut data, (-710., 10.), 0.62);
-    data.needs.insert((2, 2), e);
-    let e = place_window(&mut commands, &mut data, (-709., 120.), (0.63, 0.64));
-    data.windows.insert(2, e);
-
-    let e = place_need(&mut commands, &mut data, (-790., 200.), 0.69);
-    data.needs.insert((3, 0), e);
-    let e = place_need(&mut commands, &mut data, (-790., 70.), 0.69);
-    data.needs.insert((3, 1), e);
-    let e = place_need(&mut commands, &mut data, (-790., -60.), 0.69);
-    data.needs.insert((3, 2), e);
-    let e = place_window(&mut commands, &mut data, (-800., 70.), (0.69, 0.69));
-    data.windows.insert(3, e);
 }
 
 fn place_window(
@@ -246,6 +302,24 @@ fn display_monster(
     }
 }
 
+fn display_health(
+    data: &mut PortalData,
+    query: &mut Query<(&mut Handle<Image>, &mut Visibility)>,
+    health: &PortalHealth,
+) {
+    let mut health = *health;
+    for e in data.attack_progress.iter() {
+        if let Ok((_, mut visibility)) = query.get_mut(*e) {
+            health -= 1;
+            if health > 0 {
+                *visibility = Visibility::Visible;
+            } else {
+                *visibility = Visibility::Hidden;
+            }
+        }
+    }
+}
+
 fn should_redraw_window(monster_new: &Option<&Monster>, monster_old: &Option<&Monster>) -> bool {
     // with new, without old => redraw all
     // without new, with old => redraw all
@@ -314,13 +388,20 @@ fn listen_events(
     mut monster_popped_events: EventReader<MonsterPoppedEvent>,
     mut portal_attacked_events: EventReader<PortalAttackedEvent>,
     mut monster_fed_events: EventReader<MonsterFedEvent>,
+    mut portal_fixed_events: EventReader<PortalFixedEvent>,
 ) {
     let mut dirty = false;
     let mut monsters: Vec<Monster> = Vec::new();
-    let mut health: i8 = 0;
+    let mut health: Option<PortalHealth> = None;
 
     if let Some(e) = portal_attacked_events.read().last() {
-        health = e.health;
+        health = Some(e.health);
+        monsters.clone_from(&e.monsters);
+        dirty = true;
+    }
+
+    if let Some(e) = portal_fixed_events.read().last() {
+        health = Some(e.health);
         monsters.clone_from(&e.monsters);
         dirty = true;
     }
@@ -332,20 +413,25 @@ fn listen_events(
 
     //monster_popped_events must be after monster_fed_events
     if let Some(e) = monster_popped_events.read().last() {
-        println!("monster_popped_events {:?}", e);
         monsters.clone_from(&e.monsters);
-        println!("monsters {:?}", monsters);
         dirty = true;
     }
 
     if let Some(e) = portal_observed_events.read().last() {
-        health = e.health;
+        health = Some(e.health);
         monsters.clone_from(&e.monsters);
         dirty = true;
     }
 
     if !dirty {
         return;
+    }
+
+    if let Some(health) = health {
+        if health != data.health {
+            data.health = health;
+            display_health(&mut data, &mut query, &health);
+        }
     }
 
     let monster_new = &monsters.get(0);
@@ -379,7 +465,6 @@ fn listen_events(
     }
 
     data.monsters = monsters;
-    data.health = health;
 }
 
 pub struct PortalViewPlugin;
@@ -387,7 +472,9 @@ pub struct PortalViewPlugin;
 impl Plugin for PortalViewPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(PortalData::new())
-            .add_systems(Startup, load_resources)
+            .add_systems(Startup, load_portal)
+            .add_systems(Startup, load_windows)
+            .add_systems(Startup, load_attack_progress)
             .add_systems(Update, listen_events);
     }
 }
@@ -408,6 +495,8 @@ struct PortalData {
     portal_opened: Vec<Handle<Image>>,
     portal_opened_last_used_index: usize,
 
+    attack_progress: Vec<Entity>,
+
     monsters: Vec<Monster>,
     health: i8,
 }
@@ -427,6 +516,7 @@ impl PortalData {
             portal_closed_last_used_index: 0,
             health: 0,
             monsters: Vec::new(),
+            attack_progress: Vec::new(),
         }
     }
 

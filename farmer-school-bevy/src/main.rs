@@ -46,7 +46,7 @@ fn main() {
         c.portal_health_max = 10;
         c.debug_start_game_immediately = true;
         c.debug_disable_student_eating = true;
-        c.debug_disable_monster_attack = true;
+        c.debug_disable_monster_attack = false;
     }
 
     let mut app: App = App::new();

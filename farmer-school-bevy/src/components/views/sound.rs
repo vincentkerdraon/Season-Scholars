@@ -45,10 +45,12 @@ fn load_resources(
 }
 
 fn play_sound(commands: &mut Commands, h: Handle<AudioSource>, volume: f32) {
+    //spawn a new one each time, to be able to overlap.
+    //not great for perf
     commands.spawn((AudioBundle {
         source: h,
         settings: PlaybackSettings {
-            mode: PlaybackMode::Once,
+            mode: PlaybackMode::Remove,
             paused: false,
             volume: Volume::new(volume),
             ..default()
