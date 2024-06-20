@@ -1,5 +1,6 @@
 use super::moves::possible_move;
 use super::teacher_busy::TeacherBusy;
+use super::teacher_tired::TeacherTired;
 use crate::model::config::Config;
 
 use crate::model::overlord::*;
@@ -21,6 +22,18 @@ fn listen_game_over(
         return;
     }
     data.activated = false;
+}
+
+fn listen_events_teacher_tired(
+    time: Res<Time>,
+    mut data: ResMut<PortalData>,
+    mut teacher_tired_events: EventReader<TeacherTiredEvent>,
+) {
+    for e in teacher_tired_events.read() {
+        let now = time.elapsed_seconds_f64();
+        data.teacher_tired
+            .update(now, &e.teacher, e.short_action, e.long_action)
+    }
 }
 
 fn monster_attack(
@@ -134,7 +147,6 @@ fn listen_reset(
     if reset_game_events.read().last().is_some() {
         data.activated = true;
         reset(time, config, data, monster_popped_events);
-        reset_game_events.clear();
     }
 }
 
@@ -152,6 +164,7 @@ fn reset(
     data.monsters = Vec::new();
     data.teacher_busy = TeacherBusy::new(vec![STATION]);
     pop_monster(now, &config, &mut data, &mut monster_popped_events);
+    data.teacher_tired = TeacherTired::default();
 }
 
 fn listen_events_create_monster(
@@ -290,7 +303,6 @@ fn random_needs(min: i8, max: i8) -> Vec<Season> {
 
 fn listen_events_player_input(
     time: Res<Time>,
-    config: Res<Config>,
     mut data: ResMut<PortalData>,
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut portal_observed_events: EventWriter<PortalObservedEvent>,
@@ -311,16 +323,9 @@ fn listen_events_player_input(
         }
 
         if e.long_action {
-            if data.health >= data.health_max {
-                let emit = InvalidActionStationEvent {
-                    station: STATION,
-                    teacher: e.teacher,
-                };
-                debug!("{:?}", emit);
-                invalid_action_station_events.send(emit);
-            } else {
-                data.teacher_busy
-                    .action(e.teacher, now, config.long_action_s);
+            if data.health < data.health_max {
+                let (_, long) = data.teacher_tired.get(&e.teacher).unwrap();
+                data.teacher_busy.action(e.teacher, now, long);
                 data.health += 1;
                 let emit = PortalFixedEvent {
                     teacher: Teacher::A,
@@ -329,6 +334,13 @@ fn listen_events_player_input(
                 };
                 debug!("{:?}", emit);
                 portal_fixed_events.send(emit);
+            } else {
+                let emit = InvalidActionStationEvent {
+                    station: STATION,
+                    teacher: e.teacher,
+                };
+                debug!("{:?}", emit);
+                invalid_action_station_events.send(emit);
             }
             continue;
         }
@@ -340,8 +352,8 @@ fn listen_events_player_input(
                     revealed = true;
                     monster.window_revealed = true;
 
-                    data.teacher_busy
-                        .action(e.teacher, now, config.short_action_s);
+                    let (short, _) = data.teacher_tired.get(&e.teacher).unwrap();
+                    data.teacher_busy.action(e.teacher, now, short);
 
                     let emit = ObservePortalEvent {
                         teacher: Teacher::A,
@@ -405,6 +417,7 @@ impl Plugin for PortalControllerPlugin {
             .add_systems(Startup, reset)
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_game_over)
+            .add_systems(PreUpdate, listen_events_teacher_tired)
             .add_systems(PreUpdate, listen_moved)
             .add_systems(PreUpdate, listen_events)
             .add_systems(PreUpdate, listen_events_create_monster)
@@ -421,4 +434,5 @@ struct PortalData {
     health: i8,
     health_max: i8,
     teacher_busy: TeacherBusy,
+    teacher_tired: TeacherTired,
 }

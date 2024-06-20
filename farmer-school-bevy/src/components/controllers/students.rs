@@ -1,5 +1,6 @@
 use super::moves::possible_move;
 use super::teacher_busy::TeacherBusy;
+use super::teacher_tired::TeacherTired;
 use crate::model::config::Config;
 
 use crate::model::overlord::*;
@@ -79,6 +80,19 @@ fn listen_reset(
         };
         debug!("{:?}", emit);
         students_seated_events.send(emit);
+        data.teacher_tired = TeacherTired::default();
+    }
+}
+
+fn listen_events_teacher_tired(
+    time: Res<Time>,
+    mut data: ResMut<StudentsData>,
+    mut teacher_tired_events: EventReader<TeacherTiredEvent>,
+) {
+    for e in teacher_tired_events.read() {
+        let now = time.elapsed_seconds_f64();
+        data.teacher_tired
+            .update(now, &e.teacher, e.short_action, e.long_action)
     }
 }
 
@@ -93,7 +107,6 @@ fn listen_season(
 
 fn listen_events_player_input(
     time: Res<Time>,
-    config: Res<Config>,
     mut data: ResMut<StudentsData>,
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut move_teacher_events: EventWriter<MoveTeacherEvent>,
@@ -118,8 +131,8 @@ fn listen_events_player_input(
 
         if e.long_action {
             if let Some(graduate) = data.graduate(col) {
-                data.teacher_busy
-                    .action(e.teacher, now, config.long_action_s);
+                let (_, long) = data.teacher_tired.get(&e.teacher).unwrap();
+                data.teacher_busy.action(e.teacher, now, long);
                 let emit = GraduateEvent {
                     student_col: col,
                     teacher: e.teacher,
@@ -147,8 +160,8 @@ fn listen_events_player_input(
 
         if e.short_action {
             if let Some(season) = data.teach(col) {
-                data.teacher_busy
-                    .action(e.teacher, now, config.short_action_s);
+                let (short, _) = data.teacher_tired.get(&e.teacher).unwrap();
+                data.teacher_busy.action(e.teacher, now, short);
                 let emit = TeachEvent {
                     teacher: e.teacher,
                     student_col: col,
@@ -208,6 +221,7 @@ impl Plugin for StudentsControllerPlugin {
             .insert_resource(StudentsData { ..default() })
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_game_over)
+            .add_systems(PreUpdate, listen_events_teacher_tired)
             .add_systems(PreUpdate, listen_move)
             .add_systems(PreUpdate, listen_welcomed)
             .add_systems(PreUpdate, listen_season)
@@ -223,6 +237,7 @@ struct StudentsData {
     activated: bool,
     teacher_busy: TeacherBusy,
     season: Season,
+    teacher_tired: TeacherTired,
 }
 
 impl StudentsData {

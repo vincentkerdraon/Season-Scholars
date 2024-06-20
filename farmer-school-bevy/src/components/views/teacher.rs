@@ -3,6 +3,7 @@ use std::{collections::HashMap, num::Wrapping};
 use bevy::prelude::*;
 
 use crate::components::controllers::moves::possible_move;
+use crate::components::controllers::teacher_tired::TeacherTired;
 use crate::model::config::Config;
 
 use crate::model::kitchen::*;
@@ -333,7 +334,6 @@ fn listen_player_input(
 
 fn listen_reactions(
     time: Res<Time>,
-    config: Res<Config>,
     mut invalid_action_station_events: EventReader<InvalidActionStationEvent>,
     mut teacher_ate_events: EventReader<TeacherAteEvent>,
     mut cooked_events: EventReader<CookedEvent>,
@@ -349,10 +349,11 @@ fn listen_reactions(
     let mut insert_reaction = |teacher: Teacher, reaction: Reaction| {
         data.dirty = true;
 
+        let (short, long) = data.teacher_tired.get(&teacher).unwrap();
         let dur = match reaction {
             Reaction::Fail => DISPLAY_REACTION_FAIL_DURATION_S,
-            Reaction::Long => config.long_action_s,
-            Reaction::Short => config.short_action_s,
+            Reaction::Long => long,
+            Reaction::Short => short,
         };
         if let Some(station) = data.teachers_position.get(&teacher).cloned() {
             data.display_reaction_until.insert(
@@ -415,6 +416,18 @@ fn listen_reset(mut data: ResMut<TeacherData>, mut reset_game_events: EventReade
 
         //We will receive the position soon, but there is no teacher in the first frame
         data.teachers_position = HashMap::new();
+    }
+}
+
+fn listen_events_teacher_tired(
+    time: Res<Time>,
+    mut data: ResMut<TeacherData>,
+    mut teacher_tired_events: EventReader<TeacherTiredEvent>,
+) {
+    for e in teacher_tired_events.read() {
+        let now = time.elapsed_seconds_f64();
+        data.teacher_tired
+            .update(now, &e.teacher, e.short_action, e.long_action)
     }
 }
 
@@ -510,6 +523,7 @@ impl Plugin for TeacherViewPlugin {
             .add_systems(Startup, load_resources)
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_game_over)
+            .add_systems(PreUpdate, listen_events_teacher_tired)
             .add_systems(PreUpdate, listen_teacher_moved)
             .add_systems(PreUpdate, listen_player_input)
             .add_systems(PreUpdate, listen_reactions)
@@ -524,6 +538,7 @@ struct TeacherData {
     reactions: HashMap<(Station, Reaction), Entity>,
     teachers_position: HashMap<Teacher, Station>,
     teachers_moved: Vec<(Teacher, Option<Station>, Option<Station>)>,
+    teacher_tired: TeacherTired,
     activated: bool,
     dirty: bool,
     direction_last: Vec2,
@@ -540,6 +555,7 @@ impl TeacherData {
             reactions: HashMap::new(),
             teachers_position: HashMap::new(),
             teachers_moved: Vec::new(),
+            teacher_tired: TeacherTired::default(),
             activated: false,
             dirty: false,
             direction_last: Vec2::ZERO,

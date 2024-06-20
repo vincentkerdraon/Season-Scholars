@@ -10,26 +10,26 @@ use crate::model::{
 #[derive(Resource, Default)]
 pub struct TeacherBusy {
     here: Vec<Station>,
-    teachers: HashMap<Teacher, Option<(Station, f64)>>,
+    teachers_position: HashMap<Teacher, Option<(Station, f64)>>,
 }
 
 impl TeacherBusy {
     pub fn new(here: Vec<Station>) -> Self {
         Self {
             here,
-            teachers: HashMap::new(),
+            teachers_position: HashMap::new(),
         }
     }
     pub fn moved(&mut self, e: &TeacherMovedEvent) {
         if self.here.is_empty() {
-            return;
-            // panic!(); //FIXME needed!
+            panic!();
         }
         if self.here.contains(&e.station_from) {
-            self.teachers.remove(&e.teacher);
+            self.teachers_position.remove(&e.teacher);
         }
         if self.here.contains(&e.station_to) {
-            self.teachers.insert(e.teacher, Some((e.station_to, 0.)));
+            self.teachers_position
+                .insert(e.teacher, Some((e.station_to, 0.)));
         }
     }
 
@@ -37,7 +37,7 @@ impl TeacherBusy {
         if self.here.is_empty() {
             panic!();
         }
-        if let Some(Some((_, until))) = self.teachers.get_mut(&t) {
+        if let Some(Some((_, until))) = self.teachers_position.get_mut(&t) {
             *until = now + duration;
             return true;
         }
@@ -50,7 +50,7 @@ impl TeacherBusy {
         if self.here.is_empty() {
             panic!();
         }
-        if let Some(d) = self.teachers.get(&t) {
+        if let Some(d) = self.teachers_position.get(&t) {
             if let Some((_, until)) = d {
                 if *until > now {
                     return (true, false);
@@ -64,7 +64,7 @@ impl TeacherBusy {
     }
 
     pub fn station(&mut self, t: Teacher) -> Option<Station> {
-        if let Some(Some((s, _))) = self.teachers.get(&t) {
+        if let Some(Some((s, _))) = self.teachers_position.get(&t) {
             return Some(*s);
         }
         None

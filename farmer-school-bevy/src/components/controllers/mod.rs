@@ -7,4 +7,5 @@ pub mod season;
 pub mod students;
 pub mod teacher;
 pub mod teacher_busy;
+pub mod teacher_tired;
 pub mod welcome;

@@ -1,5 +1,6 @@
 use super::moves::possible_move;
 use super::teacher_busy::TeacherBusy;
+use crate::components::controllers::teacher_tired::TeacherTired;
 use crate::model::config::Config;
 use crate::model::kitchen::*;
 use crate::model::overlord::*;
@@ -24,23 +25,33 @@ fn listen_game_over(
 
 fn listen_reset(
     config: Res<Config>,
-    data: ResMut<KitchenData>,
+    mut data: ResMut<KitchenData>,
     mut reset_game_events: EventReader<ResetGameEvent>,
     students_eat_events: EventWriter<StudentsEatEvent>,
 ) {
-    if reset_game_events.read().last().is_some() {
-        reset(config, data, students_eat_events);
+    if let Some(_) = reset_game_events.read().last() {
+        reset(&config, &mut data, students_eat_events);
     }
 }
 
-fn reset(
+fn startup_reset(
     config: Res<Config>,
     mut data: ResMut<KitchenData>,
+    students_eat_events: EventWriter<StudentsEatEvent>,
+) {
+    reset(&config, &mut data, students_eat_events);
+}
+
+fn reset(
+    config: &Res<Config>,
+    data: &mut ResMut<KitchenData>,
     mut students_eat_events: EventWriter<StudentsEatEvent>,
 ) {
     data.activated = true;
     data.food_remaining = config.food_max;
     data.teacher_busy = TeacherBusy::new(vec![STATION]);
+    data.teacher_tired = TeacherTired::default();
+
     let emit = StudentsEatEvent {
         food_remaining: data.food_remaining,
     };
@@ -102,6 +113,18 @@ fn listen_students(
     }
 }
 
+fn listen_events_teacher_tired(
+    time: Res<Time>,
+    mut data: ResMut<KitchenData>,
+    mut teacher_tired_events: EventReader<TeacherTiredEvent>,
+) {
+    for e in teacher_tired_events.read() {
+        let now = time.elapsed_seconds_f64();
+        data.teacher_tired
+            .update(now, &e.teacher, e.short_action, e.long_action)
+    }
+}
+
 fn listen_events_player_input(
     time: Res<Time>,
     config: Res<Config>,
@@ -128,8 +151,8 @@ fn listen_events_player_input(
 
         if e.long_action {
             if data.food_remaining < config.food_max {
-                data.teacher_busy
-                    .action(e.teacher, now, config.long_action_s);
+                let (_, long) = data.teacher_tired.get(&e.teacher).unwrap();
+                data.teacher_busy.action(e.teacher, now, long);
                 data.food_remaining = config.food_max;
                 let emit = CookedEvent {
                     food_remaining: data.food_remaining,
@@ -150,9 +173,10 @@ fn listen_events_player_input(
 
         if e.short_action {
             if data.food_remaining > 0 {
+                let now = time.elapsed_seconds_f64();
                 data.food_remaining -= 1;
-                data.teacher_busy
-                    .action(e.teacher, now, config.short_action_s);
+                let (short, _) = data.teacher_tired.get(&e.teacher).unwrap();
+                data.teacher_busy.action(e.teacher, now, short);
 
                 let emit = TeacherAteEvent {
                     food_remaining: data.food_remaining,
@@ -201,9 +225,10 @@ impl Plugin for KitchenControllerPlugin {
             .add_event::<CookedEvent>()
             .add_event::<StudentsEatEvent>()
             .add_event::<TeacherAteEvent>()
-            .add_systems(Startup, reset)
+            .add_systems(Startup, startup_reset)
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_game_over)
+            .add_systems(PreUpdate, listen_events_teacher_tired)
             .add_systems(PreUpdate, listen_season)
             .add_systems(PreUpdate, listen_moved)
             .add_systems(PreUpdate, listen_students)
@@ -216,5 +241,6 @@ struct KitchenData {
     activated: bool,
     food_remaining: i8,
     teacher_busy: TeacherBusy,
+    teacher_tired: TeacherTired,
     students_classroom_nb: i8,
 }

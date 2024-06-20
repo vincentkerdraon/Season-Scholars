@@ -8,8 +8,14 @@ pub struct Config {
     ///starting number of students
     pub students_init: usize,
     pub students_rows_nb: i8,
-    pub long_action_s: f64,
-    pub short_action_s: f64,
+    pub long_action_s_min: f64,
+    pub short_action_s_min: f64,
+    pub long_action_s_max: f64,
+    pub short_action_s_max: f64,
+    ///how often the teachers get more tired
+    pub actions_increase_delta: f64,
+    ///increase of teacher tiredness
+    pub actions_increase_increment: f64,
     pub seasons_duration_s: f64,
     pub portal_health_max: i8,
     pub portal_windows_nb: i8,

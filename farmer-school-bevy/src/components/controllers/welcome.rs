@@ -1,5 +1,6 @@
 use super::moves::possible_move;
 use super::teacher_busy::TeacherBusy;
+use super::teacher_tired::TeacherTired;
 use crate::model::config::Config;
 
 use crate::model::overlord::*;
@@ -30,6 +31,7 @@ fn listen_reset(data: ResMut<WelcomeData>, mut reset_game_events: EventReader<Re
 fn reset(mut data: ResMut<WelcomeData>) {
     data.teacher_busy = TeacherBusy::new(vec![STATION]);
     data.activated = true;
+    data.teacher_tired = TeacherTired::default();
 }
 
 fn listen_game_over(
@@ -40,6 +42,18 @@ fn listen_game_over(
         return;
     }
     data.activated = false;
+}
+
+fn listen_events_teacher_tired(
+    time: Res<Time>,
+    mut data: ResMut<WelcomeData>,
+    mut teacher_tired_events: EventReader<TeacherTiredEvent>,
+) {
+    for e in teacher_tired_events.read() {
+        let now = time.elapsed_seconds_f64();
+        data.teacher_tired
+            .update(now, &e.teacher, e.short_action, e.long_action)
+    }
 }
 
 fn listen_graduated(
@@ -104,8 +118,8 @@ fn listen_events(
 
         if e.long_action {
             if !data.student_available {
-                data.teacher_busy
-                    .action(e.teacher, now, config.long_action_s);
+                let (_, long) = data.teacher_tired.get(&e.teacher).unwrap();
+                data.teacher_busy.action(e.teacher, now, long);
                 let emit = RecruitStudentEvent { teacher: e.teacher };
                 debug!("{:?}", emit);
                 recruit_student_events.send(emit);
@@ -130,8 +144,8 @@ fn listen_events(
                 data.student_available = false;
                 data.students_classroom_nb += 1;
 
-                data.teacher_busy
-                    .action(e.teacher, now, config.short_action_s);
+                let (short, _) = data.teacher_tired.get(&e.teacher).unwrap();
+                data.teacher_busy.action(e.teacher, now, short);
                 let emit = WelcomeStudentEvent {
                     teacher: Teacher::A,
                 };
@@ -185,6 +199,7 @@ impl Plugin for WelcomeControllerPlugin {
             .add_systems(Startup, reset)
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_game_over)
+            .add_systems(PreUpdate, listen_events_teacher_tired)
             .add_systems(PreUpdate, listen_moved)
             .add_systems(PreUpdate, listen_monster_fed)
             .add_systems(PreUpdate, listen_graduated)
@@ -198,4 +213,5 @@ struct WelcomeData {
     student_available: bool,
     teacher_busy: TeacherBusy,
     activated: bool,
+    teacher_tired: TeacherTired,
 }

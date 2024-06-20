@@ -15,3 +15,14 @@ pub struct TeacherMovedEvent {
     pub station_to: Station,
     pub teacher: Teacher,
 }
+
+//TeacherSpeed is action duration in seconds
+pub type ActionLongDuration = f64;
+pub type ActionShortDuration = f64;
+
+#[derive(Event, Debug)]
+pub struct TeacherTiredEvent {
+    pub short_action: ActionShortDuration,
+    pub long_action: ActionLongDuration,
+    pub teacher: Teacher,
+}
