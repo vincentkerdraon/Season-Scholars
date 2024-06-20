@@ -43,10 +43,17 @@ fn main() {
 
     if env::var("SEASON_SCHOLARS_DEV").is_ok() {
         debug_pointer_click = true;
-        c.portal_health_max = 10;
         c.debug_start_game_immediately = true;
+    }
+    read_env_var_to_i8(
+        "SEASON_SCHOLARS_DEV_PORTAL_HEALTH",
+        &mut c.portal_health_max,
+    );
+    if env::var("SEASON_SCHOLARS_DEV_STUDENT_NOT_EATING").is_ok() {
         c.debug_disable_student_eating = true;
-        c.debug_disable_monster_attack = false;
+    }
+    if env::var("SEASON_SCHOLARS_DEV_NO_MONSTER_ATTACKS").is_ok() {
+        c.debug_disable_monster_attack = true;
     }
 
     let mut app: App = App::new();
@@ -105,6 +112,17 @@ fn setup(mut commands: Commands) {
         },
         ..default()
     });
+}
+
+fn read_env_var_to_i8(var_name: &str, target: &mut i8) {
+    if let Ok(var_value) = env::var(var_name) {
+        if !var_value.is_empty() {
+            match var_value.parse::<i8>() {
+                Ok(parsed_value) => *target = parsed_value,
+                Err(e) => eprintln!("Failed to parse env var {}: {}", var_name, e),
+            }
+        }
+    }
 }
 
 fn _log_mouse_click(

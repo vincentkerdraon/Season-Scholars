@@ -268,9 +268,6 @@ fn generate_monster(now: f64, difficulty: i32) -> Monster {
         }
     }
 
-    m.next_wait_s = 0.; //FIXME
-    m.attack_interval_s = 5.; //FIXME
-
     m.id = difficulty;
     m.next_attack_s = m.next_wait_s + m.attack_interval_s;
 

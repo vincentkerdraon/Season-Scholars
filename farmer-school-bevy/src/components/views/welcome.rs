@@ -23,7 +23,7 @@ fn load_resources(
                 translation: Vec3 {
                     x: 398.0,
                     y: 412.0,
-                    z: 1.0,
+                    z: 6.0,
                 },
                 scale: Vec3 {
                     x: 0.54,

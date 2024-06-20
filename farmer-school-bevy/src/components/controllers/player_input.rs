@@ -59,7 +59,6 @@ fn input_system(
             KeyCode::ShiftRight,
             KeyCode::ControlRight,
             KeyCode::AltRight,
-            KeyCode::Enter,
         ];
 
         if detect_input_changed(&mut data.keys_pressed, &keyboard_input, keys_to_check) {
@@ -88,7 +87,6 @@ fn input_system(
             KeyCode::PageUp,
             KeyCode::PageDown,
             KeyCode::KeyS,
-            KeyCode::NumpadEnter,
             //FIXME move_confirm in menu
         ];
 
