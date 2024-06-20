@@ -26,5 +26,5 @@ pub struct Config {
     pub track_break_s: f64,
     pub debug_start_game_immediately: bool,
     pub debug_disable_student_eating: bool,
-    pub debug_disable_monster_attack: bool,
+    pub debug_disable_season_monster: bool,
 }

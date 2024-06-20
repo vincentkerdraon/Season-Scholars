@@ -152,7 +152,7 @@ fn listen_events_player_input(
                     station,
                     teacher: e.teacher,
                 };
-                debug!("{:?}", emit);
+                trace!("{:?}", emit);
                 invalid_action_station_events.send(emit);
             }
             continue;
@@ -181,7 +181,7 @@ fn listen_events_player_input(
                     station,
                     teacher: e.teacher,
                 };
-                debug!("{:?}", emit);
+                trace!("{:?}", emit);
                 invalid_action_station_events.send(emit);
             }
             continue;

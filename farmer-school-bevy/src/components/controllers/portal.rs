@@ -156,8 +156,7 @@ fn reset(
     mut data: ResMut<PortalData>,
     mut monster_popped_events: EventWriter<MonsterPoppedEvent>,
 ) {
-    data.health_max = config.portal_health_max;
-    data.health = data.health_max;
+    data.health = config.portal_health_max;
     data.difficulty = 0;
     // data.teachers_present = HashMap::new();
     let now = time.elapsed_seconds_f64();
@@ -174,7 +173,7 @@ fn listen_events_create_monster(
     mut season_changed_events: EventReader<SeasonChangedEvent>,
     mut monster_popped_events: EventWriter<MonsterPoppedEvent>,
 ) {
-    if config.debug_disable_monster_attack {
+    if config.debug_disable_season_monster {
         return;
     }
     let now = time.elapsed_seconds_f64();
@@ -304,6 +303,7 @@ fn random_needs(min: i8, max: i8) -> Vec<Season> {
 fn listen_events_player_input(
     time: Res<Time>,
     mut data: ResMut<PortalData>,
+    config: Res<Config>,
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut portal_observed_events: EventWriter<PortalObservedEvent>,
     mut observe_portal_events: EventWriter<ObservePortalEvent>,
@@ -323,7 +323,7 @@ fn listen_events_player_input(
         }
 
         if e.long_action {
-            if data.health < data.health_max {
+            if data.health < config.portal_health_max {
                 let (_, long) = data.teacher_tired.get(&e.teacher).unwrap();
                 data.teacher_busy.action(e.teacher, now, long);
                 data.health += 1;
@@ -339,7 +339,7 @@ fn listen_events_player_input(
                     station: STATION,
                     teacher: e.teacher,
                 };
-                debug!("{:?}", emit);
+                trace!("{:?}", emit);
                 invalid_action_station_events.send(emit);
             }
             continue;
@@ -375,7 +375,7 @@ fn listen_events_player_input(
                     station: STATION,
                     teacher: e.teacher,
                 };
-                debug!("{:?}", emit);
+                trace!("{:?}", emit);
                 invalid_action_station_events.send(emit);
             }
             continue;
@@ -432,7 +432,6 @@ struct PortalData {
     monsters: Vec<Monster>,
     difficulty: i32,
     health: i8,
-    health_max: i8,
     teacher_busy: TeacherBusy,
     teacher_tired: TeacherTired,
 }
