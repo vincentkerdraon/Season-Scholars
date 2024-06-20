@@ -1,14 +1,18 @@
 use std::collections::HashMap;
+use std::num::Wrapping;
 
 use bevy::prelude::*;
 
 use crate::model::config::Config;
 
+use crate::model::overlord::{GameOverEvent, ResetGameEvent};
 use crate::model::portal::*;
 use crate::model::season::Season;
 
 const PORTAL_OPENED_NB: i8 = 5;
 const PORTAL_CLOSED_NB: i8 = 10;
+// 5 steps and attack on next step
+const ATTACK_PROGRESS_INCREMENTS: i8 = 6;
 
 fn load_attack_progress(
     mut commands: Commands,
@@ -20,6 +24,7 @@ fn load_attack_progress(
     let texture1 = asset_server.load(config.base_path.join("images/ready/Door/ProgressBar1.png"));
     let texture2 = asset_server.load(config.base_path.join("images/ready/Door/ProgressBar2.png"));
     let texture3 = asset_server.load(config.base_path.join("images/ready/Door/ProgressBar3.png"));
+    let texture4 = asset_server.load(config.base_path.join("images/ready/Door/ProgressBar4.png"));
 
     data.attack_progress = vec![];
 
@@ -31,7 +36,7 @@ fn load_attack_progress(
                     translation: Vec3 {
                         x: pos.0,
                         y: pos.1,
-                        z: 49.0,
+                        z: 58.0,
                     },
                     scale: Vec3 {
                         x: scale.0,
@@ -47,15 +52,11 @@ fn load_attack_progress(
         data.attack_progress.push(e);
     };
 
-    register_attack(texture0.clone(), (-470., 480.), (0.3, 0.3));
-    register_attack(texture1.clone(), (-570., 450.), (0.3, 0.3));
-    register_attack(texture2.clone(), (-470., 410.), (0.3, 0.3));
-    register_attack(texture3.clone(), (-574., 390.), (0.3, 0.3));
-    register_attack(texture3.clone(), (-474., 375.), (0.3, 0.3));
-    register_attack(texture3.clone(), (-570., 340.), (0.3, -0.3));
-    register_attack(texture2.clone(), (-440., 310.), (0.3, -0.3));
-    register_attack(texture1.clone(), (-530., 290.), (0.3, -0.3));
-    register_attack(texture0.clone(), (-422., 250.), (0.3, -0.3));
+    register_attack(texture0.clone(), (-560., 480.), (0.2, 0.2));
+    register_attack(texture1.clone(), (-530., 440.), (0.2, 0.2));
+    register_attack(texture2.clone(), (-570., 380.), (0.2, 0.2));
+    register_attack(texture3.clone(), (-565., 330.), (0.2, 0.2));
+    register_attack(texture4.clone(), (-540., 210.), (0.2, 0.2));
 }
 
 fn load_windows(
@@ -380,6 +381,47 @@ fn should_redraw_monster(monster_new: &Option<&Monster>, monster_old: &Option<&M
     false
 }
 
+fn display_attack_progress(
+    time: Res<Time>,
+    config: Res<Config>,
+    mut data: ResMut<PortalData>,
+    mut query: Query<(&mut Handle<Image>, &mut Visibility)>,
+) {
+    if !data.activated {
+        return;
+    }
+
+    data.frame += Wrapping(1);
+    if !data.frame.0 % config.draw_frame_modulo != 0 {
+        return;
+    }
+
+    let now = time.elapsed_seconds_f64();
+
+    let mut progress = ATTACK_PROGRESS_INCREMENTS;
+    if let Some(monster) = data.monsters.first() {
+        if data.attack_progress_next_s != monster.next_attack_s {
+            data.attack_progress_next_s = monster.next_attack_s;
+            data.attack_progress_reset_s = now;
+        }
+        let total_time_s = data.attack_progress_next_s - data.attack_progress_reset_s;
+        let remaining_time_s = now - data.attack_progress_reset_s;
+        progress = (remaining_time_s / total_time_s * (ATTACK_PROGRESS_INCREMENTS as f64)) as i8;
+    }
+
+    for i in 0..ATTACK_PROGRESS_INCREMENTS {
+        if let Some(e) = data.attack_progress.get(i as usize) {
+            if let Ok((_, mut visibility)) = query.get_mut(*e) {
+                if i < progress {
+                    *visibility = Visibility::Visible;
+                } else {
+                    *visibility = Visibility::Hidden;
+                }
+            }
+        }
+    }
+}
+
 fn listen_events(
     config: Res<Config>,
     mut data: ResMut<PortalData>,
@@ -467,6 +509,22 @@ fn listen_events(
     data.monsters = monsters;
 }
 
+fn listen_game_over(
+    mut data: ResMut<PortalData>,
+    mut game_over_events: EventReader<GameOverEvent>,
+) {
+    if game_over_events.read().last().is_none() {
+        return;
+    }
+    data.activated = false;
+}
+
+fn listen_reset(mut data: ResMut<PortalData>, mut reset_game_events: EventReader<ResetGameEvent>) {
+    if reset_game_events.read().last().is_some() {
+        data.activated = true;
+    }
+}
+
 pub struct PortalViewPlugin;
 
 impl Plugin for PortalViewPlugin {
@@ -475,6 +533,9 @@ impl Plugin for PortalViewPlugin {
             .add_systems(Startup, load_portal)
             .add_systems(Startup, load_windows)
             .add_systems(Startup, load_attack_progress)
+            .add_systems(PreUpdate, listen_reset)
+            .add_systems(PreUpdate, listen_game_over)
+            .add_systems(Update, display_attack_progress)
             .add_systems(Update, listen_events);
     }
 }
@@ -496,9 +557,14 @@ struct PortalData {
     portal_opened_last_used_index: usize,
 
     attack_progress: Vec<Entity>,
+    attack_progress_next_s: f64,
+    attack_progress_reset_s: f64,
 
     monsters: Vec<Monster>,
     health: i8,
+
+    activated: bool,
+    frame: Wrapping<i8>,
 }
 
 impl PortalData {
@@ -517,6 +583,10 @@ impl PortalData {
             health: 0,
             monsters: Vec::new(),
             attack_progress: Vec::new(),
+            attack_progress_next_s: 0.,
+            attack_progress_reset_s: 0.,
+            activated: false,
+            frame: Wrapping(0),
         }
     }
 
