@@ -9,6 +9,16 @@ use crate::model::teacher::*;
 
 use super::teacher_tired::TeacherTired;
 
+fn listen_game_over(
+    mut data: ResMut<TeacherData>,
+    mut game_over_events: EventReader<GameOverEvent>,
+) {
+    if game_over_events.read().last().is_none() {
+        return;
+    }
+    data.activated = false;
+}
+
 fn listen_reset(
     time: Res<Time>,
     config: Res<Config>,
@@ -18,6 +28,7 @@ fn listen_reset(
     mut teacher_tired_events: EventWriter<TeacherTiredEvent>,
 ) {
     if let Some(e) = reset_game_events.read().last() {
+        data.activated = true;
         data.teachers = e.teachers.clone();
 
         let now = time.elapsed_seconds_f64();
@@ -67,6 +78,10 @@ fn update_teacher_speed(
     mut data: ResMut<TeacherData>,
     mut teacher_tired_events: EventWriter<TeacherTiredEvent>,
 ) {
+    if !data.activated {
+        return;
+    }
+
     data.frame += Wrapping(1);
     if !data.frame.0 % config.draw_frame_modulo != 0 {
         return;
@@ -143,6 +158,7 @@ impl Plugin for TeacherControllerPlugin {
             .add_event::<MoveTeacherEvent>()
             .add_event::<TeacherMovedEvent>()
             .add_event::<TeacherTiredEvent>()
+            .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, update_teacher_speed)
             .add_systems(PreUpdate, listen_events_teacher_ate)
@@ -155,4 +171,5 @@ struct TeacherData {
     teacher_tired: TeacherTired,
     teachers: Vec<Teacher>,
     frame: Wrapping<i8>,
+    activated: bool,
 }

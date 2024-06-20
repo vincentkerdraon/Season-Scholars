@@ -31,7 +31,6 @@ impl TeacherTired {
                 if *long > long_max {
                     *long = long_max;
                 }
-                debug!("teacher {:?} speed: short:{} long:{}", t, *short, *long);
                 return Some((true, *short, *long));
             }
             return Some((false, *short, *long));

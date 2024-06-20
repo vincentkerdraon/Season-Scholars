@@ -349,6 +349,7 @@ fn listen_reactions(
     let mut insert_reaction = |teacher: Teacher, reaction: Reaction| {
         data.dirty = true;
 
+        //FIXME panic here.         //using player B. not sure how
         let (short, long) = data.teacher_tired.get(&teacher).unwrap();
         let dur = match reaction {
             Reaction::Fail => DISPLAY_REACTION_FAIL_DURATION_S,

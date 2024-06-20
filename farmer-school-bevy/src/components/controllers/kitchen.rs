@@ -78,8 +78,10 @@ fn listen_season(
     if config.debug_disable_student_eating {
         return;
     }
-    for _ in season_changed_events.read() {
-        // data.food_remaining -= data.students_classroom_nb / 3;
+    for e in season_changed_events.read() {
+        if e.season != Season::Winter {
+            continue;
+        }
         data.food_remaining -= 1;
 
         let emit = StudentsEatEvent {
