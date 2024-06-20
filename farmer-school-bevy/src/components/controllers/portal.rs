@@ -71,6 +71,7 @@ fn monster_attack(
 
 fn listen_events(
     time: Res<Time>,
+    config: Res<Config>,
     mut data: ResMut<PortalData>,
     mut graduated_events: EventReader<GraduatedEvent>,
     mut monster_fed_events: EventWriter<MonsterFedEvent>,
@@ -109,7 +110,7 @@ fn listen_events(
 
         //there must be always at least one monster
         if data.monsters.is_empty() {
-            pop_monster(now, &mut data, &mut monster_popped_events)
+            pop_monster(now, &config, &mut data, &mut monster_popped_events)
         }
     }
 }
@@ -150,7 +151,7 @@ fn reset(
     let now = time.elapsed_seconds_f64();
     data.monsters = Vec::new();
     data.teacher_busy = TeacherBusy::new(vec![STATION]);
-    pop_monster(now, &mut data, &mut monster_popped_events);
+    pop_monster(now, &config, &mut data, &mut monster_popped_events);
 }
 
 fn listen_events_create_monster(
@@ -165,18 +166,19 @@ fn listen_events_create_monster(
     }
     let now = time.elapsed_seconds_f64();
     for _ in season_changed_events.read() {
-        pop_monster(now, &mut data, &mut monster_popped_events);
+        pop_monster(now, &config, &mut data, &mut monster_popped_events);
     }
 }
 
 fn pop_monster(
     now: f64,
+    config: &Config,
     data: &mut PortalData,
     monster_popped_events: &mut EventWriter<MonsterPoppedEvent>,
 ) {
     // ignore if already too many
-    if data.monsters.len() > 6 {
-        debug!("already too many monsters, skipping pop.");
+    if data.monsters.len() > config.portal_windows_nb as usize {
+        debug!("already too many monsters, skipping pop_monster.");
         return;
     }
 
@@ -265,8 +267,13 @@ fn generate_monster(now: f64, difficulty: i32) -> Monster {
             m.attack_interval_s = 10.;
         }
     }
+
+    m.next_wait_s = 0.; //FIXME
+    m.attack_interval_s = 5.; //FIXME
+
     m.id = difficulty;
     m.next_attack_s = m.next_wait_s + m.attack_interval_s;
+
     m
 }
 

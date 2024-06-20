@@ -45,7 +45,7 @@ fn load_attack_progress(
                     },
                     ..default()
                 },
-                visibility: Visibility::Visible, //FIXME
+                visibility: Visibility::Hidden,
                 ..default()
             })
             .id();
