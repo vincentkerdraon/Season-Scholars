@@ -54,6 +54,12 @@ pub struct PortalAttackedEvent {
     pub monsters: Vec<Monster>,
 }
 
+#[derive(Event, Debug)]
+pub struct MonsterActivityEvent {
+    pub health: PortalHealth,
+    pub monsters: Vec<Monster>,
+}
+
 /// The current monster at the portal has some needs fulfilled
 #[derive(Event, Debug)]
 pub struct MonsterFedEvent {

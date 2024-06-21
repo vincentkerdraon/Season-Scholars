@@ -472,6 +472,7 @@ fn listen_events(
     if let Some(health) = health {
         if health != data.health {
             data.health = health;
+            println!("display_health {}", health); //FIXME
             display_health(&mut data, &mut query, &health);
         }
     }

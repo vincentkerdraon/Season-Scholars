@@ -163,7 +163,7 @@ fn listen_monster_attack(
             .get(data.monsters_last_used_index as usize)
             .unwrap()
             .clone();
-        play_sound(&mut commands, h, 1., 1.);
+        play_sound(&mut commands, h, 1.0, 1.);
     }
 }
 

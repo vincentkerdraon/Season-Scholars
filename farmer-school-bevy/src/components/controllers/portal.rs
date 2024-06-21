@@ -40,27 +40,32 @@ fn monster_attack(
     time: Res<Time>,
     mut data: ResMut<PortalData>,
     mut portal_attacked_events: EventWriter<PortalAttackedEvent>,
+    mut portal_monster_activity_events: EventWriter<MonsterActivityEvent>,
     mut game_over_events: EventWriter<GameOverEvent>,
 ) {
     if !data.activated {
         return;
     }
 
+    let mut emit_portal_monster_activity_event = false;
+
     if let Some(monster) = data.monsters.first_mut() {
-        let mut changed = false;
         let now = time.elapsed_seconds_f64();
         if monster.next_wait_s < now && !monster.monster_visible {
             monster.monster_visible = true;
-            changed = true;
+
+            //allow some time before the next attack, else it attacks as soon as revealed and this is confusing.
+            if monster.next_attack_s < now {
+                monster.next_attack_s = now + 3.;
+            }
+
+            //TODO not sure why I can't send the event here. borrow issue
+            emit_portal_monster_activity_event = true;
         }
 
         if monster.monster_visible && monster.next_attack_s < now {
             monster.next_attack_s = now + monster.attack_interval_s;
             data.health -= 1;
-            changed = true;
-        }
-
-        if changed {
             let emit = PortalAttackedEvent {
                 health: data.health,
                 monsters: data.monsters.clone(),
@@ -79,6 +84,15 @@ fn monster_attack(
             //stop processing this func until reset
             data.activated = false;
         }
+    }
+
+    if emit_portal_monster_activity_event {
+        let emit = MonsterActivityEvent {
+            health: data.health,
+            monsters: data.monsters.clone(),
+        };
+        debug!("{:?}", emit);
+        portal_monster_activity_events.send(emit);
     }
 }
 
@@ -143,10 +157,17 @@ fn listen_reset(
     mut data: ResMut<PortalData>,
     mut reset_game_events: EventReader<ResetGameEvent>,
     monster_popped_events: EventWriter<MonsterPoppedEvent>,
+    monster_activity_events: EventWriter<MonsterActivityEvent>,
 ) {
     if reset_game_events.read().last().is_some() {
         data.activated = true;
-        reset(time, config, data, monster_popped_events);
+        reset(
+            time,
+            config,
+            data,
+            monster_popped_events,
+            monster_activity_events,
+        );
     }
 }
 
@@ -155,6 +176,7 @@ fn reset(
     config: Res<Config>,
     mut data: ResMut<PortalData>,
     mut monster_popped_events: EventWriter<MonsterPoppedEvent>,
+    mut monster_activity_events: EventWriter<MonsterActivityEvent>,
 ) {
     data.health = config.portal_health_max;
     data.difficulty = 0;
@@ -164,6 +186,12 @@ fn reset(
     data.monsters = Vec::new();
     pop_monster(now, &config, &mut data, &mut monster_popped_events);
     data.teacher_tired = TeacherTired::default();
+    let emit = MonsterActivityEvent {
+        monsters: data.monsters.clone(),
+        health: data.health,
+    };
+    debug!("{:?}", emit);
+    monster_activity_events.send(emit);
 }
 
 fn listen_events_create_monster(
@@ -190,7 +218,7 @@ fn pop_monster(
 ) {
     // ignore if already too many
     if data.monsters.len() > config.portal_windows_nb as usize {
-        debug!("already too many monsters, skipping pop_monster.");
+        trace!("already too many monsters, skipping pop_monster.");
         return;
     }
 
@@ -419,6 +447,7 @@ impl Plugin for PortalControllerPlugin {
             .add_event::<PortalFixedEvent>()
             .add_event::<PortalAttackedEvent>()
             .add_event::<MonsterFedEvent>()
+            .add_event::<MonsterActivityEvent>()
             .add_event::<MonsterPoppedEvent>()
             .insert_resource(PortalData { ..default() })
             .add_systems(Startup, reset)
