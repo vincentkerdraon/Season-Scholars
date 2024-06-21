@@ -42,7 +42,12 @@ fn load_resources(
     let teacher_b_teaching = asset_server.load(
         config
             .base_path
-            .join("images/ready/Teacher/TeacherB/TeacherBTeachingWelcoming.png"),
+            .join("images/ready/Teacher/TeacherB/TeacherBTeaching.png"),
+    );
+    let teacher_b_welcoming = asset_server.load(
+        config
+            .base_path
+            .join("images/ready/Teacher/TeacherB/TeacherBWelcoming.png"),
     );
     let teacher_a_protecting = asset_server.load(
         config
@@ -105,8 +110,8 @@ fn load_resources(
     place_teacher_and_reactions(
         Station::Welcome,
         teacher_a_teaching.clone(),
-        teacher_b_teaching.clone(),
-        (450., 380., 10.),
+        teacher_b_welcoming.clone(),
+        (450., 360., 10.),
         (-0.15, 0.15),
         (450., 450.),
         1.,
@@ -151,7 +156,7 @@ fn load_resources(
         Station::Kitchen,
         teacher_a_cooking,
         teacher_b_cooking,
-        (770., 350., 12.),
+        (770., 300., 12.),
         (0.25, 0.25),
         (770., 350.),
         1.,

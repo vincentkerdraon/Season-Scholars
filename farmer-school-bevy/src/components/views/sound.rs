@@ -108,9 +108,13 @@ fn listen_reactions(
             Reaction::Long => speed = (duration / long) as f32,
             Reaction::Fail => {}
         }
-        debug!(
+        trace!(
             "play reaction {:?} (short={}s,long={}s), original={}s => speed={}",
-            reaction, short, long, duration, speed
+            reaction,
+            short,
+            long,
+            duration,
+            speed
         );
 
         play_sound(&mut commands, h, 1., speed);
@@ -160,7 +164,7 @@ fn listen_monster_attack(
             .get(data.monsters_last_used_index as usize)
             .unwrap()
             .clone();
-        play_sound(&mut commands, h, 1., 4.);
+        play_sound(&mut commands, h, 1., 1.);
     }
 }
 

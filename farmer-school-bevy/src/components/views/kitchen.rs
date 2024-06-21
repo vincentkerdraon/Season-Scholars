@@ -24,7 +24,7 @@ fn load_resources(
             //exactly the same coordinates in teacher display (overlaps)
             translation: Vec3 {
                 x: 770.,
-                y: 350.,
+                y: 300.,
                 z: 10.0,
             },
             scale: Vec3 {
@@ -69,11 +69,11 @@ fn load_resources(
         };
         data.food.insert(id, food_data);
     };
-    register_food(0, textures_0, (625., 340., 20.));
-    register_food(1, textures_1, (680., 340., 21.));
-    register_food(2, textures_2, (770., 305., 22.));
-    register_food(3, textures_3, (850., 290., 23.));
-    register_food(4, textures_4, (905., 325., 20.));
+    register_food(0, textures_0, (625., 260., 20.));
+    register_food(1, textures_1, (680., 260., 21.));
+    register_food(2, textures_2, (770., 225., 22.));
+    register_food(3, textures_3, (850., 210., 23.));
+    register_food(4, textures_4, (890., 255., 20.));
 
     data.dirty = true;
 }
