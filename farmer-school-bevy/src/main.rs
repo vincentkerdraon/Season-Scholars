@@ -7,7 +7,7 @@ use bevy::{
     input::{mouse::MouseButtonInput, ButtonState},
     log::LogPlugin,
     prelude::*,
-    window::{Cursor, WindowResolution},
+    window::{Cursor, WindowMode, WindowResolution},
 };
 use std::env;
 
@@ -59,6 +59,10 @@ fn main() {
     if env::var("SEASON_SCHOLARS_DEV_NO_SEASON_MONSTER").is_ok() {
         c.debug_disable_season_monster = true;
     }
+    let mut window_mode = WindowMode::Fullscreen;
+    if env::var("SEASON_SCHOLARS_DEV_NO_FULLSCREEN").is_ok() {
+        window_mode = WindowMode::Fullscreen;
+    }
 
     let mut app: App = App::new();
     app.insert_resource(c)
@@ -74,7 +78,7 @@ fn main() {
                             visible: debug_pointer_click,
                             ..default()
                         },
-                        // mode: bevy::window::WindowMode::Fullscreen,
+                        mode: window_mode,
                         ..Default::default()
                     }),
                     ..Default::default()

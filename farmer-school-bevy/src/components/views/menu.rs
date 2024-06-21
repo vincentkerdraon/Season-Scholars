@@ -18,7 +18,8 @@ const HOW_TO: &str = "- Move your teacher from station to station by selecting a
 - At the cooking station, you can eat to rest and move faster (short action) or cook (long action).\n";
 const CREDITS: &str = "Created for the 2024 Calgary game jam \"arcade\"\n
 Maëlle & Vincent KERDRAON
-This version using rust + bevy, another version in godot\n
+This version V1.0 using rust + bevy, another version in godot\n
+Only works in 1920x1080.
 All images using AGI. Homemade sounds.";
 const JOIN: &str = "press \"short action\" to join/leave\n
 press \"long action\" to start the game\n
