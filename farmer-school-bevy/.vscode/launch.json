@@ -23,7 +23,7 @@
             "args": [],
             "env": {
                 "RUST_BACKTRACE": "1",
-                "SEASON_SCHOLARS_DEV": "whatever",
+                // "SEASON_SCHOLARS_DEV": "whatever",
                 "SEASON_SCHOLARS_DEV_ASSETS": "whatever",
                 // "SEASON_SCHOLARS_DEV_PORTAL_HEALTH": "4",
                 // "SEASON_SCHOLARS_DEV_STUDENT_NOT_EATING": "whatever",

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::HashSet;
 
 use bevy::prelude::*;
 
@@ -11,12 +11,15 @@ Each season brings new crops to learn: asparagus, cherries, chanterelles and lem
 But beware! Monsters with unique needs threaten your village. \n
 To protect your people, you must graduate students with the precise knowledge to combat these threats. \n
 Will you rise to the challenge?";
-const HOW_TO: &str = "- Move your teacher from station to station by selecting a direction and pressing \"move.\"\n
-- In front of the students, you can teach them about the current season (short action) or graduate them.\n
+const HOW_TO: &str = "- Move your teacher from station to station by selecting a direction.\n
+- In front of the students, you can teach them about the current season (short action) \nor graduate them to fullfil the current monster needs.\n
 - At the door in the back, you can welcome a new student (short action) or find a new one (long action).\n
-- Through the magical windows on the left, you can spy on incoming monsters to learn their needs (short action).\n
-- You can defend (short action) the monster portal on the left or repair it (long action).\n
-- At the cooking station, you can eat (short action) or cook (long action).\n";
+- Through the magical windows on the left, you can spy on incoming monsters to learn their needs (short action) \nor repair the portal when the classroom get damaged (long action).\n
+- At the cooking station, you can eat to rest and move faster (short action) or cook (long action).\n";
+const CREDITS: &str = "Created for the 2024 Calgary game jam \"arcade\"\n
+Maëlle & Vincent KERDRAON
+This version using rust + bevy, another version in godot\n
+All images using AGI. Homemade sounds.";
 const JOIN: &str = "press \"short action\" to join/leave\n
 press \"long action\" to start the game\n
 press \"reset\" to exit";
@@ -28,21 +31,104 @@ fn load_resources(
     asset_server: Res<AssetServer>,
     mut data: ResMut<MenuData>,
 ) {
-    data.background = commands
-        .spawn(NodeBundle {
-            style: Style {
-                left: Val::Px(0.),
-                bottom: Val::Px(0.),
-                width: Val::Vw(100.),
-                height: Val::Vh(100.),
-                ..Default::default()
-            },
-            background_color: BackgroundColor(Color::rgba(0.8, 0.8, 0.8, 0.85)),
-            visibility: Visibility::Hidden,
-            z_index: ZIndex::Global(300),
-            ..Default::default()
-        })
-        .id();
+    // WTF, IMPOSSIBLE to use the Z index?
+    // replacing with image.
+    // data.background = commands
+    //     .spawn(NodeBundle {
+    //         style: Style {
+    //             left: Val::Px(0.),
+    //             bottom: Val::Px(0.),
+    //             width: Val::Vw(100.),
+    //             height: Val::Vh(100.),
+    //             ..Default::default()
+    //         },
+    //         background_color: BackgroundColor(Color::rgba(0.8, 0.8, 0.8, 0.85)),
+    //         visibility: Visibility::Hidden,
+    //         z_index: ZIndex::Global(300),
+    //         ..Default::default()
+    //     })
+    //     .id();
+
+    data.images.push(
+        commands
+            .spawn(SpriteBundle {
+                texture: asset_server.load(
+                    config
+                        .base_path
+                        .join("images/ready/StartScreen/Gradient.png"),
+                ),
+                transform: Transform {
+                    translation: Vec3 {
+                        x: 0.,
+                        y: 0.,
+                        z: 300.,
+                    },
+                    scale: Vec3 {
+                        x: 10.,
+                        y: 6.,
+                        z: 1.,
+                    },
+                    ..default()
+                },
+
+                ..default()
+            })
+            .id(),
+    );
+
+    data.images.push(
+        commands
+            .spawn(SpriteBundle {
+                texture: asset_server.load(
+                    config
+                        .base_path
+                        .join("images/ready/StartScreen/TeacherA.png"),
+                ),
+                transform: Transform {
+                    translation: Vec3 {
+                        x: -700.,
+                        y: -100.,
+                        z: 301.,
+                    },
+                    scale: Vec3 {
+                        x: 0.8,
+                        y: 0.8,
+                        z: 1.,
+                    },
+                    ..default()
+                },
+
+                ..default()
+            })
+            .id(),
+    );
+
+    data.images.push(
+        commands
+            .spawn(SpriteBundle {
+                texture: asset_server.load(
+                    config
+                        .base_path
+                        .join("images/ready/StartScreen/TeacherB.png"),
+                ),
+                transform: Transform {
+                    translation: Vec3 {
+                        x: 700.,
+                        y: -100.,
+                        z: 301.,
+                    },
+                    scale: Vec3 {
+                        x: 0.8,
+                        y: 0.8,
+                        z: 1.,
+                    },
+                    ..default()
+                },
+
+                ..default()
+            })
+            .id(),
+    );
 
     data.input_arcade = commands
         .spawn(SpriteBundle {
@@ -54,7 +140,7 @@ fn load_resources(
             transform: Transform {
                 translation: Vec3 {
                     x: 0.,
-                    y: -150.,
+                    y: -100.,
                     z: 301.,
                 },
                 scale: Vec3 {
@@ -79,7 +165,7 @@ fn load_resources(
             transform: Transform {
                 translation: Vec3 {
                     x: 0.,
-                    y: -150.,
+                    y: -100.,
                     z: 302.,
                 },
                 scale: Vec3 {
@@ -227,9 +313,9 @@ fn listen_events(
     }
     for e in display_screen_menu_events.read() {
         data.display = true;
-        data.teachers = HashMap::new();
+        data.teachers = HashSet::new();
         for t in e.teachers.clone() {
-            data.teachers.insert(t, false);
+            data.teachers.insert(t);
         }
         dirty = true;
     }
@@ -264,21 +350,23 @@ fn listen_events(
         if let Ok((_, mut visibility)) = param_set.p0().get_mut(data.join_instructions) {
             *visibility = Visibility::Hidden;
         }
-        if let Ok(mut visibility) = param_set.p1().get_mut(data.background) {
-            *visibility = Visibility::Hidden;
-        }
         if let Ok(mut visibility) = param_set.p1().get_mut(data.input_arcade) {
             *visibility = Visibility::Hidden;
         }
         if let Ok(mut visibility) = param_set.p1().get_mut(data.input_keyboard) {
             *visibility = Visibility::Hidden;
         }
+        for e in data.images.iter() {
+            if let Ok(mut visibility) = param_set.p1().get_mut(*e) {
+                *visibility = Visibility::Hidden;
+            }
+        }
 
         return;
     }
 
     if let Ok((mut text, mut visibility)) = param_set.p0().get_mut(data.player_a) {
-        if data.teachers.contains_key(&Teacher::A) {
+        if data.teachers.contains(&Teacher::A) {
             text.sections[0].value = "PlayerA ready!".to_string();
             text.sections[0].style.color = Color::rgb(0.0, 0.7, 0.0);
         } else {
@@ -288,7 +376,7 @@ fn listen_events(
         *visibility = Visibility::Visible;
     }
     if let Ok((mut text, mut visibility)) = param_set.p0().get_mut(data.player_b) {
-        if data.teachers.contains_key(&Teacher::B) {
+        if data.teachers.contains(&Teacher::B) {
             text.sections[0].value = "PlayerB ready!".to_string();
             text.sections[0].style.color = Color::rgb(0.0, 0.7, 0.0);
         } else {
@@ -304,14 +392,13 @@ fn listen_events(
         *visibility = Visibility::Visible;
     }
     if let Ok((mut text, mut visibility)) = param_set.p0().get_mut(data.explain) {
-        if data.variation % 2 == 0 {
+        if data.variation % 3 == 0 {
             text.sections[0].value = EXPLAIN.to_string();
-        } else {
+        } else if data.variation % 3 == 1 {
             text.sections[0].value = HOW_TO.to_string();
+        } else {
+            text.sections[0].value = CREDITS.to_string();
         }
-        *visibility = Visibility::Visible;
-    }
-    if let Ok(mut visibility) = param_set.p1().get_mut(data.background) {
         *visibility = Visibility::Visible;
     }
     if let Ok(mut visibility) = param_set.p1().get_mut(data.input_arcade) {
@@ -326,6 +413,11 @@ fn listen_events(
             *visibility = Visibility::Visible;
         } else {
             *visibility = Visibility::Hidden;
+        }
+    }
+    for e in data.images.iter() {
+        if let Ok(mut visibility) = param_set.p1().get_mut(*e) {
+            *visibility = Visibility::Visible;
         }
     }
 }
@@ -347,14 +439,14 @@ struct MenuData {
     input_arcade: Entity,
     input_keyboard: Entity,
     join_instructions: Entity,
-    background: Entity,
     player_a: Entity,
     player_b: Entity,
+    images: Vec<Entity>,
 
     display: bool,
     variation: i8,
     next_switch_variation: f64,
-    teachers: HashMap<Teacher, bool>,
+    teachers: HashSet<Teacher>,
 }
 
 impl MenuData {
@@ -365,13 +457,14 @@ impl MenuData {
             input_arcade: Entity::PLACEHOLDER,
             input_keyboard: Entity::PLACEHOLDER,
             join_instructions: Entity::PLACEHOLDER,
-            background: Entity::PLACEHOLDER,
             player_a: Entity::PLACEHOLDER,
             player_b: Entity::PLACEHOLDER,
+            images: Vec::new(),
+
             display: false,
             variation: 0,
             next_switch_variation: 0.,
-            teachers: HashMap::new(),
+            teachers: HashSet::new(),
         }
     }
 }

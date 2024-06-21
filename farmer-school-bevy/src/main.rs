@@ -74,6 +74,7 @@ fn main() {
                             visible: debug_pointer_click,
                             ..default()
                         },
+                        // mode: bevy::window::WindowMode::Fullscreen,
                         ..Default::default()
                     }),
                     ..Default::default()
