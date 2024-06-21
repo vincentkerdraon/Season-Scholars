@@ -1,4 +1,3 @@
-use super::moves::possible_move;
 use super::teacher_busy::TeacherBusy;
 use super::teacher_tired::TeacherTired;
 use crate::model::config::Config;
@@ -29,7 +28,7 @@ fn listen_reset(data: ResMut<WelcomeData>, mut reset_game_events: EventReader<Re
 }
 
 fn reset(mut data: ResMut<WelcomeData>) {
-    data.teacher_busy = TeacherBusy::new(vec![STATION]);
+    data.teacher_busy = TeacherBusy::default();
     data.activated = true;
     data.teacher_tired = TeacherTired::default();
 }
@@ -112,6 +111,9 @@ fn listen_events(
     let now = time.elapsed_seconds_f64();
     for e in player_input_events.read() {
         //ignore event if teacher is not at this station or if busy
+        if !data.teacher_busy.is_station(e.teacher, &STATION) {
+            continue;
+        }
         if data.teacher_busy.ready(e.teacher, now) != (true, true) {
             continue;
         }
@@ -164,7 +166,10 @@ fn listen_events(
         }
 
         if e.direction != Vec2::ZERO {
-            if let Some(to) = possible_move(STATION, e.direction) {
+            if let Some(to) = data
+                .teacher_busy
+                .possible_move(e.teacher, STATION, e.direction)
+            {
                 let emit = MoveTeacherEvent {
                     station_from: STATION,
                     station_to: to,

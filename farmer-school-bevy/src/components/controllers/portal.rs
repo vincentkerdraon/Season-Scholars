@@ -1,4 +1,3 @@
-use super::moves::possible_move;
 use super::teacher_busy::TeacherBusy;
 use super::teacher_tired::TeacherTired;
 use crate::model::config::Config;
@@ -182,7 +181,7 @@ fn reset(
     data.difficulty = 0;
     // data.teachers_present = HashMap::new();
     let now = time.elapsed_seconds_f64();
-    data.teacher_busy = TeacherBusy::new(vec![STATION]);
+    data.teacher_busy = TeacherBusy::default();
     data.monsters = Vec::new();
     pop_monster(now, &config, &mut data, &mut monster_popped_events);
     data.teacher_tired = TeacherTired::default();
@@ -347,6 +346,9 @@ fn listen_events_player_input(
 
     let now = time.elapsed_seconds_f64();
     for e in player_input_events.read() {
+        if !data.teacher_busy.is_station(e.teacher, &STATION) {
+            continue;
+        }
         if data.teacher_busy.ready(e.teacher, now) != (true, true) {
             continue;
         }
@@ -417,7 +419,10 @@ fn listen_events_player_input(
         }
 
         if e.direction != Vec2::ZERO {
-            if let Some(to) = possible_move(STATION, e.direction) {
+            if let Some(to) = data
+                .teacher_busy
+                .possible_move(e.teacher, STATION, e.direction)
+            {
                 let emit = MoveTeacherEvent {
                     station_from: STATION,
                     station_to: to,

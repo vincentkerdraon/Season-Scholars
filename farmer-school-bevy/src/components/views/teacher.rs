@@ -337,7 +337,7 @@ fn listen_player_input(
         }
 
         if let Some(from) = data.teachers_position.get(&e.teacher).cloned() {
-            if let Some(to) = possible_move(from, e.direction) {
+            if let Some((to, _)) = possible_move(from, e.direction) {
                 //don't override the reference if it already exists
                 if let Some((until, _)) = data.display_path_until.get_mut(&(e.teacher, from, to)) {
                     *until = f64::MAX;

@@ -1,4 +1,3 @@
-use super::moves::possible_move;
 use super::teacher_busy::TeacherBusy;
 use crate::components::controllers::teacher_tired::TeacherTired;
 use crate::model::config::Config;
@@ -49,7 +48,7 @@ fn reset(
 ) {
     data.activated = true;
     data.food_remaining = config.food_max;
-    data.teacher_busy = TeacherBusy::new(vec![STATION]);
+    data.teacher_busy = TeacherBusy::default();
     data.teacher_tired = TeacherTired::default();
 
     let emit = StudentsEatEvent {
@@ -147,6 +146,10 @@ fn listen_events_player_input(
         if !data.activated {
             continue;
         }
+
+        if !data.teacher_busy.is_station(e.teacher, &STATION) {
+            continue;
+        }
         if data.teacher_busy.ready(e.teacher, now) != (true, true) {
             continue;
         }
@@ -198,7 +201,10 @@ fn listen_events_player_input(
         }
 
         if e.direction != Vec2::ZERO {
-            if let Some(to) = possible_move(STATION, e.direction) {
+            if let Some(to) = data
+                .teacher_busy
+                .possible_move(e.teacher, STATION, e.direction)
+            {
                 let emit = MoveTeacherEvent {
                     station_from: STATION,
                     station_to: to,

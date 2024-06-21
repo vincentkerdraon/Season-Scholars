@@ -1,4 +1,3 @@
-use super::moves::possible_move;
 use super::teacher_busy::TeacherBusy;
 use super::teacher_tired::TeacherTired;
 use crate::model::config::Config;
@@ -63,11 +62,7 @@ fn listen_reset(
     if reset_game_events.read().last().is_some() {
         data.students_rows_nb = config.students_rows_nb;
         data.activated = true;
-        data.teacher_busy = TeacherBusy::new(vec![
-            Station::StudentLeft,
-            Station::StudentCenter,
-            Station::StudentRight,
-        ]);
+        data.teacher_busy = TeacherBusy::default();
 
         data.reset();
         for _ in 0..config.students_init {
@@ -123,10 +118,21 @@ fn listen_events_player_input(
 
     let now = time.elapsed_seconds_f64();
     for e in player_input_events.read() {
+        //FIXME panic
+        let station = data.teacher_busy.station(e.teacher).unwrap();
+        if !vec![
+            Station::StudentLeft,
+            Station::StudentCenter,
+            Station::StudentRight,
+        ]
+        .contains(&station)
+        {
+            continue;
+        }
         if data.teacher_busy.ready(e.teacher, now) != (true, true) {
             continue;
         }
-        let station = data.teacher_busy.station(e.teacher).unwrap();
+
         let col = station_to_student_col(station);
 
         if e.long_action {
@@ -188,7 +194,10 @@ fn listen_events_player_input(
         }
 
         if e.direction != Vec2::ZERO {
-            if let Some(to) = possible_move(station, e.direction) {
+            if let Some(to) = data
+                .teacher_busy
+                .possible_move(e.teacher, station, e.direction)
+            {
                 let emit = MoveTeacherEvent {
                     station_from: station,
                     station_to: to,
