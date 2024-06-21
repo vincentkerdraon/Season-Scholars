@@ -39,20 +39,131 @@ fn load_resources(
             .base_path
             .join("images/ready/Teacher/TeacherA/TeacherATeachingWelcoming.png"),
     );
+    let teacher_b_teaching = asset_server.load(
+        config
+            .base_path
+            .join("images/ready/Teacher/TeacherB/TeacherBTeachingWelcoming.png"),
+    );
     let teacher_a_protecting = asset_server.load(
         config
             .base_path
             .join("images/ready/Teacher/TeacherA/teacherAProtecting.png"),
     );
+    let teacher_b_protecting = asset_server.load(
+        config
+            .base_path
+            .join("images/ready/Teacher/TeacherB/teacherBProtecting.png"),
+    );
     let teacher_a_cooking = asset_server.load(
         config
             .base_path
-            .join("images/ready/Cooking/cookingWithTeacher.png"),
+            .join("images/ready/Cooking/cookingWithTeacherA.png"),
+    );
+    let teacher_b_cooking = asset_server.load(
+        config
+            .base_path
+            .join("images/ready/Cooking/cookingWithTeacherB.png"),
     );
     //FIXME add teacher_watch
     // let teacher_a_watch =
     //     asset_server.load(config.base_path.join("images/ready/Teacher/TeacherA/teacherAWatch.png"));
 
+    let mut place_teacher_and_reactions =
+        |station: Station,
+         teacher_a: Handle<Image>,
+         teacher_b: Handle<Image>,
+         teacher_pos: (f32, f32, f32),
+         teacher_scale: (f32, f32),
+         reaction_pos: (f32, f32),
+         reaction_scale: f32| {
+            let e = place_reaction(
+                &mut commands,
+                reaction_fail.clone(),
+                reaction_pos,
+                reaction_scale,
+            );
+            data.reactions.insert((station, Reaction::Fail), e);
+            let e = place_reaction(
+                &mut commands,
+                reaction_success_long.clone(),
+                reaction_pos,
+                reaction_scale,
+            );
+            data.reactions.insert((station, Reaction::Long), e);
+            let e = place_reaction(
+                &mut commands,
+                reaction_success_short.clone(),
+                reaction_pos,
+                reaction_scale,
+            );
+            data.reactions.insert((station, Reaction::Short), e);
+
+            let e = place_teacher(&mut commands, teacher_a.clone(), teacher_pos, teacher_scale);
+            data.teachers.insert(station, (e, teacher_a, teacher_b));
+        };
+
+    place_teacher_and_reactions(
+        Station::Welcome,
+        teacher_a_teaching.clone(),
+        teacher_b_teaching.clone(),
+        (450., 380., 10.),
+        (-0.15, 0.15),
+        (450., 450.),
+        1.,
+    );
+    place_teacher_and_reactions(
+        Station::StudentRight,
+        teacher_a_teaching.clone(),
+        teacher_b_teaching.clone(),
+        (630., -230., 50.),
+        (0.4, 0.4),
+        (630., -100.),
+        1.,
+    );
+    place_teacher_and_reactions(
+        Station::StudentCenter,
+        teacher_a_teaching.clone(),
+        teacher_b_teaching.clone(),
+        (65., -230., 50.),
+        (0.4, 0.4),
+        (65., -100.),
+        1.,
+    );
+    place_teacher_and_reactions(
+        Station::StudentLeft,
+        teacher_a_teaching.clone(),
+        teacher_b_teaching.clone(),
+        (-440., -230., 50.),
+        (0.4, 0.4),
+        (-440., -100.),
+        1.,
+    );
+    place_teacher_and_reactions(
+        Station::Portal,
+        teacher_a_protecting,
+        teacher_b_protecting,
+        (-220., 260., 12.),
+        (0.4, 0.4),
+        (-220., 260.),
+        1.,
+    );
+    place_teacher_and_reactions(
+        Station::Kitchen,
+        teacher_a_cooking,
+        teacher_b_cooking,
+        (770., 350., 12.),
+        (0.25, 0.25),
+        (770., 350.),
+        1.,
+    );
+}
+
+fn load_resources_path(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    config: Res<Config>,
+    mut data: ResMut<TeacherData>,
+) {
     let path_left_center = asset_server.load(
         config
             .base_path
@@ -82,93 +193,6 @@ fn load_resources(
         config
             .base_path
             .join("images/ready/Path/ST_COL_LEFT_TO_WINDOWS.png"),
-    );
-
-    let mut place_teacher_and_reactions =
-        |station: Station,
-         teacher_texture: Handle<Image>,
-         teacher_pos: (f32, f32, f32),
-         teacher_scale: (f32, f32),
-         reaction_pos: (f32, f32),
-         reaction_scale: f32| {
-            let e = place_reaction(
-                &mut commands,
-                reaction_fail.clone(),
-                reaction_pos,
-                reaction_scale,
-            );
-            data.reactions.insert((station, Reaction::Fail), e);
-            let e = place_reaction(
-                &mut commands,
-                reaction_success_long.clone(),
-                reaction_pos,
-                reaction_scale,
-            );
-            data.reactions.insert((station, Reaction::Long), e);
-            let e = place_reaction(
-                &mut commands,
-                reaction_success_short.clone(),
-                reaction_pos,
-                reaction_scale,
-            );
-            data.reactions.insert((station, Reaction::Short), e);
-
-            let e = place_teacher(
-                &mut commands,
-                teacher_texture.clone(),
-                teacher_pos,
-                teacher_scale,
-            );
-            data.teachers.insert(station, e);
-        };
-
-    place_teacher_and_reactions(
-        Station::Welcome,
-        teacher_a_teaching.clone(),
-        (450., 380., 10.),
-        (-0.15, 0.15),
-        (450., 450.),
-        1.,
-    );
-    place_teacher_and_reactions(
-        Station::StudentRight,
-        teacher_a_teaching.clone(),
-        (630., -230., 50.),
-        (0.4, 0.4),
-        (630., -100.),
-        1.,
-    );
-    place_teacher_and_reactions(
-        Station::StudentCenter,
-        teacher_a_teaching.clone(),
-        (65., -230., 50.),
-        (0.4, 0.4),
-        (65., -100.),
-        1.,
-    );
-    place_teacher_and_reactions(
-        Station::StudentLeft,
-        teacher_a_teaching.clone(),
-        (-440., -230., 50.),
-        (0.4, 0.4),
-        (-440., -100.),
-        1.,
-    );
-    place_teacher_and_reactions(
-        Station::Portal,
-        teacher_a_protecting,
-        (-220., 260., 12.),
-        (0.4, 0.4),
-        (-220., 260.),
-        1.,
-    );
-    place_teacher_and_reactions(
-        Station::Kitchen,
-        teacher_a_cooking,
-        (770., 350., 12.),
-        (0.25, 0.25),
-        (770., 350.),
-        1.,
     );
 
     let e = place_path(&mut commands, path_left_center, (-210., -490., 95.), 1.);
@@ -436,7 +460,7 @@ fn draw(
     time: Res<Time>,
     config: Res<Config>,
     mut data: ResMut<TeacherData>,
-    mut query: Query<&mut Visibility>,
+    mut query: Query<(&mut Handle<Image>, &mut Visibility)>,
 ) {
     if !data.activated {
         return;
@@ -453,28 +477,43 @@ fn draw(
     //don't display the teacher where they were
     data.teachers_moved.iter().for_each(|(_, from, _)| {
         if let Some(s) = from {
-            let e = *data.teachers.get(s).unwrap();
-            if let Ok(mut visibility) = query.get_mut(e) {
+            let (e, _, _) = *data.teachers.get(s).unwrap();
+            if let Ok((_, mut visibility)) = query.get_mut(e) {
                 *visibility = Visibility::Hidden;
             }
         }
     });
     //display the teacher where they are now
-    data.teachers_moved.iter().for_each(|(_, _, to)| {
-        if let Some(s) = to {
-            let e = *data.teachers.get(s).unwrap();
-            if let Ok(mut visibility) = query.get_mut(e) {
-                *visibility = Visibility::Visible;
+    let updates: Vec<_> = data
+        .teachers_moved
+        .iter()
+        .filter_map(|(teacher, _, to)| {
+            if let Some(s) = to {
+                if let Some((e, teacher_a, teacher_b)) = data.teachers.get(s) {
+                    return Some((*e, teacher, teacher_a.clone(), teacher_b.clone()));
+                }
+            }
+            None
+        })
+        .collect();
+
+    for (e, teacher, teacher_a, teacher_b) in updates {
+        if let Ok((mut texture, mut visibility)) = query.get_mut(e) {
+            *visibility = Visibility::Visible;
+            match teacher {
+                Teacher::A => *texture = teacher_a,
+                Teacher::B => *texture = teacher_b,
             }
         }
-    });
+    }
+
     data.teachers_moved.clear();
 
     let mut keys_to_remove: Vec<(Teacher, Station, Reaction)> = Vec::new();
     let data_reactions = data.reactions.clone();
     for ((t, s, r), (until, e)) in data.display_reaction_until.iter_mut() {
         if *until < now {
-            if let Ok(mut visibility) = query.get_mut(*e) {
+            if let Ok((_, mut visibility)) = query.get_mut(*e) {
                 *visibility = Visibility::Hidden;
             }
             keys_to_remove.push((*t, *s, *r));
@@ -483,7 +522,7 @@ fn draw(
         }
         if *e == Entity::PLACEHOLDER {
             *e = *data_reactions.get(&(*s, *r)).unwrap();
-            if let Ok(mut visibility) = query.get_mut(*e) {
+            if let Ok((_, mut visibility)) = query.get_mut(*e) {
                 *visibility = Visibility::Visible;
             }
             continue;
@@ -497,7 +536,7 @@ fn draw(
     let paths = data.paths.clone();
     for ((t, from, to), (until, e)) in data.display_path_until.iter_mut() {
         if *until < now {
-            if let Ok(mut visibility) = query.get_mut(*e) {
+            if let Ok((_, mut visibility)) = query.get_mut(*e) {
                 *visibility = Visibility::Hidden;
             }
             keys_to_remove.push((*t, *from, *to));
@@ -505,7 +544,7 @@ fn draw(
         }
         if *e == Entity::PLACEHOLDER {
             *e = *paths.get(&(*from, *to)).unwrap();
-            if let Ok(mut visibility) = query.get_mut(*e) {
+            if let Ok((_, mut visibility)) = query.get_mut(*e) {
                 *visibility = Visibility::Visible;
             }
             continue;
@@ -522,6 +561,7 @@ impl Plugin for TeacherViewPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(TeacherData::new())
             .add_systems(Startup, load_resources)
+            .add_systems(Startup, load_resources_path)
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, listen_events_teacher_tired)
@@ -534,7 +574,7 @@ impl Plugin for TeacherViewPlugin {
 
 #[derive(Resource)]
 struct TeacherData {
-    teachers: HashMap<Station, Entity>,
+    teachers: HashMap<Station, (Entity, Handle<Image>, Handle<Image>)>,
     paths: HashMap<(Station, Station), Entity>,
     reactions: HashMap<(Station, Reaction), Entity>,
     teachers_position: HashMap<Teacher, Station>,
