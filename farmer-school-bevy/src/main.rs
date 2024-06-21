@@ -15,12 +15,15 @@ fn main() {
     let mut path = env::current_exe()
         .unwrap_or_else(|e| panic!("Failed to get current executable path: {}", e));
 
+    //remove executable name
+    path.pop();
     if env::var("SEASON_SCHOLARS_DEV_ASSETS").is_ok() {
         path.pop();
         path.pop();
         path.pop();
-        path.pop();
     }
+
+    println!("assets expected in {:?}", path);
 
     let mut debug_pointer_click: bool = false;
     let mut c = Config {

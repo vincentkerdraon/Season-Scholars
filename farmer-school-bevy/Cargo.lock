@@ -2117,7 +2117,7 @@ dependencies = [
 
 [[package]]
 name = "farmer-school-bevy"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "bevy",
  "bevy_audio 0.11.3",

@@ -29,12 +29,12 @@ fn listen_reset(
 ) {
     if let Some(e) = reset_game_events.read().last() {
         data.activated = true;
-        data.teachers = e.teachers.clone();
+        data.teachers.clone_from(&e.teachers);
 
         let now = time.elapsed_seconds_f64();
         for t in &e.teachers {
             data.teacher_tired
-                .update(now, &t, config.short_action_s_min, config.long_action_s_min);
+                .update(now, t, config.short_action_s_min, config.long_action_s_min);
         }
 
         if e.teachers.contains(&Teacher::A) {

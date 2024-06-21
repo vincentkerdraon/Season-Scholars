@@ -48,10 +48,9 @@ fn play_sound(commands: &mut Commands, h: Handle<AudioSource>, volume: f32, spee
             mode: PlaybackMode::Remove,
             paused: false,
             volume: Volume::new(volume),
-            speed: speed,
+            speed,
             ..default()
         },
-        ..default()
     },));
 }
 
@@ -97,7 +96,7 @@ fn listen_reactions(
             .reactions
             .get(&reaction)
             .unwrap()
-            .get(0)
+            .first()
             .unwrap()
             .clone();
 
@@ -154,7 +153,7 @@ fn listen_monster_attack(
     mut portal_attacked_events: EventReader<PortalAttackedEvent>,
     mut data: ResMut<SoundData>,
 ) {
-    if let Some(_) = portal_attacked_events.read().last() {
+    if portal_attacked_events.read().last().is_some() {
         data.monsters_last_used_index += 1;
         if data.monsters_last_used_index as usize == data.monsters.len() {
             data.monsters_last_used_index = 0;

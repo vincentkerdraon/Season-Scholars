@@ -31,7 +31,7 @@ fn load_attack_progress(
     let mut register_attack = |texture: Handle<Image>, pos: (f32, f32), scale: (f32, f32)| {
         let e = commands
             .spawn(SpriteBundle {
-                texture: texture,
+                texture,
                 transform: Transform {
                     translation: Vec3 {
                         x: pos.0,
@@ -254,7 +254,7 @@ fn display_window(
     query: &mut Query<(&mut Handle<Image>, &mut Visibility)>,
     i: i8,
     window_revealed: bool,
-    needs: &Vec<Season>,
+    needs: &[Season],
 ) {
     //!revealed && need.len == 0 => closed
     //!revealed && need.len > 0 => opened
@@ -476,8 +476,8 @@ fn listen_events(
         }
     }
 
-    let monster_new = &monsters.get(0);
-    let monster_old = &data.monsters.get(0).clone();
+    let monster_new = &monsters.first();
+    let monster_old = &data.monsters.first().clone();
     if should_redraw_monster(monster_new, monster_old) {
         if let Some(new) = monster_new {
             display_monster(&mut data, &mut query, new.monster_visible);

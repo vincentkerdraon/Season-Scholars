@@ -29,7 +29,7 @@ fn listen_reset(
     mut reset_game_events: EventReader<ResetGameEvent>,
     students_eat_events: EventWriter<StudentsEatEvent>,
 ) {
-    if let Some(_) = reset_game_events.read().last() {
+    if reset_game_events.read().last().is_some() {
         reset(&config, &mut data, students_eat_events);
     }
 }

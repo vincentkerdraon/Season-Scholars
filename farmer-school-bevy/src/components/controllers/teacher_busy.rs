@@ -22,6 +22,7 @@ impl TeacherBusy {
     }
     pub fn moved(&mut self, e: &TeacherMovedEvent) {
         if self.here.is_empty() {
+            //FIXME start new game with player2 => immediate panic here
             panic!();
         }
         if self.here.contains(&e.station_from) {

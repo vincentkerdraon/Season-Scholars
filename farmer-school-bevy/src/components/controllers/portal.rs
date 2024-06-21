@@ -116,7 +116,7 @@ fn listen_events(
         } else {
             emit.needs = Some(monster.needs.clone());
         }
-        emit.monsters = data.monsters.clone();
+        emit.monsters.clone_from(&data.monsters);
 
         debug!("{:?}", emit);
         monster_fed_events.send(emit);
