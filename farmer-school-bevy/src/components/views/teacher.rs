@@ -69,9 +69,6 @@ fn load_resources(
             .base_path
             .join("images/ready/Cooking/cookingWithTeacherB.png"),
     );
-    //FIXME add teacher_watch
-    // let teacher_a_watch =
-    //     asset_server.load(config.base_path.join("images/ready/Teacher/TeacherA/teacherAWatch.png"));
 
     let mut place_teacher_and_reactions =
         |station: Station,

@@ -87,7 +87,6 @@ fn input_system(
             KeyCode::PageUp,
             KeyCode::PageDown,
             KeyCode::KeyS,
-            //FIXME move_confirm in menu
         ];
 
         if detect_input_changed(&mut data.keys_pressed, &keyboard_input, keys_to_check) {
@@ -127,14 +126,12 @@ fn input_player_a(keys_pressed: &HashSet<KeyCode>) -> PlayerInputEvent {
     if keys_pressed.get(&KeyCode::ShiftLeft).is_some()
         || keys_pressed.get(&KeyCode::ShiftRight).is_some()
     {
-        // out.long_action = true;
         out.short_action = true;
     }
     if keys_pressed.get(&KeyCode::ControlLeft).is_some()
         || keys_pressed.get(&KeyCode::ControlRight).is_some()
     {
-        // out.short_action = true;
-        out.long_action = true; //FIXME
+        out.long_action = true;
     }
 
     if keys_pressed.get(&KeyCode::ArrowDown).is_some() {
@@ -164,16 +161,14 @@ fn input_player_b(keys_pressed: &HashSet<KeyCode>) -> PlayerInputEvent {
         || keys_pressed.get(&KeyCode::NumpadSubtract).is_some()
         || keys_pressed.get(&KeyCode::PageUp).is_some()
     {
-        // out.long_action = true;
-        out.short_action = true; //FIXME
+        out.short_action = true;
     }
     if keys_pressed.get(&KeyCode::KeyA).is_some()
         || keys_pressed.get(&KeyCode::KeyW).is_some()
         || keys_pressed.get(&KeyCode::NumpadAdd).is_some()
         || keys_pressed.get(&KeyCode::PageDown).is_some()
     {
-        out.long_action = true; //FIXME
-                                // out.short_action = true;
+        out.long_action = true;
     }
 
     if keys_pressed.get(&KeyCode::KeyF).is_some() || keys_pressed.get(&KeyCode::Numpad2).is_some() {

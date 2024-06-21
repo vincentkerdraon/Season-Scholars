@@ -11,13 +11,13 @@ Each season brings new crops to learn: asparagus, cherries, chanterelles and lem
 But beware! Monsters with unique needs threaten your village. \n
 To protect your people, you must graduate students with the precise knowledge to combat these threats. \n
 Will you rise to the challenge?";
-const HOW_TO: &str = "- Move your teacher from station to station by selecting a direction.\n
+const HOW_TO: &str = "- Move your teacher from station to station.\n
 - In front of the students, you can teach them about the current season (short action) \nor graduate them to fullfil the current monster needs.\n
 - At the door in the back, you can welcome a new student (short action) or find a new one (long action).\n
 - Through the magical windows on the left, you can spy on incoming monsters to learn their needs (short action) \nor repair the portal when the classroom get damaged (long action).\n
 - At the cooking station, you can eat to rest and move faster (short action) or cook (long action).\n";
 const CREDITS: &str = "Created for the 2024 Calgary game jam \"arcade\"\n
-Maëlle & Vincent KERDRAON
+Maelle & Vincent KERDRAON
 This version V1.0 using rust + bevy, another version in godot\n
 Only works in 1920x1080.
 All images using AGI. Homemade sounds.";
@@ -324,7 +324,7 @@ fn listen_events(
     if data.display {
         let now = time.elapsed_seconds_f64();
         if data.next_switch_variation < now {
-            data.next_switch_variation = now + 5.;
+            data.next_switch_variation = now + 6.;
             data.variation += 1;
             dirty = true;
             trace!("menu switch");
