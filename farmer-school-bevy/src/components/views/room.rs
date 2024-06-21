@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use crate::model::config::Config;
 
 use crate::model::portal::{
-    PortalAttackedEvent, PortalFixedEvent, PortalHealth, PortalObservedEvent,
+    MonsterPoppedEvent, PortalAttackedEvent, PortalFixedEvent, PortalHealth, PortalObservedEvent,
 };
 use crate::model::season::*;
 
@@ -144,20 +144,22 @@ fn listen_events_floor(
     mut portal_observed_events: EventReader<PortalObservedEvent>,
     mut portal_fixed_events: EventReader<PortalFixedEvent>,
     mut portal_attacked_events: EventReader<PortalAttackedEvent>,
+    mut monster_popped_events: EventReader<MonsterPoppedEvent>,
     data: Res<RoomData>,
     mut query: Query<&mut Handle<Image>>,
     config: Res<Config>,
 ) {
     let mut health: Option<PortalHealth> = None;
 
+    if let Some(e) = monster_popped_events.read().last() {
+        health = Some(e.health);
+    }
     if let Some(e) = portal_attacked_events.read().last() {
         health = Some(e.health);
     }
-
     if let Some(e) = portal_fixed_events.read().last() {
         health = Some(e.health);
     }
-
     if let Some(e) = portal_observed_events.read().last() {
         health = Some(e.health);
     }

@@ -30,6 +30,7 @@ pub struct PortalFixedEvent {
 #[derive(Event, Debug)]
 pub struct MonsterPoppedEvent {
     pub monsters: Vec<Monster>,
+    pub health: PortalHealth,
 }
 
 #[derive(Resource, Default, Clone, Debug)]

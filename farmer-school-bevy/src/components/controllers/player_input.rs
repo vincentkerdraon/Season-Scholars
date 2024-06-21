@@ -1,18 +1,6 @@
 use crate::model::overlord::*;
 use crate::model::player_input::*;
 use bevy::prelude::*;
-use std::collections::HashSet;
-
-pub struct PlayerInputControllerPlugin;
-
-impl Plugin for PlayerInputControllerPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_event::<PlayerInputEvent>()
-            .insert_resource(InputData { ..default() })
-            .add_systems(PreUpdate, listen_events)
-            .add_systems(PreUpdate, input_system);
-    }
-}
 
 fn listen_events(
     mut data: ResMut<InputData>,
@@ -30,7 +18,7 @@ fn listen_events(
 }
 
 fn input_system(
-    mut data: ResMut<InputData>,
+    data: Res<InputData>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut input_events: EventWriter<PlayerInputEvent>,
@@ -48,143 +36,101 @@ fn input_system(
     }
 
     if data.active_player_a {
-        let keys_to_check = vec![
-            KeyCode::ArrowLeft,
-            KeyCode::ArrowRight,
-            KeyCode::ArrowUp,
-            KeyCode::ArrowDown,
-            KeyCode::ShiftLeft,
-            KeyCode::ControlLeft,
-            KeyCode::AltLeft,
-            KeyCode::ShiftRight,
-            KeyCode::ControlRight,
-            KeyCode::AltRight,
-        ];
-
-        if detect_input_changed(&mut data.keys_pressed, &keyboard_input, keys_to_check) {
-            let out = input_player_a(&data.keys_pressed);
-            trace!("player A {:?}", out);
-            input_events.send(out);
-        }
+        let out = input_player_a(&keyboard_input);
+        trace!("player A {:?}", out);
+        input_events.send(out);
     }
 
     if data.active_player_b {
-        let keys_to_check = vec![
-            KeyCode::Numpad8,
-            KeyCode::Numpad4,
-            KeyCode::Numpad2,
-            KeyCode::Numpad6,
-            KeyCode::Numpad0,
-            KeyCode::NumpadSubtract,
-            KeyCode::NumpadAdd,
-            KeyCode::KeyR,
-            KeyCode::KeyD,
-            KeyCode::KeyF,
-            KeyCode::KeyG,
-            KeyCode::KeyQ,
-            KeyCode::KeyA,
-            KeyCode::KeyW,
-            KeyCode::PageUp,
-            KeyCode::PageDown,
-            KeyCode::KeyS,
-        ];
-
-        if detect_input_changed(&mut data.keys_pressed, &keyboard_input, keys_to_check) {
-            let out = input_player_b(&data.keys_pressed);
-            trace!("player B {:?}", out);
-            input_events.send(out);
-        }
+        let out = input_player_b(&keyboard_input);
+        trace!("player B {:?}", out);
+        input_events.send(out);
     }
 }
 
-fn detect_input_changed(
-    keys_pressed: &mut HashSet<KeyCode>,
-    keyboard_input: &Res<ButtonInput<KeyCode>>,
-    keys: Vec<KeyCode>,
-) -> bool {
-    let mut updated = false;
-    for key in keys.iter() {
-        if keyboard_input.just_pressed(*key) {
-            keys_pressed.insert(*key);
-            updated = true;
-        }
-
-        if keyboard_input.just_released(*key) {
-            keys_pressed.remove(key);
-            updated = true;
-        }
-    }
-    updated
-}
-
-fn input_player_a(keys_pressed: &HashSet<KeyCode>) -> PlayerInputEvent {
+fn input_player_a(keyboard_input: &Res<ButtonInput<KeyCode>>) -> PlayerInputEvent {
     let mut out: PlayerInputEvent = PlayerInputEvent {
         teacher: (Teacher::A),
         ..default()
     };
 
-    if keys_pressed.get(&KeyCode::ShiftLeft).is_some()
-        || keys_pressed.get(&KeyCode::ShiftRight).is_some()
+    if keyboard_input.just_pressed(KeyCode::ShiftLeft)
+        || keyboard_input.just_pressed(KeyCode::ShiftRight)
     {
         out.short_action = true;
     }
-    if keys_pressed.get(&KeyCode::ControlLeft).is_some()
-        || keys_pressed.get(&KeyCode::ControlRight).is_some()
+    if keyboard_input.just_pressed(KeyCode::ControlLeft)
+        || keyboard_input.just_pressed(KeyCode::ControlRight)
     {
         out.long_action = true;
     }
 
-    if keys_pressed.get(&KeyCode::ArrowDown).is_some() {
+    if keyboard_input.just_pressed(KeyCode::ArrowDown) {
         out.direction += Vec2::new(0.0, -1.0)
     }
-    if keys_pressed.get(&KeyCode::ArrowUp).is_some() {
+    if keyboard_input.just_pressed(KeyCode::ArrowUp) {
         out.direction += Vec2::new(0.0, 1.0)
     }
-    if keys_pressed.get(&KeyCode::ArrowLeft).is_some() {
+    if keyboard_input.just_pressed(KeyCode::ArrowLeft) {
         out.direction += Vec2::new(-1.0, 0.0)
     }
-    if keys_pressed.get(&KeyCode::ArrowRight).is_some() {
+    if keyboard_input.just_pressed(KeyCode::ArrowRight) {
         out.direction += Vec2::new(1.0, 0.0)
     }
-
     out
 }
 
-fn input_player_b(keys_pressed: &HashSet<KeyCode>) -> PlayerInputEvent {
+fn input_player_b(keyboard_input: &Res<ButtonInput<KeyCode>>) -> PlayerInputEvent {
     let mut out: PlayerInputEvent = PlayerInputEvent {
         teacher: (Teacher::B),
         ..default()
     };
 
-    if keys_pressed.get(&KeyCode::KeyQ).is_some()
-        || keys_pressed.get(&KeyCode::Numpad0).is_some()
-        || keys_pressed.get(&KeyCode::NumpadSubtract).is_some()
-        || keys_pressed.get(&KeyCode::PageUp).is_some()
+    if keyboard_input.just_pressed(KeyCode::KeyQ)
+        || keyboard_input.just_pressed(KeyCode::Numpad0)
+        || keyboard_input.just_pressed(KeyCode::NumpadSubtract)
+        || keyboard_input.just_pressed(KeyCode::PageUp)
     {
         out.short_action = true;
     }
-    if keys_pressed.get(&KeyCode::KeyA).is_some()
-        || keys_pressed.get(&KeyCode::KeyW).is_some()
-        || keys_pressed.get(&KeyCode::NumpadAdd).is_some()
-        || keys_pressed.get(&KeyCode::PageDown).is_some()
+    if keyboard_input.just_pressed(KeyCode::KeyA)
+        || keyboard_input.just_pressed(KeyCode::KeyW)
+        || keyboard_input.just_pressed(KeyCode::NumpadAdd)
+        || keyboard_input.just_pressed(KeyCode::PageDown)
     {
         out.long_action = true;
     }
 
-    if keys_pressed.get(&KeyCode::KeyF).is_some() || keys_pressed.get(&KeyCode::Numpad2).is_some() {
+    if keyboard_input.just_pressed(KeyCode::KeyF) || keyboard_input.just_pressed(KeyCode::Numpad2) {
         out.direction += Vec2::new(0.0, -1.0)
     }
-    if keys_pressed.get(&KeyCode::KeyR).is_some() || keys_pressed.get(&KeyCode::Numpad8).is_some() {
+    if keyboard_input.just_pressed(KeyCode::KeyR) || keyboard_input.just_pressed(KeyCode::Numpad8) {
         out.direction += Vec2::new(0.0, 1.0)
     }
-    if keys_pressed.get(&KeyCode::KeyD).is_some() || keys_pressed.get(&KeyCode::Numpad4).is_some() {
+    if keyboard_input.just_pressed(KeyCode::KeyD) || keyboard_input.just_pressed(KeyCode::Numpad4) {
         out.direction += Vec2::new(-1.0, 0.0)
     }
-    if keys_pressed.get(&KeyCode::KeyG).is_some() || keys_pressed.get(&KeyCode::Numpad6).is_some() {
+    if keyboard_input.just_pressed(KeyCode::KeyG) || keyboard_input.just_pressed(KeyCode::Numpad6) {
         out.direction += Vec2::new(1.0, 0.0)
     }
-
     out
+}
+
+pub struct PlayerInputControllerPlugin;
+
+impl Plugin for PlayerInputControllerPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_event::<PlayerInputEvent>()
+            .insert_resource(InputData { ..default() })
+            .add_systems(PreUpdate, listen_events)
+            .add_systems(PreUpdate, input_system);
+    }
+}
+
+#[derive(Resource, Default)]
+struct InputData {
+    active_player_a: bool,
+    active_player_b: bool,
 }
 
 #[cfg(test)]
@@ -222,11 +168,4 @@ mod tests {
             assert_eq!(event.direction, Vec2::new(0.0, 1.0));
         }
     }
-}
-
-#[derive(Resource, Default)]
-struct InputData {
-    active_player_a: bool,
-    active_player_b: bool,
-    keys_pressed: HashSet<KeyCode>,
 }

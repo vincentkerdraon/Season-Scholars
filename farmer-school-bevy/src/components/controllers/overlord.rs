@@ -17,14 +17,14 @@ fn _debug_start_game(
     warn!("start game, no menu");
     data.screen = Screen::Game;
     let emit = DisplayScreenGameEvent {
-        teachers: vec![Teacher::A],
+        teachers: vec![Teacher::B],
     };
     debug!("{:?}", emit);
     display_screen_game_events.send(emit);
 
     data.screen = Screen::Game;
     let emit = ResetGameEvent {
-        teachers: vec![Teacher::A],
+        teachers: vec![Teacher::B],
     };
     debug!("{:?}", emit);
     reset_game_events.send(emit);

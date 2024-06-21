@@ -146,9 +146,7 @@ fn listen_events(
 
                 let (short, _) = data.teacher_tired.get(&e.teacher).unwrap();
                 data.teacher_busy.action(e.teacher, now, short);
-                let emit = WelcomeStudentEvent {
-                    teacher: Teacher::A,
-                };
+                let emit = WelcomeStudentEvent { teacher: e.teacher };
                 debug!("{:?}", emit);
                 welcome_student_events.send(emit);
                 let emit = StudentWelcomedEvent { teacher: e.teacher };

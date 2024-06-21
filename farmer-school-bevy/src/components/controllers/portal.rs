@@ -160,8 +160,8 @@ fn reset(
     data.difficulty = 0;
     // data.teachers_present = HashMap::new();
     let now = time.elapsed_seconds_f64();
-    data.monsters = Vec::new();
     data.teacher_busy = TeacherBusy::new(vec![STATION]);
+    data.monsters = Vec::new();
     pop_monster(now, &config, &mut data, &mut monster_popped_events);
     data.teacher_tired = TeacherTired::default();
 }
@@ -201,6 +201,7 @@ fn pop_monster(
 
     let emit = MonsterPoppedEvent {
         monsters: data.monsters.clone(),
+        health: data.health,
     };
     debug!("{:?}", emit);
     monster_popped_events.send(emit);
@@ -328,7 +329,7 @@ fn listen_events_player_input(
                 data.teacher_busy.action(e.teacher, now, long);
                 data.health += 1;
                 let emit = PortalFixedEvent {
-                    teacher: Teacher::A,
+                    teacher: e.teacher,
                     health: data.health,
                     monsters: data.monsters.clone(),
                 };
@@ -352,16 +353,22 @@ fn listen_events_player_input(
                     revealed = true;
                     monster.window_revealed = true;
 
+                    //FIXME move this code
+                    // if let Some(monster_first) = data.monsters.first() {
+                    // if  monster_first.next_attack_s + 5 < now{
+                    // monster_first.next_attack_s=now + 5
+                    // }
+                    // }
+
+                    //FIXME panic here. new game only Player 2
                     let (short, _) = data.teacher_tired.get(&e.teacher).unwrap();
                     data.teacher_busy.action(e.teacher, now, short);
 
-                    let emit = ObservePortalEvent {
-                        teacher: Teacher::A,
-                    };
+                    let emit = ObservePortalEvent { teacher: e.teacher };
                     debug!("{:?}", emit);
                     observe_portal_events.send(emit);
                     let emit = PortalObservedEvent {
-                        teacher: Teacher::A,
+                        teacher: e.teacher,
                         health: data.health,
                         monsters: data.monsters.clone(),
                     };

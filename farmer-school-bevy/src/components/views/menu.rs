@@ -429,7 +429,7 @@ impl Plugin for MenuViewPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(MenuData::new())
             .add_systems(Startup, load_resources)
-            .add_systems(PreUpdate, listen_events);
+            .add_systems(Update, listen_events);
     }
 }
 
