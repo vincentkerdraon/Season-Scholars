@@ -15,10 +15,13 @@ use crate::model::welcome::*;
 use bevy::audio::{AudioSource, PlaybackMode, Volume};
 
 fn load_resources(
-    asset_server: Res<AssetServer>,
     config: Res<Config>,
     mut data: ResMut<SoundData>,
+    asset_server: Res<AssetServer>,
 ) {
+    if config.debug_without_sound {
+        return;
+    }
     let track = asset_server.load(config.base_path.join("sounds/ready/track_1.ogg"));
     data.tracks.push((track.clone(), 20., 0.));
     let track = asset_server.load(config.base_path.join("sounds/ready/track_2.ogg"));
@@ -60,6 +63,9 @@ fn play_track(
     config: Res<Config>,
     mut data: ResMut<SoundData>,
 ) {
+    if config.debug_without_sound {
+        return;
+    }
     let now = time.elapsed_seconds_f64();
     let (_, duration, started_at) = data
         .tracks
@@ -80,8 +86,12 @@ fn play_track(
 
 fn listen_reset(
     mut data: ResMut<SoundData>,
+    config: Res<Config>,
     mut reset_game_step1_events: EventReader<ResetGameStep1Event>,
 ) {
+    if config.debug_without_sound {
+        return;
+    }
     if let Some(e) = reset_game_step1_events.read().last() {
         data.teacher_tired = TeacherTired::new(&e.teachers);
     }
@@ -89,6 +99,8 @@ fn listen_reset(
 
 fn listen_reactions(
     mut commands: Commands,
+    config: Res<Config>,
+    mut data: ResMut<SoundData>,
     mut invalid_action_station_events: EventReader<InvalidActionStationEvent>,
     mut teacher_ate_events: EventReader<TeacherAteEvent>,
     mut cooked_events: EventReader<CookedEvent>,
@@ -98,8 +110,11 @@ fn listen_reactions(
     mut taught_events: EventReader<TaughtEvent>,
     mut student_welcomed_events: EventReader<StudentWelcomedEvent>,
     mut recruit_student_events: EventReader<RecruitStudentEvent>,
-    mut data: ResMut<SoundData>,
 ) {
+    if config.debug_without_sound {
+        return;
+    }
+
     let mut play_reaction = |teacher: Teacher, reaction: Reaction| {
         let (h, duration) = data
             .reactions
@@ -160,9 +175,14 @@ fn listen_reactions(
 
 fn listen_monster_attack(
     mut commands: Commands,
-    mut portal_attacked_events: EventReader<PortalAttackedEvent>,
+    config: Res<Config>,
     mut data: ResMut<SoundData>,
+    mut portal_attacked_events: EventReader<PortalAttackedEvent>,
 ) {
+    if config.debug_without_sound {
+        return;
+    }
+
     if portal_attacked_events.read().last().is_some() {
         data.monsters_last_used_index += 1;
         if data.monsters_last_used_index as usize == data.monsters.len() {
@@ -180,8 +200,12 @@ fn listen_monster_attack(
 fn listen_events_teacher_tired(
     time: Res<Time>,
     mut data: ResMut<SoundData>,
+    config: Res<Config>,
     mut teacher_tired_events: EventReader<TeacherTiredEvent>,
 ) {
+    if config.debug_without_sound {
+        return;
+    }
     for e in teacher_tired_events.read() {
         let now = time.elapsed_seconds_f64();
         data.teacher_tired

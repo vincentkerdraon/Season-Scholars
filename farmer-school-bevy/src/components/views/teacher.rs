@@ -1,4 +1,4 @@
-use std::{collections::HashMap, num::Wrapping};
+use std::collections::HashMap;
 
 use bevy::prelude::*;
 
@@ -485,7 +485,6 @@ fn listen_events_teacher_tired(
 
 fn draw(
     time: Res<Time>,
-    config: Res<Config>,
     mut data: ResMut<TeacherData>,
     mut query: Query<(&mut Handle<Image>, &mut Visibility)>,
 ) {
@@ -493,10 +492,7 @@ fn draw(
         return;
     }
 
-    //to display some parts, we need to iterate a lot.
-    //but it is ok to do it only every few frames
-    data.frame += Wrapping(1);
-    if !data.dirty && data.frame.0 % config.draw_frame_modulo != 0 {
+    if !data.dirty {
         return;
     }
     let now = time.elapsed_seconds_f64();
@@ -611,7 +607,6 @@ struct TeacherData {
     component_ready: ComponentReady,
     dirty: bool,
     direction_last: Vec2,
-    frame: Wrapping<i8>,
     display_reaction_until: HashMap<(Teacher, Station, Reaction), (f64, Entity)>,
     display_path_until: HashMap<(Teacher, Station, Station), (f64, Entity)>,
 }
@@ -627,7 +622,6 @@ impl TeacherData {
             teacher_tired: TeacherTired::default(),
             dirty: false,
             direction_last: Vec2::ZERO,
-            frame: Wrapping(0),
             display_reaction_until: HashMap::new(),
             display_path_until: HashMap::new(),
             component_ready: ComponentReady::default(),

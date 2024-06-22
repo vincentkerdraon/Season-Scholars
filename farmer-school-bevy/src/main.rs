@@ -46,6 +46,7 @@ fn main() {
         debug_start_game_immediately: false,
         debug_disable_student_eating: false,
         debug_disable_season_monster: false,
+        debug_without_sound: false,
     };
 
     if env::var("SEASON_SCHOLARS_DEV").is_ok() {
@@ -61,6 +62,9 @@ fn main() {
     }
     if env::var("SEASON_SCHOLARS_DEV_NO_SEASON_MONSTER").is_ok() {
         c.debug_disable_season_monster = true;
+    }
+    if env::var("SEASON_SCHOLARS_DEV_WITHOUT_SOUND").is_ok() {
+        c.debug_without_sound = true;
     }
     let mut window_mode = WindowMode::Fullscreen;
     if env::var("SEASON_SCHOLARS_DEV_NO_FULLSCREEN").is_ok() {

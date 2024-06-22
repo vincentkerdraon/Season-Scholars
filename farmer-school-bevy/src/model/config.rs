@@ -27,4 +27,5 @@ pub struct Config {
     pub debug_start_game_immediately: bool,
     pub debug_disable_student_eating: bool,
     pub debug_disable_season_monster: bool,
+    pub debug_without_sound: bool,
 }

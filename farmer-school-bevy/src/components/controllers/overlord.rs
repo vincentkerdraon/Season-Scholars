@@ -186,6 +186,8 @@ fn listen_events_menu(
             &mut data,
             reset_game_step1_events,
         );
+
+        data.teachers.clear();
     }
 
     if changed {

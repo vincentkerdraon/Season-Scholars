@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::num::Wrapping;
 
 use bevy::prelude::*;
 
@@ -132,7 +131,7 @@ fn load_windows(
     data.needs.insert((2, 1), e);
     let e = place_need(&mut commands, &mut data, (-710., 10.), 0.62);
     data.needs.insert((2, 2), e);
-    let e = place_window(&mut commands, &mut data, (-709., 120.), (0.63, 0.64));
+    let e = place_window(&mut commands, &mut data, (-707., 118.), (0.65, 0.63));
     data.windows.insert(2, e);
 
     let e = place_need(&mut commands, &mut data, (-790., 200.), 0.69);
@@ -141,7 +140,7 @@ fn load_windows(
     data.needs.insert((3, 1), e);
     let e = place_need(&mut commands, &mut data, (-790., -60.), 0.69);
     data.needs.insert((3, 2), e);
-    let e = place_window(&mut commands, &mut data, (-800., 70.), (0.69, 0.69));
+    let e = place_window(&mut commands, &mut data, (-792., 76.), (0.66, 0.69));
     data.windows.insert(3, e);
 }
 
@@ -215,7 +214,8 @@ fn place_window(
                 },
                 ..default()
             },
-            visibility: Visibility::Hidden,
+            // visibility: Visibility::Hidden, //FIXME
+            visibility: Visibility::Visible,
             ..default()
         })
         .id()
@@ -383,16 +383,10 @@ fn should_redraw_monster(monster_new: &Option<&Monster>, monster_old: &Option<&M
 
 fn display_attack_progress(
     time: Res<Time>,
-    config: Res<Config>,
     mut data: ResMut<PortalData>,
     mut query: Query<(&mut Handle<Image>, &mut Visibility)>,
 ) {
     if !data.component_ready.listen_data_events {
-        return;
-    }
-
-    data.frame += Wrapping(1);
-    if !data.frame.0 % config.draw_frame_modulo != 0 {
         return;
     }
 
@@ -576,7 +570,6 @@ struct PortalData {
     health: i8,
 
     component_ready: ComponentReady,
-    frame: Wrapping<i8>,
 }
 
 impl PortalData {
@@ -597,7 +590,6 @@ impl PortalData {
             attack_progress: Vec::new(),
             attack_progress_next_s: 0.,
             attack_progress_reset_s: 0.,
-            frame: Wrapping(0),
             component_ready: ComponentReady::default(),
         }
     }
