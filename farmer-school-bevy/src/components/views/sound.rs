@@ -78,6 +78,15 @@ fn play_track(
     *started_at = now;
 }
 
+fn listen_reset(
+    mut data: ResMut<SoundData>,
+    mut reset_game_step1_events: EventReader<ResetGameStep1Event>,
+) {
+    if let Some(e) = reset_game_step1_events.read().last() {
+        data.teacher_tired = TeacherTired::new(&e.teachers);
+    }
+}
+
 fn listen_reactions(
     mut commands: Commands,
     mut invalid_action_station_events: EventReader<InvalidActionStationEvent>,
@@ -100,23 +109,24 @@ fn listen_reactions(
             .unwrap()
             .clone();
 
-        let (short, long) = data.teacher_tired.get(&teacher).unwrap();
-        let mut speed: f32 = 1.;
-        match reaction {
-            Reaction::Short => speed = (duration / short) as f32,
-            Reaction::Long => speed = (duration / long) as f32,
-            Reaction::Fail => {}
-        }
-        trace!(
-            "play reaction {:?} (short={}s,long={}s), original={}s => speed={}",
-            reaction,
-            short,
-            long,
-            duration,
-            speed
-        );
+        if let Some((short, long)) = data.teacher_tired.get(&teacher) {
+            let mut speed: f32 = 1.;
+            match reaction {
+                Reaction::Short => speed = (duration / short) as f32,
+                Reaction::Long => speed = (duration / long) as f32,
+                Reaction::Fail => {}
+            }
+            trace!(
+                "play reaction {:?} (short={}s,long={}s), original={}s => speed={}",
+                reaction,
+                short,
+                long,
+                duration,
+                speed
+            );
 
-        play_sound(&mut commands, h, 1., speed);
+            play_sound(&mut commands, h, 1., speed);
+        }
     };
 
     if let Some(e) = invalid_action_station_events.read().last() {
@@ -187,6 +197,7 @@ impl Plugin for SoundViewPlugin {
             .add_systems(Startup, load_resources)
             .add_systems(PreUpdate, listen_events_teacher_tired)
             .add_systems(Update, play_track)
+            .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_reactions)
             .add_systems(PreUpdate, listen_monster_attack);
     }

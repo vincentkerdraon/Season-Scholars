@@ -56,15 +56,13 @@ pub fn season_startup_system(mut commands: Commands, config: Res<Config>) {
 
 fn listen_reset(
     mut q: Query<(Entity, &mut SeasonTimer)>,
-    mut reset_game_events: EventReader<ResetGameEvent>,
+    // mut reset_game_step1_events: EventReader<ResetGameStep1Event>,
+    mut reset_game_step2_events: EventReader<ResetGameStep2Event>,
 ) {
-    if reset_game_events.read().last().is_none() {
-        return;
-    }
-    reset_game_events.clear();
-
-    for (_entity, mut season_timer) in q.iter_mut() {
-        season_timer.reset();
+    if let Some(_e) = reset_game_step2_events.read().last() {
+        for (_entity, mut season_timer) in q.iter_mut() {
+            season_timer.reset();
+        }
     }
 }
 

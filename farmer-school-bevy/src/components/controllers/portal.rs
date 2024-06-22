@@ -20,7 +20,10 @@ fn listen_game_over(
     if game_over_events.read().last().is_none() {
         return;
     }
-    data.activated = false;
+    data.component_ready = ComponentReady {
+        listen_data_events: false,
+        listen_player_input: false,
+    };
 }
 
 fn listen_events_teacher_tired(
@@ -42,7 +45,7 @@ fn monster_attack(
     mut portal_monster_activity_events: EventWriter<MonsterActivityEvent>,
     mut game_over_events: EventWriter<GameOverEvent>,
 ) {
-    if !data.activated {
+    if !data.component_ready.listen_data_events {
         return;
     }
 
@@ -79,9 +82,6 @@ fn monster_attack(
             };
             debug!("{:?}", emit);
             game_over_events.send(emit);
-
-            //stop processing this func until reset
-            data.activated = false;
         }
     }
 
@@ -103,7 +103,7 @@ fn listen_events(
     mut monster_fed_events: EventWriter<MonsterFedEvent>,
     mut monster_popped_events: EventWriter<MonsterPoppedEvent>,
 ) {
-    if !data.activated {
+    if !data.component_ready.listen_data_events {
         return;
     }
 
@@ -154,43 +154,33 @@ fn listen_reset(
     time: Res<Time>,
     config: Res<Config>,
     mut data: ResMut<PortalData>,
-    mut reset_game_events: EventReader<ResetGameEvent>,
-    monster_popped_events: EventWriter<MonsterPoppedEvent>,
-    monster_activity_events: EventWriter<MonsterActivityEvent>,
-) {
-    if reset_game_events.read().last().is_some() {
-        data.activated = true;
-        reset(
-            time,
-            config,
-            data,
-            monster_popped_events,
-            monster_activity_events,
-        );
-    }
-}
-
-fn reset(
-    time: Res<Time>,
-    config: Res<Config>,
-    mut data: ResMut<PortalData>,
+    mut reset_game_step1_events: EventReader<ResetGameStep1Event>,
+    mut reset_game_step2_events: EventReader<ResetGameStep2Event>,
+    mut reset_game_step3_events: EventReader<ResetGameStep3Event>,
     mut monster_popped_events: EventWriter<MonsterPoppedEvent>,
     mut monster_activity_events: EventWriter<MonsterActivityEvent>,
 ) {
-    data.health = config.portal_health_max;
-    data.difficulty = 0;
-    // data.teachers_present = HashMap::new();
-    let now = time.elapsed_seconds_f64();
-    data.teacher_busy = TeacherBusy::default();
-    data.monsters = Vec::new();
-    pop_monster(now, &config, &mut data, &mut monster_popped_events);
-    data.teacher_tired = TeacherTired::default();
-    let emit = MonsterActivityEvent {
-        monsters: data.monsters.clone(),
-        health: data.health,
-    };
-    debug!("{:?}", emit);
-    monster_activity_events.send(emit);
+    if let Some(e) = reset_game_step1_events.read().last() {
+        data.component_ready.listen_data_events = true;
+        data.health = config.portal_health_max;
+        data.difficulty = 0;
+        data.monsters = Vec::new();
+        data.teacher_busy = TeacherBusy::new(&e.teachers);
+        data.teacher_tired = TeacherTired::new(&e.teachers);
+    }
+    if let Some(_e) = reset_game_step2_events.read().last() {
+        let now = time.elapsed_seconds_f64();
+        pop_monster(now, &config, &mut data, &mut monster_popped_events);
+        let emit = MonsterActivityEvent {
+            monsters: data.monsters.clone(),
+            health: data.health,
+        };
+        debug!("{:?}", emit);
+        monster_activity_events.send(emit);
+    }
+    if let Some(_e) = reset_game_step3_events.read().last() {
+        data.component_ready.listen_player_input = true;
+    }
 }
 
 fn listen_events_create_monster(
@@ -340,7 +330,8 @@ fn listen_events_player_input(
     mut invalid_action_station_events: EventWriter<InvalidActionStationEvent>,
     mut invalid_move_events: EventWriter<InvalidMoveEvent>,
 ) {
-    if !data.activated {
+    if !data.component_ready.listen_player_input {
+        player_input_events.clear();
         return;
     }
 
@@ -383,14 +374,10 @@ fn listen_events_player_input(
                     revealed = true;
                     monster.window_revealed = true;
 
-                    //FIXME move this code
-                    // if let Some(monster_first) = data.monsters.first() {
-                    // if  monster_first.next_attack_s + 5 < now{
-                    // monster_first.next_attack_s=now + 5
-                    // }
-                    // }
-
-                    //FIXME panic here. new game only Player 2
+                    if data.teacher_tired.get(&e.teacher).is_none() {
+                        //TODO back error management, but how?
+                        break;
+                    }
                     let (short, _) = data.teacher_tired.get(&e.teacher).unwrap();
                     data.teacher_busy.action(e.teacher, now, short);
 
@@ -455,7 +442,6 @@ impl Plugin for PortalControllerPlugin {
             .add_event::<MonsterActivityEvent>()
             .add_event::<MonsterPoppedEvent>()
             .insert_resource(PortalData { ..default() })
-            .add_systems(Startup, reset)
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, listen_events_teacher_tired)
@@ -469,7 +455,7 @@ impl Plugin for PortalControllerPlugin {
 
 #[derive(Resource, Default)]
 struct PortalData {
-    activated: bool,
+    component_ready: ComponentReady,
     monsters: Vec<Monster>,
     difficulty: i32,
     health: i8,

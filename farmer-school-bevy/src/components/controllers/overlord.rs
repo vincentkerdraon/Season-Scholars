@@ -5,29 +5,98 @@ use crate::model::player_input::*;
 use crate::model::portal::*;
 use crate::model::season::*;
 use crate::model::students::*;
+use crate::model::teacher::ActionLongDuration;
+use crate::model::teacher::ActionShortDuration;
 use bevy::prelude::*;
 use std::collections::HashMap;
 use std::process;
 
 fn _debug_start_game(
+    config: Res<Config>,
     mut data: ResMut<Overlord>,
-    mut reset_game_events: EventWriter<ResetGameEvent>,
+    reset_game_step1_events: EventWriter<ResetGameStep1Event>,
     mut display_screen_game_events: EventWriter<DisplayScreenGameEvent>,
 ) {
     warn!("start game, no menu");
+    let teachers = vec![Teacher::B];
     data.screen = Screen::Game;
     let emit = DisplayScreenGameEvent {
-        teachers: vec![Teacher::B],
+        teachers: teachers.clone(),
     };
     debug!("{:?}", emit);
     display_screen_game_events.send(emit);
 
     data.screen = Screen::Game;
-    let emit = ResetGameEvent {
-        teachers: vec![Teacher::B],
+    emit_reset(
+        &teachers.clone(),
+        &config,
+        &mut data,
+        reset_game_step1_events,
+    );
+}
+
+///emit_reset does step1 + starts step2
+fn emit_reset(
+    teachers: &[Teacher],
+    config: &Config,
+    data: &mut Overlord,
+    mut reset_game_step1_events: EventWriter<ResetGameStep1Event>,
+) {
+    let mut teachers_data: Vec<(Teacher, Station, ActionShortDuration, ActionLongDuration)> =
+        Vec::new();
+    if teachers.contains(&Teacher::A) {
+        teachers_data.push((
+            Teacher::A,
+            Station::StudentCenter,
+            config.short_action_s_min,
+            config.long_action_s_min,
+        ));
+    }
+    if teachers.contains(&Teacher::B) {
+        teachers_data.push((
+            Teacher::B,
+            Station::Welcome,
+            config.short_action_s_min,
+            config.long_action_s_min,
+        ));
+    }
+    let emit = ResetGameStep1Event {
+        teachers: teachers_data.clone(),
     };
     debug!("{:?}", emit);
-    reset_game_events.send(emit);
+    reset_game_step1_events.send(emit);
+
+    data.reset_step2 = Some(teachers_data);
+}
+
+fn emit_reset_step2(
+    mut data: ResMut<Overlord>,
+    mut reset_game_step2_events: EventWriter<ResetGameStep2Event>,
+) {
+    if let Some(teachers_data) = data.reset_step2.clone() {
+        //Just assuming that because we let one frame in the middle, everything is ready.
+        data.reset_step2 = None;
+        data.reset_step3 = true;
+
+        let emit = ResetGameStep2Event {
+            teachers: teachers_data.clone(),
+        };
+        debug!("{:?}", emit);
+        reset_game_step2_events.send(emit);
+    }
+}
+
+fn emit_reset_step3(
+    mut data: ResMut<Overlord>,
+    mut reset_game_step3_events: EventWriter<ResetGameStep3Event>,
+) {
+    if data.reset_step3 {
+        data.reset_step3 = false;
+
+        let emit = ResetGameStep3Event {};
+        debug!("{:?}", emit);
+        reset_game_step3_events.send(emit);
+    }
 }
 
 fn start(
@@ -68,11 +137,12 @@ fn listen_events_score(
 
 fn listen_events_menu(
     time: Res<Time>,
+    config: Res<Config>,
     mut data: ResMut<Overlord>,
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut display_screen_game_events: EventWriter<DisplayScreenGameEvent>,
     mut display_screen_menu_events: EventWriter<DisplayScreenMenuEvent>,
-    mut reset_game_events: EventWriter<ResetGameEvent>,
+    reset_game_step1_events: EventWriter<ResetGameStep1Event>,
 ) {
     if data.screen != Screen::Menu {
         player_input_events.clear();
@@ -80,6 +150,7 @@ fn listen_events_menu(
     }
 
     let mut changed = false;
+    let mut send_reset = false;
 
     for e in player_input_events.read() {
         if e.short_action {
@@ -93,23 +164,28 @@ fn listen_events_menu(
         }
 
         if e.long_action && !data.teachers.is_empty() {
-            let teachers: Vec<Teacher> = data.teachers.keys().copied().collect();
-            let emit = DisplayScreenGameEvent {
-                teachers: teachers.clone(),
-            };
-            debug!("{:?}", emit);
-            display_screen_game_events.send(emit);
-
-            data.game_started_s = time.elapsed_seconds_f64();
-            data.score = 0;
-            data.screen = Screen::Game;
-
-            let emit = ResetGameEvent {
-                teachers: teachers.clone(),
-            };
-            debug!("{:?}", emit);
-            reset_game_events.send(emit);
+            send_reset = true;
         }
+    }
+
+    if send_reset {
+        let teachers: Vec<Teacher> = data.teachers.keys().copied().collect();
+        let emit = DisplayScreenGameEvent {
+            teachers: teachers.clone(),
+        };
+        debug!("{:?}", emit);
+        display_screen_game_events.send(emit);
+
+        data.game_started_s = time.elapsed_seconds_f64();
+        data.score = 0;
+        data.screen = Screen::Game;
+
+        emit_reset(
+            teachers.as_slice(),
+            &config,
+            &mut data,
+            reset_game_step1_events,
+        );
     }
 
     if changed {
@@ -148,6 +224,7 @@ fn listen_events_reset(
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut display_screen_menu_events: EventWriter<DisplayScreenMenuEvent>,
     mut display_screen_game_over_recap_events: EventWriter<DisplayScreenGameOverRecapEvent>,
+    mut game_over_events: EventWriter<GameOverEvent>,
 ) {
     for e in player_input_events.read() {
         if !e.reset {
@@ -163,9 +240,13 @@ fn listen_events_reset(
         match data.screen {
             Screen::Game => {
                 data.screen = Screen::GameOverRecap;
-                let teachers: Vec<Teacher> = data.teachers.keys().copied().collect();
+                let emit = GameOverEvent {
+                    reason: "Reset button".to_string(),
+                };
+                debug!("{:?}", emit);
+                game_over_events.send(emit);
                 let emit = DisplayScreenGameOverRecapEvent {
-                    teachers,
+                    teachers: Vec::new(),
                     reason: "Reset button".to_string(),
                     score: data.score,
                     seasons_elapsed: data.seasons_elapsed,
@@ -202,14 +283,20 @@ impl Plugin for OverlordControllerPlugin {
                 score: 0,
                 seasons_elapsed: 0,
                 teachers: HashMap::new(),
+                reset_step2: None,
+                reset_step3: false,
             })
             .add_event::<GameOverEvent>()
-            .add_event::<ResetGameEvent>()
+            .add_event::<ResetGameStep1Event>()
+            .add_event::<ResetGameStep2Event>()
+            .add_event::<ResetGameStep3Event>()
             .add_event::<DisplayScreenGameOverRecapEvent>()
             .add_event::<DisplayScreenGameEvent>()
             .add_event::<DisplayScreenMenuEvent>()
             .add_event::<InvalidActionStationEvent>()
             .add_event::<InvalidMoveEvent>()
+            .add_systems(PreUpdate, emit_reset_step3)
+            .add_systems(PreUpdate, emit_reset_step2)
             .add_systems(PreUpdate, listen_events_reset)
             .add_systems(PreUpdate, listen_events_game_over)
             .add_systems(PreUpdate, listen_events_score)
@@ -237,4 +324,6 @@ struct Overlord {
     teachers: HashMap<Teacher, bool>,
     game_started_s: f64,
     seasons_elapsed: i64,
+    reset_step2: Option<Vec<(Teacher, Station, ActionShortDuration, ActionLongDuration)>>,
+    reset_step3: bool,
 }

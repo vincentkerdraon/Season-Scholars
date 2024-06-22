@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 
-use crate::model::{overlord::Teacher, teacher::*};
+use crate::model::{
+    overlord::{Station, Teacher},
+    teacher::*,
+};
 
 #[derive(Resource, Default)]
 pub struct TeacherTired {
@@ -11,6 +14,18 @@ pub struct TeacherTired {
 }
 
 impl TeacherTired {
+    pub fn new(
+        teachers: &Vec<(Teacher, Station, ActionShortDuration, ActionLongDuration)>,
+    ) -> Self {
+        let mut me = Self {
+            teachers_speed: HashMap::new(),
+        };
+        for (t, _, short, long) in teachers.iter() {
+            me.teachers_speed.insert(*t, (0., *short, *long));
+        }
+        me
+    }
+
     pub fn is_slower(
         &mut self,
         now: f64,

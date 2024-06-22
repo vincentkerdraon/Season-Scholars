@@ -28,7 +28,10 @@ fn listen_game_over(
     if game_over_events.read().last().is_none() {
         return;
     }
-    data.activated = false;
+    data.component_ready = ComponentReady {
+        listen_data_events: false,
+        listen_player_input: false,
+    };
 }
 
 fn listen_welcomed(
@@ -56,13 +59,16 @@ fn listen_welcomed(
 fn listen_reset(
     config: Res<Config>,
     mut data: ResMut<StudentsData>,
-    mut reset_game_events: EventReader<ResetGameEvent>,
+    mut reset_game_step1_events: EventReader<ResetGameStep1Event>,
+    mut reset_game_step2_events: EventReader<ResetGameStep2Event>,
+    mut reset_game_step3_events: EventReader<ResetGameStep3Event>,
     mut students_seated_events: EventWriter<StudentsSeatedEvent>,
 ) {
-    if reset_game_events.read().last().is_some() {
+    if let Some(e) = reset_game_step1_events.read().last() {
         data.students_rows_nb = config.students_rows_nb;
-        data.activated = true;
-        data.teacher_busy = TeacherBusy::default();
+        data.teacher_busy = TeacherBusy::new(&e.teachers);
+        data.teacher_tired = TeacherTired::new(&e.teachers);
+        data.component_ready.listen_data_events = true;
 
         data.reset();
         for _ in 0..config.students_init {
@@ -70,12 +76,16 @@ fn listen_reset(
                 panic!();
             }
         }
+    }
+    if let Some(_e) = reset_game_step2_events.read().last() {
         let emit = StudentsSeatedEvent {
             students: data.students.values().cloned().collect(),
         };
         debug!("{:?}", emit);
         students_seated_events.send(emit);
-        data.teacher_tired = TeacherTired::default();
+    }
+    if let Some(_e) = reset_game_step3_events.read().last() {
+        data.component_ready.listen_player_input = true;
     }
 }
 
@@ -112,108 +122,111 @@ fn listen_events_player_input(
     mut invalid_action_station_events: EventWriter<InvalidActionStationEvent>,
     mut invalid_move_events: EventWriter<InvalidMoveEvent>,
 ) {
-    if !data.activated {
+    if !data.component_ready.listen_player_input {
+        player_input_events.clear();
         return;
     }
 
     let now = time.elapsed_seconds_f64();
     for e in player_input_events.read() {
-        //FIXME panic
-        let station = data.teacher_busy.station(e.teacher).unwrap();
-        if !vec![
-            Station::StudentLeft,
-            Station::StudentCenter,
-            Station::StudentRight,
-        ]
-        .contains(&station)
-        {
-            continue;
-        }
-        if data.teacher_busy.ready(e.teacher, now) != (true, true) {
-            continue;
-        }
-
-        let col = station_to_student_col(station);
-
-        if e.long_action {
-            if let Some(graduate) = data.graduate(col) {
-                let (_, long) = data.teacher_tired.get(&e.teacher).unwrap();
-                data.teacher_busy.action(e.teacher, now, long);
-                let emit = GraduateEvent {
-                    student_col: col,
-                    teacher: e.teacher,
-                };
-                debug!("{:?}", emit);
-                graduate_events.send(emit);
-                let emit = GraduatedEvent {
-                    knowledge: graduate.knowledge,
-                    student_id: graduate.id,
-                    students: data.students.values().cloned().collect(),
-                    teacher: e.teacher,
-                };
-                debug!("{:?}", emit);
-                graduated_events.send(emit);
-            } else {
-                let emit = InvalidActionStationEvent {
-                    station,
-                    teacher: e.teacher,
-                };
-                trace!("{:?}", emit);
-                invalid_action_station_events.send(emit);
-            }
-            continue;
-        }
-
-        if e.short_action {
-            if let Some(season) = data.teach(col) {
-                let (short, _) = data.teacher_tired.get(&e.teacher).unwrap();
-                data.teacher_busy.action(e.teacher, now, short);
-                let emit = TeachEvent {
-                    teacher: e.teacher,
-                    student_col: col,
-                };
-                debug!("{:?}", emit);
-                teach_events.send(emit);
-                let emit = TaughtEvent {
-                    knowledge: season,
-                    student_col: col,
-                    students: data.students.values().cloned().collect(),
-                    teacher: e.teacher,
-                };
-                debug!("{:?}", emit);
-                taught_events.send(emit);
-            } else {
-                let emit = InvalidActionStationEvent {
-                    station,
-                    teacher: e.teacher,
-                };
-                trace!("{:?}", emit);
-                invalid_action_station_events.send(emit);
-            }
-            continue;
-        }
-
-        if e.direction != Vec2::ZERO {
-            if let Some(to) = data
-                .teacher_busy
-                .possible_move(e.teacher, station, e.direction)
+        if let Some(station) = data.teacher_busy.station(e.teacher) {
+            if !vec![
+                Station::StudentLeft,
+                Station::StudentCenter,
+                Station::StudentRight,
+            ]
+            .contains(&station)
             {
-                let emit = MoveTeacherEvent {
-                    station_from: station,
-                    station_to: to,
-                    teacher: e.teacher,
-                };
-                debug!("{:?}", emit);
-                move_teacher_events.send(emit);
-            } else {
-                let emit = InvalidMoveEvent {
-                    station,
-                    teacher: e.teacher,
-                };
-                trace!("{:?}", emit);
-                invalid_move_events.send(emit);
+                continue;
             }
-            continue;
+            if data.teacher_busy.ready(e.teacher, now) != (true, true) {
+                continue;
+            }
+
+            let col = station_to_student_col(station);
+
+            if e.long_action {
+                if let Some(graduate) = data.graduate(col) {
+                    if let Some((_, long)) = data.teacher_tired.get(&e.teacher) {
+                        data.teacher_busy.action(e.teacher, now, long);
+                        let emit = GraduateEvent {
+                            student_col: col,
+                            teacher: e.teacher,
+                        };
+                        debug!("{:?}", emit);
+                        graduate_events.send(emit);
+                        let emit = GraduatedEvent {
+                            knowledge: graduate.knowledge,
+                            student_id: graduate.id,
+                            students: data.students.values().cloned().collect(),
+                            teacher: e.teacher,
+                        };
+                        debug!("{:?}", emit);
+                        graduated_events.send(emit);
+                    }
+                } else {
+                    let emit = InvalidActionStationEvent {
+                        station,
+                        teacher: e.teacher,
+                    };
+                    trace!("{:?}", emit);
+                    invalid_action_station_events.send(emit);
+                }
+                continue;
+            }
+
+            if e.short_action {
+                if let Some(season) = data.teach(col) {
+                    if let Some((short, _)) = data.teacher_tired.get(&e.teacher) {
+                        data.teacher_busy.action(e.teacher, now, short);
+                        let emit = TeachEvent {
+                            teacher: e.teacher,
+                            student_col: col,
+                        };
+                        debug!("{:?}", emit);
+                        teach_events.send(emit);
+                        let emit = TaughtEvent {
+                            knowledge: season,
+                            student_col: col,
+                            students: data.students.values().cloned().collect(),
+                            teacher: e.teacher,
+                        };
+                        debug!("{:?}", emit);
+                        taught_events.send(emit);
+                    }
+                } else {
+                    let emit = InvalidActionStationEvent {
+                        station,
+                        teacher: e.teacher,
+                    };
+                    trace!("{:?}", emit);
+                    invalid_action_station_events.send(emit);
+                }
+                continue;
+            }
+
+            if e.direction != Vec2::ZERO {
+                if let Some(to) = data
+                    .teacher_busy
+                    .possible_move(e.teacher, station, e.direction)
+                {
+                    let emit = MoveTeacherEvent {
+                        station_from: station,
+                        station_to: to,
+                        teacher: e.teacher,
+                    };
+                    debug!("{:?}", emit);
+                    move_teacher_events.send(emit);
+                } else {
+                    let emit = InvalidMoveEvent {
+                        station,
+                        teacher: e.teacher,
+                    };
+                    trace!("{:?}", emit);
+                    invalid_move_events.send(emit);
+                }
+                continue;
+            }
         }
     }
 }
@@ -240,10 +253,10 @@ impl Plugin for StudentsControllerPlugin {
 
 #[derive(Resource, Default)]
 struct StudentsData {
+    component_ready: ComponentReady,
     students_rows_nb: i8,
     students: HashMap<StudentId, Student>,
     last_id: i64,
-    activated: bool,
     teacher_busy: TeacherBusy,
     season: Season,
     teacher_tired: TeacherTired,

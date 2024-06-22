@@ -21,16 +21,20 @@ fn listen_moved(
     }
 }
 
-fn listen_reset(data: ResMut<WelcomeData>, mut reset_game_events: EventReader<ResetGameEvent>) {
-    if reset_game_events.read().last().is_some() {
-        reset(data);
+fn listen_reset(
+    mut data: ResMut<WelcomeData>,
+    mut reset_game_step1_events: EventReader<ResetGameStep1Event>,
+    // mut reset_game_step2_events: EventReader<ResetGameStep2Event>,
+    mut reset_game_step3_events: EventReader<ResetGameStep3Event>,
+) {
+    if let Some(e) = reset_game_step1_events.read().last() {
+        data.component_ready.listen_data_events = true;
+        data.teacher_busy = TeacherBusy::new(&e.teachers);
+        data.teacher_tired = TeacherTired::new(&e.teachers);
     }
-}
-
-fn reset(mut data: ResMut<WelcomeData>) {
-    data.teacher_busy = TeacherBusy::default();
-    data.activated = true;
-    data.teacher_tired = TeacherTired::default();
+    if let Some(_e) = reset_game_step3_events.read().last() {
+        data.component_ready.listen_player_input = true;
+    }
 }
 
 fn listen_game_over(
@@ -40,7 +44,10 @@ fn listen_game_over(
     if game_over_events.read().last().is_none() {
         return;
     }
-    data.activated = false;
+    data.component_ready = ComponentReady {
+        listen_data_events: false,
+        listen_player_input: false,
+    };
 }
 
 fn listen_events_teacher_tired(
@@ -103,7 +110,8 @@ fn listen_events(
     mut invalid_action_station_events: EventWriter<InvalidActionStationEvent>,
     mut invalid_move_events: EventWriter<InvalidMoveEvent>,
 ) {
-    if !data.activated {
+    if !data.component_ready.listen_player_input {
+        player_input_events.clear();
         return;
     }
 
@@ -199,7 +207,6 @@ impl Plugin for WelcomeControllerPlugin {
             .add_event::<StudentWelcomedEvent>()
             .add_event::<RecruitStudentEvent>()
             .insert_resource(WelcomeData { ..default() })
-            .add_systems(Startup, reset)
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, listen_events_teacher_tired)
@@ -212,9 +219,9 @@ impl Plugin for WelcomeControllerPlugin {
 
 #[derive(Resource, Default)]
 struct WelcomeData {
+    component_ready: ComponentReady,
     students_classroom_nb: i8,
     student_available: bool,
     teacher_busy: TeacherBusy,
-    activated: bool,
     teacher_tired: TeacherTired,
 }

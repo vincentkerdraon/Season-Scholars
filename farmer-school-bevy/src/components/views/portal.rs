@@ -5,7 +5,7 @@ use bevy::prelude::*;
 
 use crate::model::config::Config;
 
-use crate::model::overlord::{GameOverEvent, ResetGameEvent};
+use crate::model::overlord::*;
 use crate::model::portal::*;
 use crate::model::season::Season;
 
@@ -387,7 +387,7 @@ fn display_attack_progress(
     mut data: ResMut<PortalData>,
     mut query: Query<(&mut Handle<Image>, &mut Visibility)>,
 ) {
-    if !data.activated {
+    if !data.component_ready.listen_data_events {
         return;
     }
 
@@ -517,12 +517,23 @@ fn listen_game_over(
     if game_over_events.read().last().is_none() {
         return;
     }
-    data.activated = false;
+    data.component_ready = ComponentReady {
+        listen_data_events: false,
+        listen_player_input: false,
+    };
 }
 
-fn listen_reset(mut data: ResMut<PortalData>, mut reset_game_events: EventReader<ResetGameEvent>) {
-    if reset_game_events.read().last().is_some() {
-        data.activated = true;
+fn listen_reset(
+    mut data: ResMut<PortalData>,
+    mut reset_game_step1_events: EventReader<ResetGameStep1Event>,
+    // mut reset_game_step2_events: EventReader<ResetGameStep2Event>,
+    mut reset_game_step3_events: EventReader<ResetGameStep3Event>,
+) {
+    if reset_game_step1_events.read().last().is_some() {
+        data.component_ready.listen_data_events = true;
+    }
+    if let Some(_e) = reset_game_step3_events.read().last() {
+        data.component_ready.listen_player_input = true;
     }
 }
 
@@ -564,7 +575,7 @@ struct PortalData {
     monsters: Vec<Monster>,
     health: i8,
 
-    activated: bool,
+    component_ready: ComponentReady,
     frame: Wrapping<i8>,
 }
 
@@ -586,8 +597,8 @@ impl PortalData {
             attack_progress: Vec::new(),
             attack_progress_next_s: 0.,
             attack_progress_reset_s: 0.,
-            activated: false,
             frame: Wrapping(0),
+            component_ready: ComponentReady::default(),
         }
     }
 

@@ -29,7 +29,7 @@
                 // "SEASON_SCHOLARS_DEV_PORTAL_HEALTH": "4",
                 // "SEASON_SCHOLARS_DEV_STUDENT_NOT_EATING": "whatever",
                 // "SEASON_SCHOLARS_DEV_NO_SEASON_MONSTER": "whatever",
-                "RUST_LOG": "warn,farmer_school_bevy=debug,bevy_diagnostic=trace",
+                "RUST_LOG": "warn,farmer_school_bevy=trace,bevy_diagnostic=trace",
                 "LD_LIBRARY_PATH": "${workspaceFolder}/target/debug/deps:${workspaceFolder}/target/debug",
             },
             "cwd": "${workspaceFolder}"

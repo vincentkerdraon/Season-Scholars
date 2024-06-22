@@ -1,10 +1,16 @@
+use super::teacher::*;
 use bevy::prelude::*;
 
-///Start from zero
 #[derive(Event, Debug)]
-pub struct ResetGameEvent {
-    pub teachers: Vec<Teacher>,
+pub struct ResetGameStep1Event {
+    pub teachers: Vec<(Teacher, Station, ActionShortDuration, ActionLongDuration)>,
 }
+#[derive(Event, Debug)]
+pub struct ResetGameStep2Event {
+    pub teachers: Vec<(Teacher, Station, ActionShortDuration, ActionLongDuration)>,
+}
+#[derive(Event, Debug)]
+pub struct ResetGameStep3Event {}
 
 #[derive(Event, Debug)]
 pub struct GameOverEvent {
@@ -75,4 +81,11 @@ pub enum Reaction {
     Long = 1,
     Short,
     Fail,
+}
+
+/// Functional error because the requested move is not possible
+#[derive(Event, Debug, Default)]
+pub struct ComponentReady {
+    pub listen_data_events: bool,
+    pub listen_player_input: bool,
 }

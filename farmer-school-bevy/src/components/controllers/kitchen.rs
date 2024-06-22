@@ -19,43 +19,36 @@ fn listen_game_over(
     if game_over_events.read().last().is_none() {
         return;
     }
-    data.activated = false;
+    data.component_ready = ComponentReady {
+        listen_data_events: false,
+        listen_player_input: false,
+    };
 }
 
 fn listen_reset(
     config: Res<Config>,
     mut data: ResMut<KitchenData>,
-    mut reset_game_events: EventReader<ResetGameEvent>,
-    students_eat_events: EventWriter<StudentsEatEvent>,
-) {
-    if reset_game_events.read().last().is_some() {
-        reset(&config, &mut data, students_eat_events);
-    }
-}
-
-fn startup_reset(
-    config: Res<Config>,
-    mut data: ResMut<KitchenData>,
-    students_eat_events: EventWriter<StudentsEatEvent>,
-) {
-    reset(&config, &mut data, students_eat_events);
-}
-
-fn reset(
-    config: &Res<Config>,
-    data: &mut ResMut<KitchenData>,
+    mut reset_game_step1_events: EventReader<ResetGameStep1Event>,
+    mut reset_game_step2_events: EventReader<ResetGameStep2Event>,
+    mut reset_game_step3_events: EventReader<ResetGameStep3Event>,
     mut students_eat_events: EventWriter<StudentsEatEvent>,
 ) {
-    data.activated = true;
-    data.food_remaining = config.food_max;
-    data.teacher_busy = TeacherBusy::default();
-    data.teacher_tired = TeacherTired::default();
-
-    let emit = StudentsEatEvent {
-        food_remaining: data.food_remaining,
-    };
-    debug!("{:?}", emit);
-    students_eat_events.send(emit);
+    if let Some(e) = reset_game_step1_events.read().last() {
+        data.component_ready.listen_data_events = true;
+        data.food_remaining = config.food_max;
+        data.teacher_busy = TeacherBusy::new(&e.teachers);
+        data.teacher_tired = TeacherTired::new(&e.teachers);
+    }
+    if let Some(_e) = reset_game_step2_events.read().last() {
+        let emit = StudentsEatEvent {
+            food_remaining: data.food_remaining,
+        };
+        debug!("{:?}", emit);
+        students_eat_events.send(emit);
+    }
+    if let Some(_e) = reset_game_step3_events.read().last() {
+        data.component_ready.listen_player_input = true;
+    }
 }
 
 fn listen_moved(
@@ -137,16 +130,13 @@ fn listen_events_player_input(
     mut invalid_action_station_events: EventWriter<InvalidActionStationEvent>,
     mut invalid_move_events: EventWriter<InvalidMoveEvent>,
 ) {
-    if !data.activated {
+    if !data.component_ready.listen_player_input {
+        player_input_events.clear();
         return;
     }
 
     let now = time.elapsed_seconds_f64();
     for e in player_input_events.read() {
-        if !data.activated {
-            continue;
-        }
-
         if !data.teacher_busy.is_station(e.teacher, &STATION) {
             continue;
         }
@@ -233,7 +223,6 @@ impl Plugin for KitchenControllerPlugin {
             .add_event::<CookedEvent>()
             .add_event::<StudentsEatEvent>()
             .add_event::<TeacherAteEvent>()
-            .add_systems(Startup, startup_reset)
             .add_systems(PreUpdate, listen_reset)
             .add_systems(PreUpdate, listen_game_over)
             .add_systems(PreUpdate, listen_events_teacher_tired)
@@ -246,7 +235,7 @@ impl Plugin for KitchenControllerPlugin {
 
 #[derive(Resource, Default)]
 struct KitchenData {
-    activated: bool,
+    component_ready: ComponentReady,
     food_remaining: i8,
     teacher_busy: TeacherBusy,
     teacher_tired: TeacherTired,

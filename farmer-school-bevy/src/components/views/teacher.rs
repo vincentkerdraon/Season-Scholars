@@ -305,6 +305,11 @@ fn listen_teacher_moved(
     mut teacher_moved_events: EventReader<TeacherMovedEvent>,
     mut data: ResMut<TeacherData>,
 ) {
+    if !data.component_ready.listen_data_events {
+        teacher_moved_events.clear();
+        return;
+    }
+
     for e in teacher_moved_events.read() {
         data.teacher_moved_event(e.teacher, Some(e.station_from), Some(e.station_to));
     }
@@ -314,6 +319,10 @@ fn listen_player_input(
     mut player_input_events: EventReader<PlayerInputEvent>,
     mut data: ResMut<TeacherData>,
 ) {
+    if !data.component_ready.listen_player_input {
+        player_input_events.clear();
+        return;
+    }
     let mut dirty = false;
 
     for e in player_input_events.read() {
@@ -360,6 +369,7 @@ fn listen_player_input(
 
 fn listen_reactions(
     time: Res<Time>,
+    mut data: ResMut<TeacherData>,
     mut invalid_action_station_events: EventReader<InvalidActionStationEvent>,
     mut teacher_ate_events: EventReader<TeacherAteEvent>,
     mut cooked_events: EventReader<CookedEvent>,
@@ -369,24 +379,26 @@ fn listen_reactions(
     mut taught_events: EventReader<TaughtEvent>,
     mut student_welcomed_events: EventReader<StudentWelcomedEvent>,
     mut recruit_student_events: EventReader<RecruitStudentEvent>,
-    mut data: ResMut<TeacherData>,
 ) {
+    if !data.component_ready.listen_data_events {
+        return;
+    }
+
     let now = time.elapsed_seconds_f64();
     let mut insert_reaction = |teacher: Teacher, reaction: Reaction| {
         data.dirty = true;
-
-        //FIXME panic here.         //using player B. not sure how
-        let (short, long) = data.teacher_tired.get(&teacher).unwrap();
-        let dur = match reaction {
-            Reaction::Fail => DISPLAY_REACTION_FAIL_DURATION_S,
-            Reaction::Long => long,
-            Reaction::Short => short,
-        };
-        if let Some(station) = data.teachers_position.get(&teacher).cloned() {
-            data.display_reaction_until.insert(
-                (teacher, station, reaction),
-                (now + dur, Entity::PLACEHOLDER),
-            );
+        if let Some((short, long)) = data.teacher_tired.get(&teacher) {
+            let dur = match reaction {
+                Reaction::Fail => DISPLAY_REACTION_FAIL_DURATION_S,
+                Reaction::Long => long,
+                Reaction::Short => short,
+            };
+            if let Some(station) = data.teachers_position.get(&teacher).cloned() {
+                data.display_reaction_until.insert(
+                    (teacher, station, reaction),
+                    (now + dur, Entity::PLACEHOLDER),
+                );
+            }
         }
     };
 
@@ -426,12 +438,25 @@ fn listen_game_over(
     if game_over_events.read().last().is_none() {
         return;
     }
-    data.activated = false;
+    data.component_ready = ComponentReady {
+        listen_data_events: false,
+        listen_player_input: false,
+    };
 }
 
-fn listen_reset(mut data: ResMut<TeacherData>, mut reset_game_events: EventReader<ResetGameEvent>) {
-    if reset_game_events.read().last().is_some() {
-        data.activated = true;
+fn listen_reset(
+    mut data: ResMut<TeacherData>,
+    mut reset_game_step1_events: EventReader<ResetGameStep1Event>,
+    mut reset_game_step2_events: EventReader<ResetGameStep2Event>,
+    mut reset_game_step3_events: EventReader<ResetGameStep3Event>,
+) {
+    if let Some(e) = reset_game_step1_events.read().last() {
+        data.component_ready.listen_data_events = true;
+        data.teachers_position = HashMap::new();
+        data.teacher_tired = TeacherTired::new(&e.teachers);
+    }
+
+    if let Some(_e) = reset_game_step2_events.read().last() {
         data.dirty = true;
 
         data.teachers_moved = Vec::new();
@@ -440,9 +465,9 @@ fn listen_reset(mut data: ResMut<TeacherData>, mut reset_game_events: EventReade
             data.teachers_moved.push((Teacher::A, Some(s), None));
             data.teachers_moved.push((Teacher::B, Some(s), None));
         }
-
-        //We will receive the position soon, but there is no teacher in the first frame
-        data.teachers_position = HashMap::new();
+    }
+    if let Some(_e) = reset_game_step3_events.read().last() {
+        data.component_ready.listen_player_input = true;
     }
 }
 
@@ -464,7 +489,7 @@ fn draw(
     mut data: ResMut<TeacherData>,
     mut query: Query<(&mut Handle<Image>, &mut Visibility)>,
 ) {
-    if !data.activated {
+    if !data.component_ready.listen_data_events {
         return;
     }
 
@@ -582,7 +607,8 @@ struct TeacherData {
     teachers_position: HashMap<Teacher, Station>,
     teachers_moved: Vec<(Teacher, Option<Station>, Option<Station>)>,
     teacher_tired: TeacherTired,
-    activated: bool,
+
+    component_ready: ComponentReady,
     dirty: bool,
     direction_last: Vec2,
     frame: Wrapping<i8>,
@@ -599,12 +625,12 @@ impl TeacherData {
             teachers_position: HashMap::new(),
             teachers_moved: Vec::new(),
             teacher_tired: TeacherTired::default(),
-            activated: false,
             dirty: false,
             direction_last: Vec2::ZERO,
             frame: Wrapping(0),
             display_reaction_until: HashMap::new(),
             display_path_until: HashMap::new(),
+            component_ready: ComponentReady::default(),
         }
     }
 

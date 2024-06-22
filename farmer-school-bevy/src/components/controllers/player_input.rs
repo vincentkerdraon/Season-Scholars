@@ -36,55 +36,70 @@ fn input_system(
     }
 
     if data.active_player_a {
-        let out = input_player_a(&keyboard_input);
-        trace!("player A {:?}", out);
-        input_events.send(out);
+        if let Some(out) = input_player_a(&keyboard_input) {
+            trace!("player A {:?}", out);
+            input_events.send(out);
+        }
     }
 
     if data.active_player_b {
-        let out = input_player_b(&keyboard_input);
-        trace!("player B {:?}", out);
-        input_events.send(out);
+        if let Some(out) = input_player_b(&keyboard_input) {
+            trace!("player B {:?}", out);
+            input_events.send(out);
+        }
     }
 }
 
-fn input_player_a(keyboard_input: &Res<ButtonInput<KeyCode>>) -> PlayerInputEvent {
+fn input_player_a(keyboard_input: &Res<ButtonInput<KeyCode>>) -> Option<PlayerInputEvent> {
     let mut out: PlayerInputEvent = PlayerInputEvent {
         teacher: (Teacher::A),
         ..default()
     };
 
+    let mut found = false;
+
     if keyboard_input.just_pressed(KeyCode::ShiftLeft)
         || keyboard_input.just_pressed(KeyCode::ShiftRight)
     {
         out.short_action = true;
+        found = true;
     }
     if keyboard_input.just_pressed(KeyCode::ControlLeft)
         || keyboard_input.just_pressed(KeyCode::ControlRight)
     {
         out.long_action = true;
+        found = true;
     }
 
     if keyboard_input.just_pressed(KeyCode::ArrowDown) {
-        out.direction += Vec2::new(0.0, -1.0)
+        out.direction += Vec2::new(0.0, -1.0);
+        found = true;
     }
     if keyboard_input.just_pressed(KeyCode::ArrowUp) {
-        out.direction += Vec2::new(0.0, 1.0)
+        out.direction += Vec2::new(0.0, 1.0);
+        found = true;
     }
     if keyboard_input.just_pressed(KeyCode::ArrowLeft) {
-        out.direction += Vec2::new(-1.0, 0.0)
+        out.direction += Vec2::new(-1.0, 0.0);
+        found = true;
     }
     if keyboard_input.just_pressed(KeyCode::ArrowRight) {
-        out.direction += Vec2::new(1.0, 0.0)
+        out.direction += Vec2::new(1.0, 0.0);
+        found = true;
     }
-    out
+    if found {
+        return Some(out);
+    }
+    None
 }
 
-fn input_player_b(keyboard_input: &Res<ButtonInput<KeyCode>>) -> PlayerInputEvent {
+fn input_player_b(keyboard_input: &Res<ButtonInput<KeyCode>>) -> Option<PlayerInputEvent> {
     let mut out: PlayerInputEvent = PlayerInputEvent {
         teacher: (Teacher::B),
         ..default()
     };
+
+    let mut found = false;
 
     if keyboard_input.just_pressed(KeyCode::KeyQ)
         || keyboard_input.just_pressed(KeyCode::Numpad0)
@@ -92,6 +107,7 @@ fn input_player_b(keyboard_input: &Res<ButtonInput<KeyCode>>) -> PlayerInputEven
         || keyboard_input.just_pressed(KeyCode::PageUp)
     {
         out.short_action = true;
+        found = true;
     }
     if keyboard_input.just_pressed(KeyCode::KeyA)
         || keyboard_input.just_pressed(KeyCode::KeyW)
@@ -99,21 +115,29 @@ fn input_player_b(keyboard_input: &Res<ButtonInput<KeyCode>>) -> PlayerInputEven
         || keyboard_input.just_pressed(KeyCode::PageDown)
     {
         out.long_action = true;
+        found = true;
     }
 
     if keyboard_input.just_pressed(KeyCode::KeyF) || keyboard_input.just_pressed(KeyCode::Numpad2) {
-        out.direction += Vec2::new(0.0, -1.0)
+        out.direction += Vec2::new(0.0, -1.0);
+        found = true;
     }
     if keyboard_input.just_pressed(KeyCode::KeyR) || keyboard_input.just_pressed(KeyCode::Numpad8) {
-        out.direction += Vec2::new(0.0, 1.0)
+        out.direction += Vec2::new(0.0, 1.0);
+        found = true;
     }
     if keyboard_input.just_pressed(KeyCode::KeyD) || keyboard_input.just_pressed(KeyCode::Numpad4) {
-        out.direction += Vec2::new(-1.0, 0.0)
+        out.direction += Vec2::new(-1.0, 0.0);
+        found = true;
     }
     if keyboard_input.just_pressed(KeyCode::KeyG) || keyboard_input.just_pressed(KeyCode::Numpad6) {
-        out.direction += Vec2::new(1.0, 0.0)
+        out.direction += Vec2::new(1.0, 0.0);
+        found = true;
     }
-    out
+    if found {
+        return Some(out);
+    }
+    None
 }
 
 pub struct PlayerInputControllerPlugin;

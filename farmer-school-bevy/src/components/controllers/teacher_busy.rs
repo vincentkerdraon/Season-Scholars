@@ -15,6 +15,18 @@ pub struct TeacherBusy {
 }
 
 impl TeacherBusy {
+    pub fn new(
+        teachers: &Vec<(Teacher, Station, ActionShortDuration, ActionLongDuration)>,
+    ) -> Self {
+        let mut me = Self {
+            teachers_position: HashMap::new(),
+        };
+        for (t, s, _, _) in teachers.iter() {
+            me.teachers_position.insert(*t, Some((*s, 0.)));
+        }
+        me
+    }
+
     pub fn moved(&mut self, e: &TeacherMovedEvent) {
         self.teachers_position
             .insert(e.teacher, Some((e.station_to, 0.)));

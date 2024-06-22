@@ -16,59 +16,44 @@ fn listen_game_over(
     if game_over_events.read().last().is_none() {
         return;
     }
-    data.activated = false;
+    data.component_ready = ComponentReady {
+        listen_data_events: false,
+        listen_player_input: false,
+    };
 }
 
 fn listen_reset(
     time: Res<Time>,
-    config: Res<Config>,
     mut data: ResMut<TeacherData>,
-    mut reset_game_events: EventReader<ResetGameEvent>,
+    mut reset_game_step1_events: EventReader<ResetGameStep1Event>,
+    mut reset_game_step2_events: EventReader<ResetGameStep2Event>,
+    mut reset_game_step3_events: EventReader<ResetGameStep3Event>,
     mut teacher_moved_events: EventWriter<TeacherMovedEvent>,
-    mut teacher_tired_events: EventWriter<TeacherTiredEvent>,
 ) {
-    if let Some(e) = reset_game_events.read().last() {
-        data.activated = true;
-        data.teachers.clone_from(&e.teachers);
-
+    if let Some(e) = reset_game_step1_events.read().last() {
+        data.component_ready.listen_data_events = true;
+        data.teachers = Vec::new();
         let now = time.elapsed_seconds_f64();
-        for t in &e.teachers {
-            data.teacher_tired
-                .update(now, t, config.short_action_s_min, config.long_action_s_min);
-        }
 
-        if e.teachers.contains(&Teacher::A) {
+        for (t, _, short, long) in e.teachers.iter() {
+            data.teachers.push(*t);
+            data.teacher_tired.update(now, t, *short, *long);
+        }
+    }
+    if let Some(e) = reset_game_step2_events.read().last() {
+        //initial station of teachers
+        for (t, s, _, _) in e.teachers.iter() {
             let emit = TeacherMovedEvent {
-                teacher: Teacher::A,
+                teacher: *t,
                 station_from: Station::StudentLeft,
-                station_to: Station::StudentCenter,
+                station_to: *s,
             };
             debug!("{:?}", emit);
             teacher_moved_events.send(emit);
-            let emit = TeacherTiredEvent {
-                teacher: Teacher::A,
-                short_action: config.short_action_s_min,
-                long_action: config.long_action_s_min,
-            };
-            debug!("{:?}", emit);
-            teacher_tired_events.send(emit);
         }
-        if e.teachers.contains(&Teacher::B) {
-            let emit = TeacherMovedEvent {
-                teacher: Teacher::B,
-                station_from: Station::Portal,
-                station_to: Station::Welcome,
-            };
-            debug!("{:?}", emit);
-            teacher_moved_events.send(emit);
-            let emit = TeacherTiredEvent {
-                teacher: Teacher::B,
-                short_action: config.short_action_s_min,
-                long_action: config.long_action_s_min,
-            };
-            debug!("{:?}", emit);
-            teacher_tired_events.send(emit);
-        }
+    }
+    if let Some(_e) = reset_game_step3_events.read().last() {
+        data.component_ready.listen_player_input = true;
     }
 }
 
@@ -78,7 +63,7 @@ fn update_teacher_speed(
     mut data: ResMut<TeacherData>,
     mut teacher_tired_events: EventWriter<TeacherTiredEvent>,
 ) {
-    if !data.activated {
+    if !data.component_ready.listen_data_events {
         return;
     }
 
@@ -117,6 +102,11 @@ fn listen_events_teacher_ate(
     mut teacher_eat_events: EventReader<TeacherAteEvent>,
     mut teacher_tired_events: EventWriter<TeacherTiredEvent>,
 ) {
+    if !data.component_ready.listen_data_events {
+        teacher_eat_events.clear();
+        return;
+    }
+
     for e in teacher_eat_events.read() {
         let now = time.elapsed_seconds_f64();
         data.teacher_tired.update(
@@ -136,8 +126,8 @@ fn listen_events_teacher_ate(
 }
 
 fn listen_move(
-    mut teacher_moved_events: EventWriter<TeacherMovedEvent>,
     mut move_teacher_events: EventReader<MoveTeacherEvent>,
+    mut teacher_moved_events: EventWriter<TeacherMovedEvent>,
 ) {
     for e in move_teacher_events.read() {
         let emit = TeacherMovedEvent {
@@ -168,8 +158,8 @@ impl Plugin for TeacherControllerPlugin {
 
 #[derive(Resource, Default)]
 struct TeacherData {
+    component_ready: ComponentReady,
     teacher_tired: TeacherTired,
     teachers: Vec<Teacher>,
     frame: Wrapping<i8>,
-    activated: bool,
 }
