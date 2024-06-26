@@ -7,47 +7,52 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'farmer-school-bevy'",
+            "name": "Debug executable 'season-scholars'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=farmer-school-bevy",
-                    "--package=farmer-school-bevy",
+                    "--bin=season-scholars",
+                    "--package=season-scholars",
                     // "--features=bevy/dynamic_linking",
                 ],
                 "filter": {
-                    "name": "farmer-school-bevy",
+                    "name": "season-scholars",
                     "kind": "bin"
                 }
             },
             "args": [],
             "env": {
                 "RUST_BACKTRACE": "1",
+                "RUST_LOG": "warn,season-scholars=trace,bevy_diagnostic=trace",
+                "LD_LIBRARY_PATH": "${workspaceFolder}/target/debug/deps:${workspaceFolder}/target/debug",
                 // "SEASON_SCHOLARS_DEV": "whatever",
                 "SEASON_SCHOLARS_DEV_ASSETS": "whatever",
-                "SEASON_SCHOLARS_DEV_NO_FULLSCREEN": "whatever",
-                "SEASON_SCHOLARS_DEV_WITHOUT_SOUND": "whatever",
-                // "SEASON_SCHOLARS_DEV_PORTAL_HEALTH": "4",
-                // "SEASON_SCHOLARS_DEV_STUDENT_NOT_EATING": "whatever",
-                // "SEASON_SCHOLARS_DEV_NO_SEASON_MONSTER": "whatever",
-                "RUST_LOG": "warn,farmer_school_bevy=trace,bevy_diagnostic=trace",
-                "LD_LIBRARY_PATH": "${workspaceFolder}/target/debug/deps:${workspaceFolder}/target/debug",
+                // "SEASON_SCHOLARS_DEV_VSYNC": "",
+                // "SEASON_SCHOLARS_DEV_WINDOW_MODE": "",
+                // "SEASON_SCHOLARS_DEV_PORTAL_HEALTH": "",
+                // "SEASON_SCHOLARS_DEV_SHORT_ACTION_S_MIN": "0.5",
+                // "SEASON_SCHOLARS_DEV_SHORT_ACTION_S_MAX": "0.5",
+                // "SEASON_SCHOLARS_DEV_LONG_ACTION_S_MIN": "0.5",
+                // "SEASON_SCHOLARS_DEV_LONG_ACTION_S_MAX": "0.5",
+                // "SEASON_SCHOLARS_DEV_VOLUME": "0.0",
+                // "SEASON_SCHOLARS_DEV_STUDENT_NOT_EATING": "",
+                // "SEASON_SCHOLARS_DEV_NO_SEASON_MONSTER": "",
             },
             "cwd": "${workspaceFolder}"
         },
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'farmer-school-bevy'",
+            "name": "Debug unit tests in executable 'season-scholars'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=farmer-school-bevy",
-                    "--package=farmer-school-bevy"
+                    "--bin=season-scholars",
+                    "--package=season-scholars"
                 ],
                 "filter": {
-                    "name": "farmer-school-bevy",
+                    "name": "season-scholars",
                     "kind": "bin"
                 }
             },

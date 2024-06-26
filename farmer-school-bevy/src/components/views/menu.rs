@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use bevy::prelude::*;
 
-use crate::model::config::Config;
+use crate::model::config::*;
 
 use crate::model::overlord::*;
 
@@ -15,16 +15,24 @@ const HOW_TO: &str = "- Move your teacher from station to station.\n
 - In front of the students, you can teach them about the current season (short action) \nor graduate them to fullfil the current monster needs.\n
 - At the door in the back, you can welcome a new student (short action) or find a new one (long action).\n
 - Through the magical windows on the left, you can spy on incoming monsters to learn their needs (short action) \nor repair the portal when the classroom get damaged (long action).\n
-- At the cooking station, you can eat to rest and move faster (short action) or cook (long action).\n";
-const CREDITS: &str = "Created for the 2024 Calgary game jam \"arcade\"\n
-Maelle & Vincent KERDRAON
-This version V1.0 using rust + bevy, another version in godot\n
-Only works in 1920x1080.
-All images using AGI. Homemade sounds.";
+- At the cooking station, you can eat to rest and move faster (short action) or cook (long action). Students eat every winter.\n";
+
 const JOIN: &str = "press \"short action\" to join/leave\n
 press \"long action\" to start the game\n
 press \"reset\" to exit";
 const TITLE: &str = "Season Scholars";
+
+fn credits() -> String {
+    format!(
+        "Created for the 2024 Calgary game jam \"arcade\"\n\
+        Maelle & Vincent KERDRAON\n\
+        This version {} using rust + bevy, another version in godot.\n\
+        Only works in 1920x1080.\n\
+        All images using AGI. Homemade sounds.\n\
+    {}",
+        VERSION, REPO
+    )
+}
 
 fn load_resources(
     config: Res<Config>,
@@ -398,7 +406,7 @@ fn listen_events(
         } else if data.variation % 3 == 1 {
             text.sections[0].value = HOW_TO.to_string();
         } else {
-            text.sections[0].value = CREDITS.to_string();
+            text.sections[0].value = credits();
         }
         *visibility = Visibility::Visible;
     }

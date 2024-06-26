@@ -7,7 +7,7 @@ use bevy::{
     input::{mouse::MouseButtonInput, ButtonState},
     log::LogPlugin,
     prelude::*,
-    window::{Cursor, WindowMode, WindowResolution},
+    window::{Cursor, PresentMode, WindowMode, WindowResolution},
 };
 use std::env;
 
@@ -30,10 +30,10 @@ fn main() {
         base_path: path,
         students_init: 6,
         students_rows_nb: 3,
-        long_action_s_min: 6.0,
-        short_action_s_min: 2.0,
+        long_action_s_min: 3.0,
+        short_action_s_min: 1.0,
         long_action_s_max: 12.0,
-        short_action_s_max: 6.0,
+        short_action_s_max: 3.0,
         actions_increase_delta: 10.,
         actions_increase_increment: 0.5,
         seasons_duration_s: 12.,
@@ -46,29 +46,72 @@ fn main() {
         debug_start_game_immediately: false,
         debug_disable_student_eating: false,
         debug_disable_season_monster: false,
-        debug_without_sound: false,
+        volume: 1.0,
     };
 
     if env::var("SEASON_SCHOLARS_DEV").is_ok() {
         debug_pointer_click = true;
         c.debug_start_game_immediately = true;
     }
+    let mut vsync: PresentMode = PresentMode::Fifo;
+    if let Ok(env_vsync) = env::var("SEASON_SCHOLARS_DEV_VSYNC") {
+        vsync = match env_vsync.as_str() {
+            "AutoVsync" => PresentMode::AutoVsync,
+            "AutoNoVsync" => PresentMode::AutoNoVsync,
+            "Fifo" => PresentMode::Fifo,
+            "FifoRelaxed" => PresentMode::FifoRelaxed,
+            "Immediate" => PresentMode::Immediate,
+            "Mailbox" => PresentMode::Mailbox,
+            _ => {
+                println!("Unknown PresentMode '{}', defaulting to Fifo", env_vsync);
+                PresentMode::Fifo
+            }
+        };
+    }
+
+    let mut window_mode: WindowMode = WindowMode::Windowed;
+    if let Ok(env_window_mode) = env::var("SEASON_SCHOLARS_DEV_WINDOW_MODE") {
+        window_mode = match env_window_mode.as_str() {
+            "Windowed" => WindowMode::Windowed,
+            "Fullscreen" => WindowMode::Fullscreen,
+            "BorderlessFullscreen" => WindowMode::BorderlessFullscreen,
+            "SizedFullscreen" => WindowMode::SizedFullscreen,
+            _ => {
+                println!(
+                    "Unknown WindowMode '{}', defaulting to Windowed",
+                    env_window_mode
+                );
+                WindowMode::Windowed
+            }
+        };
+    }
     read_env_var_to_i8(
         "SEASON_SCHOLARS_DEV_PORTAL_HEALTH",
         &mut c.portal_health_max,
     );
+    read_env_var_to_f64(
+        "SEASON_SCHOLARS_DEV_SHORT_ACTION_S_MIN",
+        &mut c.short_action_s_min,
+    );
+    read_env_var_to_f64(
+        "SEASON_SCHOLARS_DEV_SHORT_ACTION_S_MAX",
+        &mut c.short_action_s_max,
+    );
+    read_env_var_to_f64(
+        "SEASON_SCHOLARS_DEV_LONG_ACTION_S_MIN",
+        &mut c.long_action_s_min,
+    );
+    read_env_var_to_f64(
+        "SEASON_SCHOLARS_DEV_LONG_ACTION_S_MAX",
+        &mut c.long_action_s_max,
+    );
+    read_env_var_to_f32("SEASON_SCHOLARS_DEV_VOLUME", &mut c.volume);
+
     if env::var("SEASON_SCHOLARS_DEV_STUDENT_NOT_EATING").is_ok() {
         c.debug_disable_student_eating = true;
     }
     if env::var("SEASON_SCHOLARS_DEV_NO_SEASON_MONSTER").is_ok() {
         c.debug_disable_season_monster = true;
-    }
-    if env::var("SEASON_SCHOLARS_DEV_WITHOUT_SOUND").is_ok() {
-        c.debug_without_sound = true;
-    }
-    let mut window_mode = WindowMode::Fullscreen;
-    if env::var("SEASON_SCHOLARS_DEV_NO_FULLSCREEN").is_ok() {
-        window_mode = WindowMode::Fullscreen;
     }
 
     let mut app: App = App::new();
@@ -86,6 +129,7 @@ fn main() {
                             ..default()
                         },
                         mode: window_mode,
+                        present_mode: vsync,
                         ..Default::default()
                     }),
                     ..Default::default()
@@ -141,6 +185,27 @@ fn read_env_var_to_i8(var_name: &str, target: &mut i8) {
     }
 }
 
+fn read_env_var_to_f64(var_name: &str, target: &mut f64) {
+    if let Ok(var_value) = env::var(var_name) {
+        if !var_value.is_empty() {
+            match var_value.parse::<f64>() {
+                Ok(parsed_value) => *target = parsed_value,
+                Err(e) => eprintln!("Failed to parse env var {}: {}", var_name, e),
+            }
+        }
+    }
+}
+
+fn read_env_var_to_f32(var_name: &str, target: &mut f32) {
+    if let Ok(var_value) = env::var(var_name) {
+        if !var_value.is_empty() {
+            match var_value.parse::<f32>() {
+                Ok(parsed_value) => *target = parsed_value,
+                Err(e) => eprintln!("Failed to parse env var {}: {}", var_name, e),
+            }
+        }
+    }
+}
 fn _log_mouse_click(
     windows: Query<&Window>,
     mut mouse_button_input_events: EventReader<MouseButtonInput>,

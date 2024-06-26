@@ -2,6 +2,9 @@ use std::path::PathBuf;
 
 use bevy::prelude::*;
 
+pub const VERSION: &str = "v1.3";
+pub const REPO: &str = "https://gitlab.com/eclypsaine/farmer-school";
+
 #[derive(Debug, Clone, Resource)]
 pub struct Config {
     pub base_path: PathBuf,
@@ -27,5 +30,5 @@ pub struct Config {
     pub debug_start_game_immediately: bool,
     pub debug_disable_student_eating: bool,
     pub debug_disable_season_monster: bool,
-    pub debug_without_sound: bool,
+    pub volume: f32,
 }

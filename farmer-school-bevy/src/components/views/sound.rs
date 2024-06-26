@@ -19,7 +19,7 @@ fn load_resources(
     mut data: ResMut<SoundData>,
     asset_server: Res<AssetServer>,
 ) {
-    if config.debug_without_sound {
+    if config.volume == 0.0 {
         return;
     }
     let track = asset_server.load(config.base_path.join("sounds/ready/track_1.ogg"));
@@ -63,7 +63,7 @@ fn play_track(
     config: Res<Config>,
     mut data: ResMut<SoundData>,
 ) {
-    if config.debug_without_sound {
+    if config.volume == 0.0 {
         return;
     }
     let now = time.elapsed_seconds_f64();
@@ -80,7 +80,7 @@ fn play_track(
     }
     let tracks_last_used_index = data.tracks_last_used_index as usize;
     let (t, _, started_at) = data.tracks.get_mut(tracks_last_used_index).unwrap();
-    play_sound(&mut commands, t.clone(), 0.3, 1.);
+    play_sound(&mut commands, t.clone(), 0.3 * config.volume, 1.);
     *started_at = now;
 }
 
@@ -89,7 +89,7 @@ fn listen_reset(
     config: Res<Config>,
     mut reset_game_step1_events: EventReader<ResetGameStep1Event>,
 ) {
-    if config.debug_without_sound {
+    if config.volume == 0.0 {
         return;
     }
     if let Some(e) = reset_game_step1_events.read().last() {
@@ -111,7 +111,7 @@ fn listen_reactions(
     mut student_welcomed_events: EventReader<StudentWelcomedEvent>,
     mut recruit_student_events: EventReader<RecruitStudentEvent>,
 ) {
-    if config.debug_without_sound {
+    if config.volume == 0.0 {
         return;
     }
 
@@ -140,7 +140,7 @@ fn listen_reactions(
                 speed
             );
 
-            play_sound(&mut commands, h, 1., speed);
+            play_sound(&mut commands, h, 1. * config.volume, speed);
         }
     };
 
@@ -179,7 +179,7 @@ fn listen_monster_attack(
     mut data: ResMut<SoundData>,
     mut portal_attacked_events: EventReader<PortalAttackedEvent>,
 ) {
-    if config.debug_without_sound {
+    if config.volume == 0.0 {
         return;
     }
 
@@ -193,7 +193,7 @@ fn listen_monster_attack(
             .get(data.monsters_last_used_index as usize)
             .unwrap()
             .clone();
-        play_sound(&mut commands, h, 1.0, 1.);
+        play_sound(&mut commands, h, 1.0 * config.volume, 1.);
     }
 }
 
@@ -203,7 +203,7 @@ fn listen_events_teacher_tired(
     config: Res<Config>,
     mut teacher_tired_events: EventReader<TeacherTiredEvent>,
 ) {
-    if config.debug_without_sound {
+    if config.volume == 0.0 {
         return;
     }
     for e in teacher_tired_events.read() {
