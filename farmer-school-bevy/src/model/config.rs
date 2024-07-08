@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use bevy::prelude::*;
 
-pub const VERSION: &str = "v1.3";
+pub const VERSION: &str = "v1.4";
 pub const REPO: &str = "https://gitlab.com/eclypsaine/farmer-school";
 
 #[derive(Debug, Clone, Resource)]
