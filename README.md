@@ -16,7 +16,11 @@ They are 2 implementations of the same project
 
 ## Game Jam
 
-Alberta Calgary Arcade Game Jam 2024.
+Alberta Calgary Arcade Game Jam June 2024.
+
+## Authors
+
+Maelle && Vincent KERDRAON
 
 ## License
 
