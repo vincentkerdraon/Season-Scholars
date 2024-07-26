@@ -1,4 +1,4 @@
-[gd_scene load_steps=70 format=3 uid="uid://cdq5oomu02ch8"]
+[gd_scene load_steps=72 format=3 uid="uid://cdq5oomu02ch8"]
 
 [ext_resource type="Script" path="res://farmer-school-godot/model/pipe_overloard.gd" id="1_1crkf"]
 [ext_resource type="Texture2D" uid="uid://2s4kusnynw47" path="res://images/ready/Classroom/ClassroomAutumn.jpg" id="2_5u3vu"]
@@ -70,11 +70,43 @@
 [ext_resource type="Texture2D" uid="uid://k7k5exru167x" path="res://images/ready/Path/WELCOME_TO_DOOR.png" id="65_8youd"]
 [ext_resource type="Texture2D" uid="uid://cf863kcedyer5" path="res://images/ready/Path/WECOME_TO_COOKING.png" id="66_uyy7f"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dapuo"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ddpg8"]
+font_size = 41
+font_color = Color(1, 0.0313726, 0.027451, 1)
+shadow_size = 2
+shadow_color = Color(0.372549, 0.988235, 0.054902, 0.960784)
+
 [node name="MainScene" type="Node2D"]
 scale = Vector2(0.440001, 0.44)
 script = ExtResource("1_1crkf")
 
+[node name="Menu" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 2659.0
+offset_bottom = 1466.0
+
+[node name="Panel" type="Panel" parent="Menu"]
+material = SubResource("ShaderMaterial_dapuo")
+layout_mode = 0
+offset_right = 2616.0
+offset_bottom = 1470.0
+
+[node name="Label" type="Label" parent="Menu/Panel"]
+layout_mode = 0
+offset_left = 641.0
+offset_top = 5.0
+offset_right = 1723.0
+offset_bottom = 145.0
+text = "SEASON SCHOLARS"
+label_settings = SubResource("LabelSettings_ddpg8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="Classroom" type="Node2D" parent="."]
+visible = false
 scale = Vector2(1.04481, 1.09794)
 script = ExtResource("3_wyo6d")
 metadata/asparagus = ExtResource("4_10uvm")
@@ -88,6 +120,7 @@ texture = ExtResource("2_5u3vu")
 centered = false
 
 [node name="Door" type="Node2D" parent="."]
+visible = false
 script = ExtResource("7_ul07v")
 metadata/prot1 = ExtResource("8_pi56l")
 metadata/prot2 = ExtResource("9_vmci1")
@@ -109,6 +142,7 @@ texture = ExtResource("12_t242j")
 centered = false
 
 [node name="Welcome" type="Node2D" parent="."]
+visible = false
 script = ExtResource("19_s7wjd")
 metadata/closed = ExtResource("19_m2stx")
 metadata/t1 = ExtResource("21_y7kcy")
@@ -123,6 +157,7 @@ texture = ExtResource("19_m2stx")
 centered = false
 
 [node name="Windows" type="Node2D" parent="."]
+visible = false
 script = ExtResource("24_bbqo7")
 metadata/Open = ExtResource("25_sg54n")
 metadata/closed = ExtResource("24_lf1t4")
@@ -245,6 +280,7 @@ scale = Vector2(0.8, 0.8)
 texture = ExtResource("28_gw4kb")
 
 [node name="Desks" type="Node2D" parent="."]
+visible = false
 script = ExtResource("31_k1ojx")
 metadata/stc1 = ExtResource("32_lxmd1")
 metadata/stc2 = ExtResource("33_duu5u")
@@ -389,6 +425,7 @@ scale = Vector2(0.3, 0.3)
 texture = ExtResource("58_180gs")
 
 [node name="Teacher" type="Node2D" parent="."]
+visible = false
 z_index = 50
 script = ExtResource("31_105dm")
 metadata/fail = ExtResource("63_3fyfl")
