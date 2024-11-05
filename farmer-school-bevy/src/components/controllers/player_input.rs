@@ -60,12 +60,14 @@ fn input_player_a(keyboard_input: &Res<ButtonInput<KeyCode>>) -> Option<PlayerIn
 
     if keyboard_input.just_pressed(KeyCode::ShiftLeft)
         || keyboard_input.just_pressed(KeyCode::ShiftRight)
+        || keyboard_input.just_pressed(KeyCode::KeyN)
     {
         out.short_action = true;
         found = true;
     }
     if keyboard_input.just_pressed(KeyCode::ControlLeft)
         || keyboard_input.just_pressed(KeyCode::ControlRight)
+        || keyboard_input.just_pressed(KeyCode::KeyM)
     {
         out.long_action = true;
         found = true;
@@ -101,16 +103,14 @@ fn input_player_b(keyboard_input: &Res<ButtonInput<KeyCode>>) -> Option<PlayerIn
 
     let mut found = false;
 
-    if keyboard_input.just_pressed(KeyCode::KeyQ)
-        || keyboard_input.just_pressed(KeyCode::Numpad0)
+    if keyboard_input.just_pressed(KeyCode::KeyC)
         || keyboard_input.just_pressed(KeyCode::NumpadSubtract)
         || keyboard_input.just_pressed(KeyCode::PageUp)
     {
         out.short_action = true;
         found = true;
     }
-    if keyboard_input.just_pressed(KeyCode::KeyA)
-        || keyboard_input.just_pressed(KeyCode::KeyW)
+    if keyboard_input.just_pressed(KeyCode::KeyV)
         || keyboard_input.just_pressed(KeyCode::NumpadAdd)
         || keyboard_input.just_pressed(KeyCode::PageDown)
     {
@@ -118,19 +118,19 @@ fn input_player_b(keyboard_input: &Res<ButtonInput<KeyCode>>) -> Option<PlayerIn
         found = true;
     }
 
-    if keyboard_input.just_pressed(KeyCode::KeyF) || keyboard_input.just_pressed(KeyCode::Numpad2) {
+    if keyboard_input.just_pressed(KeyCode::KeyS) || keyboard_input.just_pressed(KeyCode::Numpad2) {
         out.direction += Vec2::new(0.0, -1.0);
         found = true;
     }
-    if keyboard_input.just_pressed(KeyCode::KeyR) || keyboard_input.just_pressed(KeyCode::Numpad8) {
+    if keyboard_input.just_pressed(KeyCode::KeyW) || keyboard_input.just_pressed(KeyCode::Numpad8) {
         out.direction += Vec2::new(0.0, 1.0);
         found = true;
     }
-    if keyboard_input.just_pressed(KeyCode::KeyD) || keyboard_input.just_pressed(KeyCode::Numpad4) {
+    if keyboard_input.just_pressed(KeyCode::KeyA) || keyboard_input.just_pressed(KeyCode::Numpad4) {
         out.direction += Vec2::new(-1.0, 0.0);
         found = true;
     }
-    if keyboard_input.just_pressed(KeyCode::KeyG) || keyboard_input.just_pressed(KeyCode::Numpad6) {
+    if keyboard_input.just_pressed(KeyCode::KeyD) || keyboard_input.just_pressed(KeyCode::Numpad6) {
         out.direction += Vec2::new(1.0, 0.0);
         found = true;
     }

@@ -144,7 +144,7 @@ fn load_resources(
             texture: asset_server.load(
                 config
                     .base_path
-                    .join("images/ready/StartScreen/InputArcade.png"),
+                    .join("images/ready/StartScreen/InputArcade2.png"),
             ),
             transform: Transform {
                 translation: Vec3 {
@@ -169,7 +169,7 @@ fn load_resources(
             texture: asset_server.load(
                 config
                     .base_path
-                    .join("images/ready/StartScreen/InputKeyboard1.png"),
+                    .join("images/ready/StartScreen/InputKeyboard2.png"),
             ),
             transform: Transform {
                 translation: Vec3 {
