@@ -4,6 +4,15 @@
 
 See env var for fullscreen, volume, ...
 
+## Run from code
+
+_(requires all the dependencies...)_\
+see `farmer-school-bevy/.vscode/launch.json`
+
+```
+SEASON_SCHOLARS_DEV_ASSETS=y cargo run
+```
+
 ## Release
 
 - update version in `Cargo.toml`
