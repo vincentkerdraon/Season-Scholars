@@ -69,7 +69,7 @@ fn main() {
         };
     }
 
-    let mut window_mode: WindowMode = WindowMode::Windowed;
+    let mut window_mode: WindowMode = WindowMode::Fullscreen;
     if let Ok(env_window_mode) = env::var("SEASON_SCHOLARS_DEV_WINDOW_MODE") {
         window_mode = match env_window_mode.as_str() {
             "Windowed" => WindowMode::Windowed,
@@ -78,10 +78,10 @@ fn main() {
             "SizedFullscreen" => WindowMode::SizedFullscreen,
             _ => {
                 println!(
-                    "Unknown WindowMode '{}', defaulting to Windowed",
+                    "Unknown WindowMode '{}', defaulting to Fullscreen",
                     env_window_mode
                 );
-                WindowMode::Windowed
+                WindowMode::Fullscreen
             }
         };
     }
