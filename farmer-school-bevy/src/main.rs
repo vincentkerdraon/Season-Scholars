@@ -162,12 +162,17 @@ fn main() {
 
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2dBundle {
-        transform: Transform {
-            translation: Vec3 {
-                x: 0.,
-                y: 0.,
-                z: 0.,
+        projection: OrthographicProjection {
+            scale: 0.9,
+            area: bevy::math::Rect {
+                min: Vec2::new(-960.0, -540.0),
+                max: Vec2::new(960.0, 540.0),
             },
+            scaling_mode: bevy::render::camera::ScalingMode::FixedVertical(1080.0),
+            ..default()
+        },
+        transform: Transform {
+            translation: Vec3::new(20., 50., 1000.),
             ..default()
         },
         ..default()

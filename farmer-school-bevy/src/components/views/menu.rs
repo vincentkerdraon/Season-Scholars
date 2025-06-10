@@ -15,7 +15,7 @@ const HOW_TO: &str = "- Move your teacher from station to station.\n
 - In front of the students, you can teach them about the current season (short action) \nor graduate them to fullfil the current monster needs.\n
 - At the door in the back, you can welcome a new student (short action) or find a new one (long action).\n
 - Through the magical windows on the left, you can spy on incoming monsters to learn their needs (short action) \nor repair the portal when the classroom get damaged (long action).\n
-- At the cooking station, you can eat to rest and move faster (short action) or cook (long action). Students eat every winter.\n";
+- At the cooking station, you can eat to rest and move faster (short action) or cook (long action).\nStudents eat every winter.\n";
 
 const JOIN: &str = "press \"short action\" to join/leave\n
 press \"long action\" to start the game\n
@@ -40,24 +40,7 @@ fn load_resources(
     asset_server: Res<AssetServer>,
     mut data: ResMut<MenuData>,
 ) {
-    // WTF, IMPOSSIBLE to use the Z index?
-    // replacing with image.
-    // data.background = commands
-    //     .spawn(NodeBundle {
-    //         style: Style {
-    //             left: Val::Px(0.),
-    //             bottom: Val::Px(0.),
-    //             width: Val::Vw(100.),
-    //             height: Val::Vh(100.),
-    //             ..Default::default()
-    //         },
-    //         background_color: BackgroundColor(Color::rgba(0.8, 0.8, 0.8, 0.85)),
-    //         visibility: Visibility::Hidden,
-    //         z_index: ZIndex::Global(300),
-    //         ..Default::default()
-    //     })
-    //     .id();
-
+    // Use a SpriteBundle for the background gradient, scaled to cover the screen
     data.images.push(
         commands
             .spawn(SpriteBundle {
@@ -67,24 +50,19 @@ fn load_resources(
                         .join("images/ready/StartScreen/Gradient.png"),
                 ),
                 transform: Transform {
-                    translation: Vec3 {
-                        x: 0.,
-                        y: 0.,
-                        z: 300.,
-                    },
-                    scale: Vec3 {
-                        x: 10.,
-                        y: 6.,
-                        z: 1.,
-                    },
-                    ..default()
+                    translation: Vec3::new(0., 0., 300.),
+                    scale: Vec3::new(10., 6., 1.),
+                    ..Default::default()
                 },
-
-                ..default()
+                sprite: Sprite {
+                    custom_size: Some(Vec2::new(1920., 1080.)),
+                    ..Default::default()
+                },
+                visibility: Visibility::Visible,
+                ..Default::default()
             })
             .id(),
     );
-
     data.images.push(
         commands
             .spawn(SpriteBundle {
@@ -94,24 +72,15 @@ fn load_resources(
                         .join("images/ready/StartScreen/TeacherA.png"),
                 ),
                 transform: Transform {
-                    translation: Vec3 {
-                        x: -700.,
-                        y: -100.,
-                        z: 301.,
-                    },
-                    scale: Vec3 {
-                        x: 0.8,
-                        y: 0.8,
-                        z: 1.,
-                    },
-                    ..default()
+                    translation: Vec3::new(-700., -100., 301.),
+                    scale: Vec3::new(0.8, 0.8, 1.),
+                    ..Default::default()
                 },
-
-                ..default()
+                visibility: Visibility::Visible,
+                ..Default::default()
             })
             .id(),
     );
-
     data.images.push(
         commands
             .spawn(SpriteBundle {
@@ -121,24 +90,15 @@ fn load_resources(
                         .join("images/ready/StartScreen/TeacherB.png"),
                 ),
                 transform: Transform {
-                    translation: Vec3 {
-                        x: 700.,
-                        y: -100.,
-                        z: 301.,
-                    },
-                    scale: Vec3 {
-                        x: 0.8,
-                        y: 0.8,
-                        z: 1.,
-                    },
-                    ..default()
+                    translation: Vec3::new(700., -100., 301.),
+                    scale: Vec3::new(0.8, 0.8, 1.),
+                    ..Default::default()
                 },
-
-                ..default()
+                visibility: Visibility::Visible,
+                ..Default::default()
             })
             .id(),
     );
-
     data.input_arcade = commands
         .spawn(SpriteBundle {
             texture: asset_server.load(
@@ -147,23 +107,14 @@ fn load_resources(
                     .join("images/ready/StartScreen/InputArcade2.png"),
             ),
             transform: Transform {
-                translation: Vec3 {
-                    x: 0.,
-                    y: -100.,
-                    z: 301.,
-                },
-                scale: Vec3 {
-                    x: 0.5,
-                    y: 0.5,
-                    z: 1.,
-                },
-                ..default()
+                translation: Vec3::new(0., -100., 301.),
+                scale: Vec3::new(0.5, 0.5, 1.),
+                ..Default::default()
             },
-
-            ..default()
+            visibility: Visibility::Visible,
+            ..Default::default()
         })
         .id();
-
     data.input_keyboard = commands
         .spawn(SpriteBundle {
             texture: asset_server.load(
@@ -172,19 +123,12 @@ fn load_resources(
                     .join("images/ready/StartScreen/InputKeyboard2.png"),
             ),
             transform: Transform {
-                translation: Vec3 {
-                    x: 0.,
-                    y: -100.,
-                    z: 302.,
-                },
-                scale: Vec3 {
-                    x: 0.5,
-                    y: 0.5,
-                    z: 1.,
-                },
-                ..default()
+                translation: Vec3::new(0., -100., 302.),
+                scale: Vec3::new(0.5, 0.5, 1.),
+                ..Default::default()
             },
-            ..default()
+            visibility: Visibility::Visible,
+            ..Default::default()
         })
         .id();
 
@@ -218,15 +162,15 @@ fn load_resources(
                 TextStyle {
                     font_size: 20.0,
                     color: Color::rgb(0.2, 0.2, 0.2),
-
                     ..default()
                 },
             ),
             style: Style {
                 position_type: PositionType::Absolute,
-                align_content: AlignContent::FlexStart,
-                left: Val::Px(500.),
-                bottom: Val::Px(700.),
+                align_self: AlignSelf::Center,
+                left: Val::Percent(20.0),
+                width: Val::Percent(70.0),
+                top: Val::Px(80.),
                 ..Default::default()
             },
             visibility: Visibility::Hidden,
@@ -247,9 +191,9 @@ fn load_resources(
             ),
             style: Style {
                 position_type: PositionType::Absolute,
-                align_content: AlignContent::Start,
-                left: Val::Px(750.),
-                bottom: Val::Px(20.),
+                align_self: AlignSelf::Center,
+                left: Val::Percent(40.0),
+                bottom: Val::Px(10.0),
                 ..Default::default()
             },
             visibility: Visibility::Hidden,
@@ -269,9 +213,9 @@ fn load_resources(
             ),
             style: Style {
                 position_type: PositionType::Absolute,
-                align_content: AlignContent::Center,
-                left: Val::Px(100.),
-                bottom: Val::Px(20.),
+                align_self: AlignSelf::FlexStart,
+                left: Val::Percent(5.0),
+                bottom: Val::Percent(3.0),
                 ..Default::default()
             },
             visibility: Visibility::Hidden,
@@ -291,9 +235,9 @@ fn load_resources(
             ),
             style: Style {
                 position_type: PositionType::Absolute,
-                align_content: AlignContent::Center,
-                left: Val::Px(1400.),
-                bottom: Val::Px(20.),
+                align_self: AlignSelf::FlexEnd,
+                left: Val::Percent(75.0),
+                bottom: Val::Percent(3.0),
                 ..Default::default()
             },
             visibility: Visibility::Hidden,
